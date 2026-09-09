@@ -1,0 +1,138 @@
+/* ==========================================================================
+   🪐 LUKES ACADEMY - HOJA DE ESTILOS Y TEMAS CENTRALIZADOS
+   ========================================================================== */
+
+/* 1. PALETA DE COLORES GLOBAL Y VIBRANTE (VARIABLES CSS) */
+:root {
+    --bg-main: #f8f6f0;
+    --bg-card: #ffffff;
+    --bg-subcard: #f1ede4;
+    --text-main: #1e2623;
+    --text-muted: #737d77;
+    --border-color: #e3dec3;
+    --accent-orange: #e06a4e;
+    --accent-green: #23483f;
+}
+
+/* 2. OVERRIDE PARA MODO OSCURO (CLASE .dark) */
+.dark {
+    --bg-main: #111614;
+    --bg-card: #19221f;
+    --bg-subcard: #222d29;
+    --text-main: #f8f6f0;
+    --text-muted: #8b9690;
+    --border-color: #2a3833;
+    --accent-orange: #e06a4e;
+    --accent-green: #3a7d6e;
+}
+
+/* 3. CLASES SEMÁNTICAS DE REUTILIZACIÓN */
+.app-bg {
+    background-color: var(--bg-main);
+    transition: background-color 0.3s ease;
+}
+
+.card-bg {
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    border-color: var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.card-hover:hover {
+    background-color: var(--bg-subcard);
+}
+
+.subcard-bg {
+    background-color: var(--bg-subcard);
+    border-color: var(--border-color);
+    color: var(--text-main);
+}
+
+.text-main {
+    color: var(--text-main);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+.border-main {
+    border-color: var(--border-color);
+}
+
+.nav-btn {
+    color: var(--text-muted);
+}
+
+.nav-btn:hover {
+    background-color: var(--bg-subcard);
+    color: var(--text-main);
+}
+
+/* 4. FUENTES Y TIPOGRAFÍA */
+.title-brand {
+    font-family: 'Comfortaa', cursive;
+}
+
+/* 5. CÍRCULOS DE PROGRESO DE ESTADÍSTICAS */
+.circle-bg {
+    fill: none;
+    stroke: var(--border-color);
+    stroke-width: 4;
+}
+
+.circle-progress {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.6s ease;
+}
+
+/* 6. SCROLLBAR PERSONALIZADO */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 10px;
+}
+
+/* 7. ANIMACIONES Y EFECTOS ESPECIALES */
+
+/* Shake al equivocar respuesta */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+    animation: shake 0.4s ease-in-out;
+}
+
+/* Brillo Shimmer para la Lukes Gold Card */
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+    animation: shimmer 3s infinite;
+}
+
+/* Transición de Minimizado de Splash Screen */
+.splash-morph {
+    transition: all 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+/* Resalte sutil para el Logo SVG libre en Modo Oscuro */
+.dark img[src*="lukes-academy-logo.svg"] {
+    filter: drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.85)) brightness(1.1);
+    transition: filter 0.3s ease;
+}
