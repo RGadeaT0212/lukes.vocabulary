@@ -2,7 +2,6 @@
    🪐 LUKES ACADEMY - HOJA DE ESTILOS Y TEMAS CENTRALIZADOS
    ========================================================================== */
 
-/* 1. PALETA DE COLORES GLOBAL Y VIBRANTE (VARIABLES CSS) */
 :root {
     --bg-main: #f8f6f0;
     --bg-card: #ffffff;
@@ -11,10 +10,9 @@
     --text-muted: #737d77;
     --border-color: #e3dec3;
     --accent-orange: #e06a4e;
-    --accent-green: #23483f;
+    --accent-green: #23483f; /* Verde Bosque exclusivo para completados */
 }
 
-/* 2. OVERRIDE PARA MODO OSCURO (CLASE .dark) */
 .dark {
     --bg-main: #111614;
     --bg-card: #19221f;
@@ -23,89 +21,103 @@
     --text-muted: #8b9690;
     --border-color: #2a3833;
     --accent-orange: #e06a4e;
-    --accent-green: #3a7d6e;
+    --accent-green: #23483f;
 }
 
-/* 3. CLASES SEMÁNTICAS DE REUTILIZACIÓN */
-.app-bg {
-    background-color: var(--bg-main);
-    transition: background-color 0.3s ease;
-}
+.app-bg { background-color: var(--bg-main); transition: background-color 0.3s ease; }
+.card-bg { background-color: var(--bg-card); color: var(--text-main); border-color: var(--border-color); transition: all 0.3s ease; }
+.card-hover:hover { background-color: var(--bg-subcard); }
+.subcard-bg { background-color: var(--bg-subcard); border-color: var(--border-color); color: var(--text-main); }
+.text-main { color: var(--text-main); }
+.text-muted { color: var(--text-muted); }
+.border-main { border-color: var(--border-color); }
 
-.card-bg {
-    background-color: var(--bg-card);
-    color: var(--text-main);
-    border-color: var(--border-color);
-    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.card-hover:hover {
+/* 🎨 OPCIONES DE SELECCIÓN MÚLTIPLE (LECTURA CLARA EN INGLÉS) */
+.option-btn-default {
     background-color: var(--bg-subcard);
-}
-
-.subcard-bg {
-    background-color: var(--bg-subcard);
-    border-color: var(--border-color);
+    border: 2px solid var(--border-color);
     color: var(--text-main);
+    transition: all 0.2s ease;
 }
 
-.text-main {
-    color: var(--text-main);
+.option-btn-selected {
+    background-color: rgba(224, 106, 78, 0.12) !important;
+    border: 2px solid var(--accent-orange) !important;
+    color: var(--text-main) !important;
+    font-weight: 800 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(224, 106, 78, 0.15);
 }
 
-.text-muted {
-    color: var(--text-muted);
+.dark .option-btn-selected {
+    background-color: rgba(224, 106, 78, 0.25) !important;
+    border: 2px solid var(--accent-orange) !important;
+    color: #ffffff !important;
 }
 
-.border-main {
-    border-color: var(--border-color);
+/* 🎨 ESTADOS DE BURBUJAS DE MAPA */
+.bubble-lesson {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+    position: relative;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 3px solid var(--border-color);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
-.nav-btn {
-    color: var(--text-muted);
+.bubble-lesson.locked {
+    background-color: var(--bg-subcard) !important;
+    color: var(--text-muted) !important;
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
-.nav-btn:hover {
-    background-color: var(--bg-subcard);
-    color: var(--text-main);
+.bubble-lesson.active {
+    cursor: pointer;
+    animation: pulse-active 2s infinite;
 }
 
-/* 4. FUENTES Y TIPOGRAFÍA */
-.title-brand {
-    font-family: 'Comfortaa', cursive;
+.bubble-lesson.completed {
+    background-color: var(--accent-green) !important;
+    color: #ffffff !important;
+    border-color: var(--accent-green) !important;
+    box-shadow: 0 6px 16px rgba(35, 72, 63, 0.4);
 }
 
-/* 5. CÍRCULOS DE PROGRESO DE ESTADÍSTICAS */
-.circle-bg {
-    fill: none;
-    stroke: var(--border-color);
-    stroke-width: 4;
+/* 🌟 ANIMACIONES Y EFECTOS VISUALES */
+@keyframes pulse-active {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 106, 78, 0.4); }
+    70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(224, 106, 78, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 106, 78, 0); }
 }
 
-.circle-progress {
-    fill: none;
-    stroke-width: 4;
-    stroke-linecap: round;
-    transition: stroke-dasharray 0.6s ease;
+@keyframes unlock-bounce {
+    0% { transform: scale(0.8) rotate(-10deg); }
+    50% { transform: scale(1.25) rotate(10deg); }
+    75% { transform: scale(0.95); }
+    100% { transform: scale(1) rotate(0deg); }
 }
 
-/* 6. SCROLLBAR PERSONALIZADO */
-.custom-scrollbar::-webkit-scrollbar {
-    width: 4px;
+.animate-unlock {
+    animation: unlock-bounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.03);
+@keyframes correct-pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.15);
-    border-radius: 10px;
+.animate-correct {
+    animation: correct-pop 0.35s ease-out;
 }
 
-/* 7. ANIMACIONES Y EFECTOS ESPECIALES */
-
-/* Shake al equivocar respuesta */
 @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-6px); }
@@ -116,23 +128,38 @@
     animation: shake 0.4s ease-in-out;
 }
 
-/* Brillo Shimmer para la Lukes Gold Card */
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(200%); }
+main {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
 }
 
-.animate-shimmer {
-    animation: shimmer 3s infinite;
+/* Fondo del anillo circular */
+.circle-bg {
+    fill: none;
+    stroke: var(--bg-subcard);
+    stroke-width: 3.8;
 }
 
-/* Transición de Minimizado de Splash Screen */
-.splash-morph {
-    transition: all 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+/* Anillo de progreso activo */
+.circle-progress {
+    fill: none;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s ease;
 }
 
-/* Resalte sutil para el Logo SVG libre en Modo Oscuro */
-.dark img[src*="lukes-academy-logo.svg"] {
-    filter: drop-shadow(0px 0px 3px rgba(255, 255, 255, 0.85)) brightness(1.1);
-    transition: filter 0.3s ease;
+/* Números del centro de las estadísticas */
+#stat-words-learned,
+#stat-challenges-completed,
+#stat-missions-completed {
+    color: var(--text-main) !important;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* Asegurar que las etiquetas SVG respondan al tema oscuro / claro */
+.dark #stat-words-learned,
+.dark #stat-challenges-completed,
+.dark #stat-missions-completed {
+    color: #ffffff !important;
 }
