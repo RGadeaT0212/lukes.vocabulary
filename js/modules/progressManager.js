@@ -1,12 +1,11 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - PROGRESS MANAGER (CACHE-FIRST ENGINE)
+// 🪐 LUKES ACADEMY - PROGRESS MANAGER (REAL-TIME SUPABASE SYNC)
 // ==========================================================================
 import { supabase } from './supabaseClient.js';
 
 const CACHE_KEY = 'lukes_student_progress';
 
 export const ProgressManager = {
-    // Estado en memoria
     state: {
         student_id: null,
         stats: {
@@ -14,9 +13,11 @@ export const ProgressManager = {
             challengesCompleted: 0,
             missionsCompleted: 0,
             paws: 0,
-            currentLevel: 'A1'
+            currentLevel: '1'
         },
         completed_bubbles: [1],
+        completed_blocks: {},
+        mastered_words_ids: [],
         spaced_repetition: {
             low: [],
             medium: [],
@@ -25,21 +26,24 @@ export const ProgressManager = {
         }
     },
 
-    // 1. Inicialización: Carga desde Supabase e inyecta en caché
     async init() {
         try {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) return null;
+            if (!user) {
+                const localData = localStorage.getItem(CACHE_KEY);
+                if (localData) this.state = JSON.parse(localData);
+                return this.state;
+            }
 
             this.state.student_id = user.id;
 
-            // Intentar cargar desde caché local primero para velocidad
+            // Carga local previa
             const localData = localStorage.getItem(CACHE_KEY);
             if (localData) {
                 this.state = JSON.parse(localData);
             }
 
-            // Sincronizar/Descargar versión fresca de Supabase
+            // Descarga/Sincronización desde Supabase
             const { data, error } = await supabase
                 .from('student_progress')
                 .select('*')
@@ -52,15 +56,21 @@ export const ProgressManager = {
             }
 
             if (data) {
+                // Fusión de burbujas completadas sin perder avance local
+                const remoteBubbles = data.completed_bubbles || [1];
+                const localBubbles = this.state.completed_bubbles || [1];
+                const mergedBubbles = Array.from(new Set([...remoteBubbles, ...localBubbles]));
+
                 this.state = {
                     student_id: data.student_id,
                     stats: data.stats || this.state.stats,
-                    completed_bubbles: data.completed_bubbles || [1],
+                    completed_bubbles: mergedBubbles,
+                    completed_blocks: data.completed_blocks || this.state.completed_blocks,
+                    mastered_words_ids: data.mastered_words_ids || this.state.mastered_words_ids,
                     spaced_repetition: data.spaced_repetition || this.state.spaced_repetition
                 };
                 this.saveToLocal();
             } else {
-                // Si es un usuario nuevo sin fila de progreso, se crea la fila inicial
                 await this.syncToSupabase();
             }
 
@@ -71,7 +81,6 @@ export const ProgressManager = {
         }
     },
 
-    // 2. Guardado ultra rápido en localStorage (Operación local)
     saveToLocal() {
         try {
             localStorage.setItem(CACHE_KEY, JSON.stringify(this.state));
@@ -80,21 +89,21 @@ export const ProgressManager = {
                 window.AppState.completedBubbles = new Set(this.state.completed_bubbles);
             }
         } catch (e) {
-            console.error('[ProgressManager] Error al guardar en localStorage:', e);
+            console.error('[ProgressManager] Error en localStorage:', e);
         }
     },
 
-    // 3. Sincronización silenciosa con Supabase (Fire and Forget / Upsert)
     async syncToSupabase() {
-        if (!this.state.student_id) return;
-
         this.saveToLocal();
+        if (!this.state.student_id) return;
 
         try {
             const payload = {
                 student_id: this.state.student_id,
                 stats: this.state.stats,
                 completed_bubbles: this.state.completed_bubbles,
+                completed_blocks: this.state.completed_blocks,
+                mastered_words_ids: this.state.mastered_words_ids,
                 spaced_repetition: this.state.spaced_repetition,
                 updated_at: new Date().toISOString()
             };
@@ -104,69 +113,65 @@ export const ProgressManager = {
                 .upsert(payload, { onConflict: 'student_id' });
 
             if (error) {
-                console.warn('[ProgressManager] Sincronización diferida (offline/error):', error.message);
+                console.warn('[ProgressManager] Sincronización offline:', error.message);
             } else {
-                console.log('[ProgressManager] Progreso sincronizado con Supabase.');
+                console.log('[ProgressManager] Progreso guardado exitosamente en Supabase.');
             }
         } catch (err) {
             console.error('[ProgressManager] Error en syncToSupabase:', err);
         }
     },
 
-    // 4. Métodos de Actualización de Estado (Memoria Local)
+    sanitizeTypingText(text) {
+        if (!text) return '';
+        return text.trim().replace(/\s+/g, '\u00A0');
+    },
 
-    // Registrar Patitas de Gato ganadas por porcentaje de precisión (Tramo 20%)
+    completeBubble(bubbleNum) {
+        const num = Number(bubbleNum);
+        if (!this.state.completed_bubbles.includes(num)) {
+            this.state.completed_bubbles.push(num);
+            this.syncToSupabase();
+        }
+    },
+
+    recordLessonCompletion(unitId, blockId, lessonLevel, hitsCount, totalAttempts, blockWordIds = []) {
+        const blockKey = `unit${unitId}_block${blockId}`;
+        
+        if (!this.state.completed_blocks[blockKey]) {
+            this.state.completed_blocks[blockKey] = { L1: false, L2: false, L3: false, hits: 0, attempts: 0, score: 0, status: 'IN_PROGRESS' };
+        }
+
+        const block = this.state.completed_blocks[blockKey];
+        block[lessonLevel] = true;
+        block.hits += hitsCount;
+        block.attempts += totalAttempts;
+
+        if (lessonLevel === 'L3') {
+            const domainScore = block.attempts > 0 ? (block.hits / block.attempts) * 100 : 0;
+            block.score = domainScore;
+
+            if (domainScore >= 80) {
+                blockWordIds.forEach(id => {
+                    if (!this.state.mastered_words_ids.includes(id)) {
+                        this.state.mastered_words_ids.push(id);
+                    }
+                });
+                this.state.stats.wordsLearned = this.state.mastered_words_ids.length;
+                block.status = 'MASTERED';
+            } else {
+                block.status = 'NEEDS_REVIEW';
+            }
+        }
+
+        this.syncToSupabase();
+        return block;
+    },
+
     addPaws(amount) {
         if (typeof amount !== 'number' || amount <= 0) return;
         this.state.stats.paws = (this.state.stats.paws || 0) + amount;
-        this.saveToLocal();
-    },
-
-    // Desbloquear/Completar una burbuja de lección
-    completeBubble(bubbleNum) {
-        if (!this.state.completed_bubbles.includes(bubbleNum)) {
-            this.state.completed_bubbles.push(bubbleNum);
-            this.saveToLocal();
-        }
-    },
-
-    // Registrar nueva palabra aprendida
-    incrementWordsLearned() {
-        this.state.stats.wordsLearned = (this.state.stats.wordsLearned || 0) + 1;
-        this.saveToLocal();
-    },
-
-    // Actualizar el estado de una palabra en la curva de repetición espaciada
-    updateSpacedRepetition(itemId, level, targetDateStr) {
-        const sr = this.state.spaced_repetition;
-
-        // Remover de todos los arreglos de nivel para evitar duplicados
-        sr.low = sr.low.filter(id => id !== itemId);
-        sr.medium = sr.medium.filter(id => id !== itemId);
-        sr.high = sr.high.filter(id => id !== itemId);
-
-        // Asignar al nuevo nivel
-        if (sr[level]) {
-            sr[level].push(itemId);
-        }
-
-        // Programar en la agenda por fecha (YYYY-MM-DD)
-        if (targetDateStr) {
-            if (!sr.schedule[targetDateStr]) {
-                sr.schedule[targetDateStr] = [];
-            }
-            if (!sr.schedule[targetDateStr].includes(itemId)) {
-                sr.schedule[targetDateStr].push(itemId);
-            }
-        }
-
-        this.saveToLocal();
-    },
-
-    // Obtener las palabras programadas para repasar el día de hoy
-    getTodayScheduledItems() {
-        const todayStr = new Date().toISOString().split('T')[0];
-        return this.state.spaced_repetition.schedule[todayStr] || [];
+        this.syncToSupabase();
     }
 };
 
