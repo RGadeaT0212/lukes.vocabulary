@@ -2,7 +2,7 @@
 // 🪐 VOCABULARY ENGINE v52.0 (ROTACIÓN ESTRICTA, TTS ULTRA PAUSADO Y L1-L3)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
-import { VOCABULARY_TEMPLATES } from '../templates/templatesCataloge.js';
+import { VOCABULARY_TEMPLATES } from './templatesCataloge.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
 
@@ -19,7 +19,7 @@ export const VocabularyEngine = {
     lessonTotalWords: 0,
     knownWordsInBlock: new Set(),
     currentCategory: 'EXPRESSIONS',
-    selectedLevel: '1', // Nomenclatura numérica por defecto
+    selectedLevel: '1',
     currentUnitNumber: 1,
     currentBlockNumber: 1,
     currentBubbleType: 1,
@@ -37,7 +37,6 @@ export const VocabularyEngine = {
         }
     },
 
-    // 🔊 TTS Adaptado A1: Normal aún más despacio (0.65x) y Lento ultra pausado (0.35x)
     getTTSRates() {
         return {
             normal: 0.65,
@@ -47,7 +46,7 @@ export const VocabularyEngine = {
 
     speakStrict(text, isSlow = false) {
         if (typeof window === 'undefined' || !window.speechSynthesis) return;
-        window.speechSynthesis.cancel(); // Detiene cualquier audio anterior inmediatamente
+        window.speechSynthesis.cancel();
         
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = 'en-US';
@@ -79,7 +78,7 @@ export const VocabularyEngine = {
         this.currentBlockWords = filtered.length > 0 ? filtered.slice(startIndex, startIndex + 5) : VOCABULARY_DATABASE.slice(0, 5);
         
         this.currentBubbleType = bubbleNum;
-        this.currentSubLesson = ((bubbleNum - 1) % 3) + 1; // 1: Reconocimiento, 2: Consolidación, 3: Producción
+        this.currentSubLesson = ((bubbleNum - 1) % 3) + 1;
         if (this.currentBlockWords.length > 0) {
             this.currentUnitNumber = this.currentBlockWords[0].unit || 1;
         }
@@ -93,12 +92,10 @@ export const VocabularyEngine = {
         this.loopEngine();
     },
 
-    // 🔄 CONSTRUCCIÓN DE LECCIÓN (15 EJERCICIOS ~8 MIN CON MÁX. 2 REPETICIONES DE PLANTILLA)
     buildExerciseQueue() {
         let targetWords = [...this.currentBlockWords];
         this.exerciseQueue = [];
 
-        // Tarjetas de Presentación en L1
         if (this.currentSubLesson === 1) {
             targetWords.forEach(word => {
                 this.exerciseQueue.push({
@@ -112,7 +109,6 @@ export const VocabularyEngine = {
             });
         }
 
-        // Definición de Objetivos
         let goalSequence = [];
         if (this.currentSubLesson === 1) {
             goalSequence = ['Recognize', 'Recognize', 'Associate', 'Recognize', 'Associate', 'Recognize', 'Associate', 'Recognize', 'Associate', 'Recognize', 'Associate', 'Recognize', 'Associate', 'Recognize', 'Associate'];
@@ -122,26 +118,23 @@ export const VocabularyEngine = {
             goalSequence = ['Produce', 'Associate', 'Produce', 'Recall', 'Produce', 'Produce', 'Associate', 'Produce', 'Recall', 'Produce', 'Produce', 'Associate', 'Produce', 'Recall', 'Produce'];
         }
 
-        let templateHistory = []; // Rastreador de últimas plantillas usadas
+        let templateHistory = [];
         const totalPracticeItems = 15;
 
         for (let i = 0; i < totalPracticeItems; i++) {
             const word = targetWords[i % targetWords.length];
             const targetGoal = goalSequence[i];
 
-            // Filtrar plantillas compatibles respetando el máximo de 2 repeticiones consecutivas
             const availableTemplates = Object.keys(VOCABULARY_TEMPLATES).filter(key => {
                 const tmpl = VOCABULARY_TEMPLATES[key];
                 
                 if (word.hasImage === false && (tmpl.type === 'image' || tmpl.type === 'match_image')) return false;
                 
-                // 🛑 LÍMITE: No usar la misma plantilla más de 2 veces seguidas
                 const historyLength = templateHistory.length;
                 if (historyLength >= 2 && templateHistory[historyLength - 1] === key && templateHistory[historyLength - 2] === key) {
                     return false;
                 }
                 
-                // En L1 y L2 está estrictamente prohibida la escritura activa (Produce)
                 if (this.currentSubLesson < 3 && tmpl.goal === 'Produce') return false;
                 
                 return tmpl.goal === targetGoal;
@@ -152,7 +145,6 @@ export const VocabularyEngine = {
             
             templateHistory.push(chosenTemplateKey);
 
-            // Generar distractores siempre en inglés
             const distractors = VOCABULARY_DATABASE.filter(w => w.id !== word.id)
                 .sort(() => 0.5 - Math.random())
                 .slice(0, 3);
@@ -190,7 +182,6 @@ export const VocabularyEngine = {
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
 
-        // FASE A: Tarjeta de Introducción
         if (ex.type === 'intro_card') {
             deck.innerHTML = `
                 <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0">
@@ -247,7 +238,6 @@ export const VocabularyEngine = {
             return;
         }
 
-        // FASE B: Ejercicios Practicables
         const isWriteMode = this.currentSubLesson === 3 && (ex.goal === 'Produce' || ex.templateKey === 'WriteWord' || ex.templateKey === 'Dictation');
 
         let exerciseInteractiveBody = '';
@@ -331,7 +321,6 @@ export const VocabularyEngine = {
             </div>
         `;
 
-        // 🔊 LECTURA AUTOMÁTICA OBLIGATORIA DE ENTRADA
         this.speakStrict(ex.prompt_text, false);
     },
 
@@ -362,7 +351,7 @@ export const VocabularyEngine = {
             selectedBtn.className = "option-btn-selected p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
         }
 
-        this.speakStrict(wordText, false); // Reproduce audio de la opción seleccionada cortando el anterior
+        this.speakStrict(wordText, false);
         this.selectedAnswerIndex = index;
         this.activateCheckButton();
     },
@@ -533,4 +522,6 @@ export const VocabularyEngine = {
     }
 };
 
+// EXPOSICIÓN GLOBAL DE LOS MÉTODOS DE AUDIO Y MOTOR
 window.VocabularyEngine = VocabularyEngine;
+window.speakStrict = (text, isSlow = false) => VocabularyEngine.speakStrict(text, isSlow);
