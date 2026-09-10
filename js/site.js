@@ -1,9 +1,9 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v48.0
+// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v52.0
 // ==========================================================================
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
-import { VocabularyEngine } from './modules/vocabulary.js';
+import { VocabularyEngine, BUBBLE_COLOR_PALETTE } from './modules/vocabulary.js';
 import { SpeakingEngine } from './modules/speakingEngine.js';
 import { ChallengesEngine } from './modules/challengesEngine.js';
 import { MissionsEngine } from './modules/missionsEngine.js';
@@ -12,7 +12,7 @@ window.AppState = {
     user: null,
     carouselIndex: 0,
     homeBubbleIndex: 0,
-    activeLevel: 'A1',
+    activeLevel: '1',
     activeCategory: 'EXPRESSIONS',
     isDarkMode: false,
     targetLanguage: 'en'
@@ -22,7 +22,7 @@ let currentAuthTab = 'login';
 
 const carouselItems = [
     { text: "🚀 ¡RUTA CONTINUA DE LECCIONES! Avanza sin modales innecesarios.", tag: "NUEVO" },
-    { text: "🔥 PROGRESO REAL: Solo la L1 está abierta. ¡Completa lecciones para avanzar!", tag: "SISTEMA" },
+    { text: "🔥 PROGRESO REAL: Completa las lecciones para desbloquear el mapa.", tag: "SISTEMA" },
     { text: "Aprende produciendo en inglés y desbloquea las Patitas de Gato 🐾.", tag: "MÉTODO" }
 ];
 
@@ -86,7 +86,7 @@ window.toggleBottomSheetProfile = function() {
     }
 };
 
-// CARRUSEL CON TODAS LAS BURBUJAS EN FILA Y BLOQUEO ESTRICTO (SOLO L1 INICIALMENTE)
+// 🟢 RENDERIZADO DE BURBUJAS CON CENTRADO AUTOMÁTICO EN LA BURBUJA ACTIVA
 window.renderHomeLessonsModule = function() {
     const titleEl = document.getElementById('home-category-title');
     const badgeEl = document.getElementById('home-level-badge');
@@ -102,10 +102,29 @@ window.renderHomeLessonsModule = function() {
     }
 
     const categoryWords = VocabularyEngine.allWords.filter(w => w.category_group === window.AppState.activeCategory);
-    const detectedLevel = categoryWords.length > 0 ? (categoryWords[0].level || 'A1') : 'A1';
+    const detectedLevel = categoryWords.length > 0 ? (categoryWords[0].level || categoryWords[0].unit || '1') : '1';
     
     titleEl.textContent = window.AppState.activeCategory.replace(/_/g, ' ').toUpperCase();
-    if (badgeEl) badgeEl.textContent = detectedLevel;
+    if (badgeEl) badgeEl.textContent = `NIVEL ${detectedLevel}`;
+
+    const wordCount = categoryWords.length > 0 ? categoryWords.length : 15;
+    const totalBubbles = Math.ceil(wordCount / 5) * 3;
+
+    const rawCompletedArr = ProgressManager.state.completed_bubbles;
+    const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : []);
+
+    // 🎯 AUTO-FOCO INICIAL: Solo establece el foco en la burbuja activa si es la carga inicial de la sesión
+    if (window.AppState.isFirstLoad === undefined) {
+        let activeIndex = 0;
+        for (let i = 1; i <= totalBubbles; i++) {
+            if (!completedBubbles.has(i)) {
+                activeIndex = i - 1;
+                break;
+            }
+        }
+        window.AppState.homeBubbleIndex = activeIndex;
+        window.AppState.isFirstLoad = false; // Permite navegación libre a partir de este momento
+    }
 
     if (accordionEl) {
         const blockIndex = Math.floor(window.AppState.homeBubbleIndex / 3);
@@ -120,36 +139,99 @@ window.renderHomeLessonsModule = function() {
         `).join('');
     }
 
-    const wordCount = categoryWords.length > 0 ? categoryWords.length : 15;
-    const totalBlocks = Math.ceil(wordCount / 5);
-    const totalBubbles = totalBlocks * 3;
-
-    const rawCompletedArr = ProgressManager.state.completed_bubbles;
-    const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : []);
-
-    // BURBUJAS MÁS GRANDES (SÓLO NÚMERO O CANDADO)
     trackEl.innerHTML = Array.from({ length: totalBubbles }).map((_, idx) => {
         const bubbleNum = idx + 1;
+        const isCompleted = completedBubbles.has(bubbleNum);
         const isUnlocked = bubbleNum === 1 || completedBubbles.has(bubbleNum - 1);
+        const color = BUBBLE_COLOR_PALETTE[(bubbleNum - 1) % BUBBLE_COLOR_PALETTE.length];
 
-        return `
-            <div class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300"
-                 ${isUnlocked ? `onclick="window.startHomeLesson('${window.AppState.activeCategory}', ${bubbleNum})"` : ''}>
-                <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg transition-all ${isUnlocked ? 'bg-[#e06a4e] text-white hover:scale-110 active:scale-95 cursor-pointer' : 'bg-[#e3dec3] dark:bg-[#222d29] text-muted cursor-not-allowed'}">
-                    ${isUnlocked ? bubbleNum : '<i class="fa-solid fa-lock text-sm sm:text-xl"></i>'}
-                </button>
-            </div>
-        `;
+        if (isCompleted) {
+            return `
+                <div id="home-bubble-${bubbleNum}" class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300">
+                    <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg transition-all bg-[#23483f] text-white border-2 border-[#23483f] cursor-pointer"
+                            onclick="window.startHomeLesson('${window.AppState.activeCategory}', ${bubbleNum})">
+                        ✓
+                    </button>
+                </div>
+            `;
+        } else if (isUnlocked) {
+            return `
+                <div id="home-bubble-${bubbleNum}" class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300">
+                    <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg transition-all hover:scale-110 active:scale-95 cursor-pointer text-white"
+                            style="background-color: ${color}; border-color: ${color};"
+                            onclick="window.startHomeLesson('${window.AppState.activeCategory}', ${bubbleNum})">
+                        ${bubbleNum}
+                    </button>
+                </div>
+            `;
+        } else {
+            return `
+                <div id="home-bubble-${bubbleNum}" class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300">
+                    <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-sm bg-[#e3dec3] dark:bg-[#222d29] text-muted cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-sm sm:text-xl lock-icon"></i>
+                    </button>
+                </div>
+            `;
+        }
     }).join('');
 
     window.updateHomeCarouselPosition();
+};
+
+// ↔️ DESPLAZAMIENTO MANUAL DEL CARRUSEL
+window.moveHomeCarousel = function(direction) {
+    const track = document.getElementById('home-bubbles-track');
+    if (!track) return;
+
+    const totalNodes = track.querySelectorAll('.home-bubble-node').length;
+    let nextIdx = window.AppState.homeBubbleIndex + direction;
+
+    if (nextIdx < 0) nextIdx = 0;
+    if (nextIdx >= totalNodes) nextIdx = totalNodes - 1;
+
+    window.AppState.homeBubbleIndex = nextIdx;
+    window.updateHomeCarouselPosition();
+};
+
+// 🎬 ANIMACIÓN TRANSICIONAL AL COMPLETAR UNA LECCIÓN
+window.triggerHomeCarouselTransition = function(completedBubbleNum) {
+    if (typeof window.renderHomeLessonsModule === 'function') {
+        window.renderHomeLessonsModule();
+    }
+
+    const currentBubbleEl = document.getElementById(`home-bubble-${completedBubbleNum}`);
+    const nextBubbleNum = completedBubbleNum + 1;
+    const nextBubbleEl = document.getElementById(`home-bubble-${nextBubbleNum}`);
+
+    if (currentBubbleEl && window.confetti) {
+        const rect = currentBubbleEl.getBoundingClientRect();
+        const x = (rect.left + rect.width / 2) / window.innerWidth;
+        const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+        window.confetti({
+            particleCount: 60,
+            spread: 60,
+            origin: { x, y }
+        });
+    }
+
+    if (nextBubbleEl) {
+        const lockIcon = nextBubbleEl.querySelector('.lock-icon');
+        if (lockIcon) {
+            lockIcon.className = 'fa-solid fa-lock-open text-sm sm:text-xl text-[#e06a4e] animate-unlock';
+        }
+    }
+
+    setTimeout(() => {
+        window.AppState.homeBubbleIndex = Math.max(0, nextBubbleNum - 1);
+        window.updateHomeCarouselPosition();
+    }, 850);
 };
 
 window.updateHomeCarouselPosition = function() {
     const track = document.getElementById('home-bubbles-track');
     if (!track) return;
 
-    // Paso ajustado para el nuevo tamaño de burbujas (Aproximadamente 104px en PC)
     const stepWidth = window.innerWidth >= 640 ? 108 : 84;
     const currentIndex = window.AppState.homeBubbleIndex || 0;
     const offset = -(currentIndex * stepWidth + (window.innerWidth >= 640 ? 44 : 32));
@@ -180,8 +262,6 @@ window.moveHomeCarousel = function(direction) {
 
     window.AppState.homeBubbleIndex = nextIdx;
     window.updateHomeCarouselPosition();
-    
-    // Actualizar previsualización de palabras según el bloque
     window.renderHomeLessonsModule();
 };
 
@@ -215,10 +295,10 @@ window.showToast = function(message, type = 'info') {
     if (!container) return;
 
     const toast = document.createElement('div');
-    let bgStyle = 'bg-[#2b3a35] border-[#1c2321] text-white';
+    let bgStyle = 'bg-[#23483f] border-[#19322b] text-white';
     if (type === 'error') bgStyle = 'bg-rose-50 border-rose-200 text-rose-600';
-    if (type === 'success') bgStyle = 'bg-[#f0f7f4] border-[#d2e8e2] text-[#3a7d6e]';
-    if (type === 'warning') bgStyle = 'bg-[#fdf6f0] border-[#f3d5c8] text-[#d97757]';
+    if (type === 'success') bgStyle = 'bg-[#f0f7f4] border-[#d2e8e2] text-[#23483f]';
+    if (type === 'warning') bgStyle = 'bg-[#fdf6f0] border-[#f3d5c8] text-[#e06a4e]';
 
     toast.className = `p-4 rounded-2xl border text-xs font-mono font-bold uppercase tracking-wider shadow-xl transition-all duration-300 translate-y-2 opacity-0 text-center z-50 pointer-events-auto min-w-[280px] max-w-sm ${bgStyle}`;
     toast.innerHTML = message;
@@ -247,7 +327,6 @@ window.updateStatsDisplay = function() {
     if (pawsMobileEl) pawsMobileEl.textContent = stats.paws || 0;
 };
 
-// NAVEGACIÓN LIMPIA A MÓDULOS (SIN ABRIR GOLD CARD EN MISIONES)
 window.openSpeakingManager = function() { SpeakingEngine.initSpeakingModule(); };
 window.openChallengesManager = function() { ChallengesEngine.startDailyChallenge(); };
 window.openMissionsManager = function() {
@@ -407,7 +486,7 @@ function initCarousel() {
 
     track.innerHTML = carouselItems.map((item) => `
         <div class="w-full flex-shrink-0 h-full flex flex-col items-center justify-center text-center p-4 sm:p-6 subcard-bg transition-all select-none">
-            <span class="text-[9px] sm:text-[10px] font-black px-3 py-1 bg-[#2b3a35] text-white rounded-full tracking-widest mb-2">${item.tag}</span>
+            <span class="text-[9px] sm:text-[10px] font-black px-3 py-1 bg-[#23483f] text-white rounded-full tracking-widest mb-2">${item.tag}</span>
             <p class="text-main font-extrabold text-xs sm:text-base max-w-lg leading-relaxed">${item.text}</p>
         </div>
     `).join('');
@@ -432,7 +511,7 @@ function updateCarouselView() {
         const dot = document.getElementById(`dot-${idx}`);
         if (dot) {
             dot.className = idx === window.AppState.carouselIndex
-                ? "w-6 h-2 rounded-full bg-[#1c2321] dark:bg-white transition-all duration-300 shadow-xs"
+                ? "w-6 h-2 rounded-full bg-[#23483f] dark:bg-white transition-all duration-300 shadow-xs"
                 : "w-2 h-2 rounded-full bg-[#8a938e]/60 transition-all duration-300";
         }
     });
