@@ -2,7 +2,7 @@
 // 🪐 VOCABULARY ENGINE v52.0 (ROTACIÓN ESTRICTA, TTS ULTRA PAUSADO Y L1-L3)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
-import { VOCABULARY_TEMPLATES } from './js/templates/templatesCataloge.js';
+import { VOCABULARY_TEMPLATES } from './templates/templatesCataloge.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
 
