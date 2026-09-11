@@ -2,7 +2,7 @@
 // 🪐 VOCABULARY ENGINE v52.0 (ROTACIÓN ESTRICTA, TTS ULTRA PAUSADO Y L1-L3)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
-import { VOCABULARY_TEMPLATES } from './templatesCataloge.js';
+import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
 
@@ -10,6 +10,7 @@ export const BUBBLE_COLOR_PALETTE = [
     '#e06a4e', '#d4a373', '#2a5c82', '#6b4c82', '#2d7a60',
     '#c97b34', '#d94f4f', '#3b5998', '#4a5d3e', '#1f6f78'
 ];
+ window.MissionsEngine = MissionsEngine;
 
 export const VocabularyEngine = {
     allWords: [],
@@ -522,6 +523,5 @@ export const VocabularyEngine = {
     }
 };
 
-// EXPOSICIÓN GLOBAL DE LOS MÉTODOS DE AUDIO Y MOTOR
 window.VocabularyEngine = VocabularyEngine;
 window.speakStrict = (text, isSlow = false) => VocabularyEngine.speakStrict(text, isSlow);
