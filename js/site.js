@@ -8,6 +8,8 @@ import { SpeakingEngine } from './modules/speakingEngine.js';
 import { ChallengesEngine } from './modules/challengesEngine.js';
 import { MissionsEngine } from './modules/missionsEngine.js';
 
+window.MissionsEngine = MissionsEngine;
+
 window.AppState = {
     user: null,
     carouselIndex: 0,
@@ -15,7 +17,8 @@ window.AppState = {
     activeLevel: '1',
     activeCategory: 'EXPRESSIONS',
     isDarkMode: false,
-    targetLanguage: 'en'
+    targetLanguage: 'en',
+    isFirstLoad: true
 };
 
 let currentAuthTab = 'login';
@@ -86,7 +89,6 @@ window.toggleBottomSheetProfile = function() {
     }
 };
 
-// 🟢 RENDERIZADO DE BURBUJAS CON CENTRADO AUTOMÁTICO EN LA BURBUJA ACTIVA
 window.renderHomeLessonsModule = function() {
     const titleEl = document.getElementById('home-category-title');
     const badgeEl = document.getElementById('home-level-badge');
@@ -108,13 +110,13 @@ window.renderHomeLessonsModule = function() {
     if (badgeEl) badgeEl.textContent = `NIVEL ${detectedLevel}`;
 
     const wordCount = categoryWords.length > 0 ? categoryWords.length : 15;
-    const totalBubbles = Math.ceil(wordCount / 5) * 3;
+    const totalBlocks = Math.ceil(wordCount / 5);
+    const totalBubbles = totalBlocks * 3;
 
     const rawCompletedArr = ProgressManager.state.completed_bubbles;
     const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : []);
 
-    // 🎯 AUTO-FOCO INICIAL: Solo establece el foco en la burbuja activa si es la carga inicial de la sesión
-    if (window.AppState.isFirstLoad === undefined) {
+    if (window.AppState.isFirstLoad) {
         let activeIndex = 0;
         for (let i = 1; i <= totalBubbles; i++) {
             if (!completedBubbles.has(i)) {
@@ -123,7 +125,7 @@ window.renderHomeLessonsModule = function() {
             }
         }
         window.AppState.homeBubbleIndex = activeIndex;
-        window.AppState.isFirstLoad = false; // Permite navegación libre a partir de este momento
+        window.AppState.isFirstLoad = false;
     }
 
     if (accordionEl) {
@@ -178,7 +180,6 @@ window.renderHomeLessonsModule = function() {
     window.updateHomeCarouselPosition();
 };
 
-// ↔️ DESPLAZAMIENTO MANUAL DEL CARRUSEL
 window.moveHomeCarousel = function(direction) {
     const track = document.getElementById('home-bubbles-track');
     if (!track) return;
@@ -193,7 +194,6 @@ window.moveHomeCarousel = function(direction) {
     window.updateHomeCarouselPosition();
 };
 
-// 🎬 ANIMACIÓN TRANSICIONAL AL COMPLETAR UNA LECCIÓN
 window.triggerHomeCarouselTransition = function(completedBubbleNum) {
     if (typeof window.renderHomeLessonsModule === 'function') {
         window.renderHomeLessonsModule();
@@ -250,21 +250,6 @@ window.updateHomeCarouselPosition = function() {
     });
 };
 
-window.moveHomeCarousel = function(direction) {
-    const track = document.getElementById('home-bubbles-track');
-    if (!track) return;
-
-    const totalNodes = track.querySelectorAll('.home-bubble-node').length;
-    let nextIdx = window.AppState.homeBubbleIndex + direction;
-
-    if (nextIdx < 0) nextIdx = 0;
-    if (nextIdx >= totalNodes) nextIdx = totalNodes - 1;
-
-    window.AppState.homeBubbleIndex = nextIdx;
-    window.updateHomeCarouselPosition();
-    window.renderHomeLessonsModule();
-};
-
 window.toggleWordPreviewAccordion = function() {
     const accordion = document.getElementById('word-preview-accordion');
     const chevron = document.getElementById('preview-chevron');
@@ -283,6 +268,7 @@ window.toggleWordPreviewAccordion = function() {
 window.changeAppLevel = function(newLevel) {
     window.AppState.activeLevel = newLevel;
     window.AppState.homeBubbleIndex = 0;
+    window.AppState.isFirstLoad = true;
     window.renderHomeLessonsModule();
 };
 
@@ -401,7 +387,7 @@ async function checkSession() {
                 id: session.user.id,
                 email: session.user.email,
                 name: session.user.user_metadata?.first_name || session.user.email.split('@')[0],
-                level: 'A1'
+                level: '1'
             };
             updateUI(true);
             return;
@@ -453,7 +439,7 @@ function bindAuthEvents() {
                     id: data.user.id,
                     email: data.user.email,
                     name: data.user.user_metadata?.first_name || data.user.email.split('@')[0],
-                    level: 'A1'
+                    level: '1'
                 };
                 updateUI(true);
                 window.showToast(`¡Bienvenido, ${window.AppState.user.name}!`, 'success');
