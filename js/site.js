@@ -1,5 +1,5 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v52.0
+// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v60.3
 // ==========================================================================
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
@@ -9,12 +9,13 @@ import { ChallengesEngine } from './modules/challengesEngine.js';
 import { MissionsEngine } from './modules/missionsEngine.js';
 
 window.MissionsEngine = MissionsEngine;
+window.ChallengesEngine = ChallengesEngine;
 
 window.AppState = {
     user: null,
     carouselIndex: 0,
     homeBubbleIndex: 0,
-    activeLevel: '1',
+    activeLevel: 'A1',
     activeCategory: 'EXPRESSIONS',
     isDarkMode: false,
     targetLanguage: 'en',
@@ -56,6 +57,18 @@ window.toggleDarkMode = function() {
     }
 
     localStorage.setItem('lukes_dark_mode', window.AppState.isDarkMode ? 'true' : 'false');
+    window.updateDarkModeSwitches();
+};
+
+window.updateDarkModeSwitches = function() {
+    const isDark = window.AppState.isDarkMode;
+    document.querySelectorAll('.dark-toggle-thumb').forEach(thumb => {
+        if (isDark) {
+            thumb.classList.add('translate-x-4');
+        } else {
+            thumb.classList.remove('translate-x-4');
+        }
+    });
 };
 
 function initDarkModePreference() {
@@ -64,6 +77,7 @@ function initDarkModePreference() {
         window.AppState.isDarkMode = true;
         document.documentElement.classList.add('dark');
     }
+    window.updateDarkModeSwitches();
 }
 
 window.changeTargetLanguage = function(lang) {
@@ -71,22 +85,119 @@ window.changeTargetLanguage = function(lang) {
     window.showToast("Idioma de aprendizaje: Inglés 🇺🇸", "info");
 };
 
-window.toggleBottomSheetProfile = function() {
-    const sheet = document.getElementById('profile-bottom-sheet');
-    if (!sheet) return;
+window.openUserProfileModal = function() {
+    const user = window.AppState.user || { name: 'Estudiante', email: 'Invitado / Sin cuenta' };
+    const stats = ProgressManager.state.stats || {};
+    const skillMastery = ProgressManager.state.skill_mastery || { listening: 0, reading: 0, writing: 0, speaking: 0 };
+    
+    const masteredWords = ProgressManager.state.mastered_words_ids?.length || stats.wordsLearned || 0;
+    const completedBubbles = ProgressManager.state.completed_bubbles?.length || 0;
+    const completedChallenges = stats.challengesCompleted || 0;
+    const streakDays = Math.max(1, Math.ceil(completedBubbles / 2));
 
-    const isHidden = sheet.classList.contains('opacity-0');
-    const content = sheet.querySelector('div');
-
-    if (isHidden) {
-        sheet.classList.remove('opacity-0', 'pointer-events-none');
-        if (content) content.classList.remove('translate-y-full');
+    let modal = document.getElementById('user-profile-detail-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'user-profile-detail-modal';
+        modal.className = "fixed inset-0 bg-[#1c2321]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 font-mono select-none";
+        document.body.appendChild(modal);
     } else {
-        if (content) content.classList.add('translate-y-full');
-        setTimeout(() => {
-            sheet.classList.add('opacity-0', 'pointer-events-none');
-        }, 300);
+        modal.classList.remove('hidden');
     }
+
+    modal.innerHTML = `
+        <div class="card-bg border border-main text-main w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col gap-4 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <button onclick="document.getElementById('user-profile-detail-modal').classList.add('hidden')" 
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer">✕</button>
+
+            <div class="flex items-center gap-4 border-b border-main/10 pb-4">
+                <div class="w-14 h-14 rounded-2xl bg-[#e06a4e] text-white flex items-center justify-center font-black text-xl shadow-md">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <div class="flex flex-col text-left truncate">
+                    <h3 class="font-black text-base text-main uppercase truncate">${user.name}</h3>
+                    <span class="text-xs text-muted truncate">${user.email}</span>
+                    <span class="text-[9px] text-[#e06a4e] font-bold mt-0.5">🔥 RACHA: ${streakDays} DÍAS CONSECUTIVOS</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2.5">
+                <span class="text-[10px] font-bold text-muted uppercase tracking-wider text-left">// CRECIMIENTO DE FLUIDEZ DE HABILIDADES</span>
+                
+                <div class="subcard-bg p-3.5 rounded-2xl border border-main flex flex-col gap-2">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[9px] font-bold">
+                            <span>🎧 LISTENING (ESCUCHA)</span>
+                            <span>${Math.round(skillMastery.listening)}%</span>
+                        </div>
+                        <div class="skill-bar-bg h-2 w-full">
+                            <div class="skill-bar-fill" style="width: ${skillMastery.listening}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[9px] font-bold">
+                            <span>📖 READING (LECTURA)</span>
+                            <span>${Math.round(skillMastery.reading)}%</span>
+                        </div>
+                        <div class="skill-bar-bg h-2 w-full">
+                            <div class="skill-bar-fill" style="width: ${skillMastery.reading}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[9px] font-bold">
+                            <span>✍️ WRITING (ESCRITURA)</span>
+                            <span>${Math.round(skillMastery.writing)}%</span>
+                        </div>
+                        <div class="skill-bar-bg h-2 w-full">
+                            <div class="skill-bar-fill" style="width: ${skillMastery.writing}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[9px] font-bold">
+                            <span>🎙️ SPEAKING (HABLA)</span>
+                            <span>${Math.round(skillMastery.speaking)}%</span>
+                        </div>
+                        <div class="skill-bar-bg h-2 w-full">
+                            <div class="skill-bar-fill" style="width: ${skillMastery.speaking}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2 text-center">
+                <div class="subcard-bg p-2.5 rounded-2xl border border-main">
+                    <span class="text-[8px] text-muted font-bold block uppercase">DOMINADAS</span>
+                    <span class="text-base font-black text-main">${masteredWords}</span>
+                </div>
+                <div class="subcard-bg p-2.5 rounded-2xl border border-main">
+                    <span class="text-[8px] text-muted font-bold block uppercase">LECCIONES</span>
+                    <span class="text-base font-black text-main">${completedBubbles}</span>
+                </div>
+                <div class="subcard-bg p-2.5 rounded-2xl border border-main">
+                    <span class="text-[8px] text-muted font-bold block uppercase">DESAFÍOS</span>
+                    <span class="text-base font-black text-main">${completedChallenges}</span>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mt-1">
+                <button onclick="window.MissionsEngine.renderLukesGoldCardModal()" 
+                        class="flex-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 font-bold text-xs py-3 rounded-xl uppercase transition-all">
+                    💳 Tarjeta Gold
+                </button>
+                <button onclick="document.getElementById('user-profile-detail-modal').classList.add('hidden')" 
+                        class="flex-1 bg-[#23483f] text-white font-bold text-xs py-3 rounded-xl uppercase transition-all">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    `;
+};
+
+window.toggleBottomSheetProfile = function() {
+    window.openUserProfileModal();
 };
 
 window.renderHomeLessonsModule = function() {
@@ -104,7 +215,7 @@ window.renderHomeLessonsModule = function() {
     }
 
     const categoryWords = VocabularyEngine.allWords.filter(w => w.category_group === window.AppState.activeCategory);
-    const detectedLevel = categoryWords.length > 0 ? (categoryWords[0].level || categoryWords[0].unit || '1') : '1';
+    const detectedLevel = categoryWords.length > 0 ? (categoryWords[0].level || categoryWords[0].unit || 'A1') : 'A1';
     
     titleEl.textContent = window.AppState.activeCategory.replace(/_/g, ' ').toUpperCase();
     if (badgeEl) badgeEl.textContent = `NIVEL ${detectedLevel}`;
@@ -114,7 +225,7 @@ window.renderHomeLessonsModule = function() {
     const totalBubbles = totalBlocks * 3;
 
     const rawCompletedArr = ProgressManager.state.completed_bubbles;
-    const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : []);
+    const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : [1]);
 
     if (window.AppState.isFirstLoad) {
         let activeIndex = 0;
@@ -150,7 +261,7 @@ window.renderHomeLessonsModule = function() {
         if (isCompleted) {
             return `
                 <div id="home-bubble-${bubbleNum}" class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300">
-                    <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg transition-all bg-[#23483f] text-white border-2 border-[#23483f] cursor-pointer"
+                    <button type="button" class="w-18 h-18 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl shadow-lg transition-all bg-[#23483f] text-white border-2 border-[#23483f] cursor-pointer"
                             onclick="window.startHomeLesson('${window.AppState.activeCategory}', ${bubbleNum})">
                         ✓
                     </button>
@@ -159,7 +270,7 @@ window.renderHomeLessonsModule = function() {
         } else if (isUnlocked) {
             return `
                 <div id="home-bubble-${bubbleNum}" class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300">
-                    <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-lg transition-all hover:scale-110 active:scale-95 cursor-pointer text-white"
+                    <button type="button" class="w-18 h-18 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl shadow-lg transition-all hover:scale-110 active:scale-95 cursor-pointer text-white"
                             style="background-color: ${color}; border-color: ${color};"
                             onclick="window.startHomeLesson('${window.AppState.activeCategory}', ${bubbleNum})">
                         ${bubbleNum}
@@ -169,8 +280,8 @@ window.renderHomeLessonsModule = function() {
         } else {
             return `
                 <div id="home-bubble-${bubbleNum}" class="home-bubble-node flex flex-col items-center shrink-0 transition-all duration-300">
-                    <button type="button" class="w-16 h-16 sm:w-22 sm:h-22 rounded-full flex items-center justify-center font-black text-lg sm:text-2xl shadow-sm bg-[#e3dec3] dark:bg-[#222d29] text-muted cursor-not-allowed">
-                        <i class="fa-solid fa-lock text-sm sm:text-xl lock-icon"></i>
+                    <button type="button" class="w-18 h-18 sm:w-20 sm:h-20 rounded-full flex items-center justify-center font-black text-xl sm:text-2xl shadow-sm bg-[#e3dec3] dark:bg-[#222d29] text-muted cursor-not-allowed">
+                        <i class="fa-solid fa-lock text-base sm:text-2xl lock-icon"></i>
                     </button>
                 </div>
             `;
@@ -178,6 +289,7 @@ window.renderHomeLessonsModule = function() {
     }).join('');
 
     window.updateHomeCarouselPosition();
+    window.initTouchSwipeForBubbles();
 };
 
 window.moveHomeCarousel = function(direction) {
@@ -232,22 +344,51 @@ window.updateHomeCarouselPosition = function() {
     const track = document.getElementById('home-bubbles-track');
     if (!track) return;
 
-    const stepWidth = window.innerWidth >= 640 ? 108 : 84;
+    const isDesktop = window.innerWidth >= 640;
+    const stepWidth = isDesktop ? 120 : 88;
     const currentIndex = window.AppState.homeBubbleIndex || 0;
-    const offset = -(currentIndex * stepWidth + (window.innerWidth >= 640 ? 44 : 32));
+    const offset = -(currentIndex * stepWidth);
 
     track.style.transform = `translateX(${offset}px)`;
 
     const nodes = track.querySelectorAll('.home-bubble-node');
     nodes.forEach((node, i) => {
         if (i === currentIndex) {
-            node.style.transform = 'scale(1.15)';
+            node.style.transform = 'scale(1.25)';
             node.style.opacity = '1';
+            node.style.zIndex = '10';
         } else {
             node.style.transform = 'scale(0.85)';
             node.style.opacity = '0.45';
+            node.style.zIndex = '1';
         }
     });
+};
+
+window.initTouchSwipeForBubbles = function() {
+    const trackContainer = document.getElementById('home-bubbles-track')?.parentElement;
+    if (!trackContainer || trackContainer.dataset.swipeInitialized) return;
+
+    let touchStartX = 0;
+
+    trackContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    trackContainer.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const diffX = touchStartX - touchEndX;
+
+        if (Math.abs(diffX) > 35) {
+            if (diffX > 0) {
+                window.moveHomeCarousel(1);
+            } else {
+                window.moveHomeCarousel(-1);
+            }
+        }
+    }, { passive: true });
+
+    trackContainer.dataset.swipeInitialized = "true";
 };
 
 window.toggleWordPreviewAccordion = function() {
@@ -299,25 +440,42 @@ window.showToast = function(message, type = 'info') {
 
 window.updateStatsDisplay = function() {
     const stats = ProgressManager.state.stats || {};
-    
+    const masteredIds = ProgressManager.state.mastered_words_ids || [];
+    const totalVocabularyCount = 340;
+
+    const learnedCount = masteredIds.length || stats.wordsLearned || 0;
+    const wordPercentage = Math.min(100, Math.round((learnedCount / totalVocabularyCount) * 100));
+
+    const completedBubbles = ProgressManager.state.completed_bubbles?.length || 0;
+    const lessonPercentage = Math.min(100, Math.round((completedBubbles / 60) * 100));
+    const challengesCount = stats.challengesCompleted || 0;
+    const challengePercentage = Math.min(100, Math.round((challengesCount / 20) * 100));
+
+    const setCircleProgress = (elementId, percentage) => {
+        const el = document.getElementById(elementId);
+        if (el) el.setAttribute('stroke-dasharray', `${percentage}, 100`);
+    };
+
+    setCircleProgress('circle-words-progress', wordPercentage);
+    setCircleProgress('circle-challenges-progress', challengePercentage);
+    setCircleProgress('circle-missions-progress', lessonPercentage);
+
     const wordsEl = document.getElementById('stat-words-learned');
     const challengesEl = document.getElementById('stat-challenges-completed');
     const missionsEl = document.getElementById('stat-missions-completed');
     const pawsHeaderEl = document.getElementById('header-coins-display');
     const pawsMobileEl = document.getElementById('mobile-coins-display');
 
-    if (wordsEl) wordsEl.textContent = stats.wordsLearned || 0;
-    if (challengesEl) challengesEl.textContent = stats.challengesCompleted || 0;
-    if (missionsEl) missionsEl.textContent = stats.missionsCompleted || 0;
+    if (wordsEl) wordsEl.textContent = `${wordPercentage}%`;
+    if (challengesEl) challengesEl.textContent = challengesCount;
+    if (missionsEl) missionsEl.textContent = `${lessonPercentage}%`;
     if (pawsHeaderEl) pawsHeaderEl.textContent = stats.paws || 0;
     if (pawsMobileEl) pawsMobileEl.textContent = stats.paws || 0;
 };
 
 window.openSpeakingManager = function() { SpeakingEngine.initSpeakingModule(); };
-window.openChallengesManager = function() { ChallengesEngine.startDailyChallenge(); };
-window.openMissionsManager = function() {
-    window.showToast("Misiones Diarias: Completa lecciones para subir tu racha 🐾", "info");
-};
+window.openChallengesManager = function() { ChallengesEngine.openChallengesHub(); };
+window.openMissionsManager = function() { MissionsEngine.initMissionsModule(); };
 
 window.openAuthModal = function(tab = 'login') {
     const modal = document.getElementById('auth-modal');
@@ -359,7 +517,6 @@ function updateUI(isLoggedIn) {
     const mobUserBtn = document.getElementById('mobile-auth-user-btn');
     const nameDisp = document.getElementById('student-name-display');
     const mobNameDisp = document.getElementById('mobile-name-display');
-    const sheetNameDisp = document.getElementById('sheet-student-name');
 
     if (isLoggedIn && window.AppState.user) {
         if (guestBlock) guestBlock.classList.add('hidden');
@@ -370,7 +527,6 @@ function updateUI(isLoggedIn) {
         const displayName = window.AppState.user.name || 'Estudiante';
         if (nameDisp) nameDisp.textContent = displayName;
         if (mobNameDisp) mobNameDisp.textContent = displayName;
-        if (sheetNameDisp) sheetNameDisp.textContent = displayName;
     } else {
         if (guestBlock) guestBlock.classList.remove('hidden');
         if (userBlock) userBlock.classList.add('hidden');
@@ -386,8 +542,7 @@ async function checkSession() {
             window.AppState.user = {
                 id: session.user.id,
                 email: session.user.email,
-                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0],
-                level: '1'
+                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
             };
             updateUI(true);
             return;
@@ -438,8 +593,7 @@ function bindAuthEvents() {
                 window.AppState.user = {
                     id: data.user.id,
                     email: data.user.email,
-                    name: data.user.user_metadata?.first_name || data.user.email.split('@')[0],
-                    level: '1'
+                    name: data.user.user_metadata?.first_name || data.user.email.split('@')[0]
                 };
                 updateUI(true);
                 window.showToast(`¡Bienvenido, ${window.AppState.user.name}!`, 'success');
@@ -454,15 +608,80 @@ function bindAuthEvents() {
     });
 }
 
-window.handleLogout = async function() {
-    try {
-        await supabaseClient.auth.signOut();
-        window.AppState.user = null;
-        updateUI(false);
-        window.showToast("Sesión cerrada.", 'info');
-    } catch (e) {
-        console.error("Error al cerrar sesión:", e);
+// 🔐 CIERRA SESIÓN Y REINICIA EL MAPA Y LAS ESTADÍSTICAS A ESTADO INVITADO
+// 🛑 MODAL CENTRADO DE CONFIRMACIÓN GLOBAL (YES / NO)
+window.showConfirmModal = function({ title = "¿Seguro que quieres salir?", message = "Perderás el progreso que no hayas guardado.", onConfirm }) {
+    let modal = document.getElementById('global-confirm-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'global-confirm-modal';
+        modal.className = "fixed inset-0 bg-[#1c2321]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 font-mono select-none animate-fade-in";
+        document.body.appendChild(modal);
+    } else {
+        modal.classList.remove('hidden');
     }
+
+    modal.innerHTML = `
+        <div class="card-bg border border-main text-main w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col items-center gap-4 text-center relative">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl border border-amber-500/20">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            
+            <div class="flex flex-col gap-1">
+                <h3 class="font-black text-base text-main uppercase">${title}</h3>
+                <p class="text-xs text-muted leading-relaxed">${message}</p>
+            </div>
+
+            <div class="flex gap-2.5 w-full mt-2">
+                <button id="confirm-modal-no-btn" 
+                        class="flex-1 subcard-bg hover:bg-main text-main font-bold text-xs py-3 rounded-xl uppercase transition-all border border-main cursor-pointer">
+                    No
+                </button>
+                <button id="confirm-modal-yes-btn" 
+                        class="flex-1 bg-[#e06a4e] hover:bg-[#c8573b] text-white font-bold text-xs py-3 rounded-xl uppercase transition-all shadow-md cursor-pointer">
+                    Sí, salir
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('confirm-modal-no-btn').onclick = () => {
+        modal.classList.add('hidden');
+    };
+
+    document.getElementById('confirm-modal-yes-btn').onclick = () => {
+        modal.classList.add('hidden');
+        if (typeof onConfirm === 'function') onConfirm();
+    };
+};
+
+// 🔐 CIERRA SESIÓN CON CONFIRMACIÓN
+window.handleLogout = function() {
+    window.showConfirmModal({
+        title: "¿Cerrar Sesión?",
+        message: "¿Seguro que quieres salir de tu cuenta de estudiante?",
+        onConfirm: async () => {
+            try {
+                await supabaseClient.auth.signOut();
+                window.AppState.user = null;
+                
+                if (ProgressManager.resetProgressState) {
+                    ProgressManager.resetProgressState();
+                }
+                
+                updateUI(false);
+                window.AppState.isFirstLoad = true;
+                window.AppState.homeBubbleIndex = 0;
+                
+                window.updateStatsDisplay();
+                window.renderHomeLessonsModule();
+                
+                window.showToast("Sesión cerrada.", 'info');
+            } catch (e) {
+                console.error("Error al cerrar sesión:", e);
+            }
+        }
+    });
 };
 
 function initCarousel() {
