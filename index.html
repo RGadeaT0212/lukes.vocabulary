@@ -3,7 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lukes English Academy - VocabApp</title>
+
+    <!-- SEO Principal / Motores de Búsqueda -->
+    <title>Lukes English Academy - Aprende Vocabulario en Inglés Rápido</title>
+    <meta name="description" content="Domina más de 300 palabras en inglés rápido con Lukes English Academy. Ejercicios interactivos, reconocimiento de voz, dinámicas gamificadas y seguimiento de progreso real. 100% interactivo y efectivo.">
+    <meta name="keywords" content="aprender ingles rapido, vocabulario en ingles, ejercicios de ingles interactivos, laboratorio de speaking ingles, aprender ingles gratis, app para aprender ingles, lukes english academy">
+    <meta name="author" content="Lukes English Academy">
+    <meta name="robots" content="index, follow">
+
+<!-- Open Graph / Redes Sociales y Chatbots (WhatsApp, Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rgadeat0212.github.io/lukes.vocabulary/">
+    <meta property="og:title" content="Lukes English Academy - Domina el Vocabulario en Inglés">
+    <meta property="og:description" content="Aprende y retén vocabulario en inglés rápido mediante retos interactivos, práctica oral con inteligencia de voz y recompensas diarias.">
+    <meta property="og:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
+
+<!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lukes English Academy - Aprende Inglés Rápido">
+    <meta name="twitter:description" content="Aprende y retén vocabulario en inglés con un método acelerado e interactivo.">
+    <meta name="twitter:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
+
+<!-- Datos Estructurados JSON-LD (Lectura Directa para IAs y Búsquedas Inteligentes) -->
+    <script type="application/ld+json">
+    {
+     "@context": "https://schema.org",
+    "@type": "EducationalApplication",
+    "name": "Lukes English Academy",
+     "operatingSystem": "Web",
+    "applicationCategory": "EducationalApplication",
+    "educationalLevel": ["A1", "A2", "B1"],
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    },
+    "url": "https://rgadeat0212.github.io/lukes.vocabulary/",
+    "description": "Plataforma web educativa para aprender y dominar vocabulario en inglés de forma rápida mediante lecciones continuas, retos de práctica oral, minijuegos y un sistema de gamificación por recompensas.",
+    "inLanguage": ["es", "en"],
+    "featureList": [
+        "Alineación con el Marco Común Europeo (A1 - B1)",
+        "Laboratorio de Speaking con reconocimiento de voz",
+        "Desafíos diarios e interactivos con recompensa Paws",
+        "Estadísticas de fluidez y retención en tiempo real",
+        "Diseño adaptable para dispositivos móviles y PC"
+    ]
+    }   
+    </script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -69,13 +115,14 @@
         </div>
 
         <div class="border-t border-main pt-4 flex flex-col gap-3">
+            <!-- INTERRUPTOR DE MODO OSCURO (CON ELEMENTO PERILLA) -->
             <div class="flex items-center justify-between subcard-bg p-2 rounded-xl border border-main">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-moon text-xs text-main"></i>
                     <span class="text-[10px] font-mono font-bold text-main">MODO OSCURO</span>
                 </div>
-                <button onclick="window.toggleDarkMode()" class="w-9 h-5 bg-[#e3dec3] dark:bg-[#e06a4e] rounded-full p-0.5 transition-colors cursor-pointer flex items-center">
-                    <div class="w-4 h-4 bg-white rounded-full shadow-xs transform dark:translate-x-4 transition-transform"></div>
+                <button onclick="window.toggleDarkMode()" class="w-9 h-5 bg-[#d1c9b0] dark:bg-[#e06a4e] rounded-full p-0.5 transition-colors cursor-pointer flex items-center">
+                    <div class="dark-toggle-thumb w-4 h-4 bg-white rounded-full shadow-xs transform transition-transform duration-300"></div>
                 </button>
             </div>
 
@@ -90,18 +137,19 @@
                 </button>
             </div>
 
+            <!-- VINCULACIÓN AL PERFIL EN EL BOTÓN DE USUARIO LOGUEADO -->
             <div id="logged-user-actions" class="hidden flex flex-col gap-2">
-                <div class="flex items-center justify-between subcard-bg p-2 rounded-xl border border-main">
+                <div onclick="window.openUserProfileModal()" class="flex items-center justify-between subcard-bg p-2 rounded-xl border border-main cursor-pointer hover:border-[#e06a4e] transition-all">
                     <div class="flex items-center gap-2">
                         <div class="w-7 h-7 rounded-full bg-[#e06a4e] text-white font-bold text-xs flex items-center justify-center shadow-xs">
                             <i class="fa-solid fa-user text-xs"></i>
                         </div>
-                        <div class="flex flex-col">
+                        <div class="flex flex-col text-left">
                             <span id="student-name-display" class="text-xs font-bold text-main truncate max-w-[85px]">Estudiante</span>
                             <span class="text-[8px] font-bold text-[#e06a4e]">🐾 <span id="header-coins-display">0</span> PATITAS</span>
                         </div>
                     </div>
-                    <button onclick="window.MissionsEngine.renderLukesGoldCardModal()" class="text-[8px] bg-gradient-to-r from-amber-400 to-amber-600 text-stone-900 font-black px-2 py-1 rounded-lg uppercase shadow-xs">
+                    <button onclick="event.stopPropagation(); window.MissionsEngine.renderLukesGoldCardModal()" class="text-[8px] bg-gradient-to-r from-amber-400 to-amber-600 text-stone-900 font-black px-2 py-1 rounded-lg uppercase shadow-xs">
                         💳
                     </button>
                 </div>
@@ -116,7 +164,6 @@
     <!-- HEADER MÓVIL (ESTÁTICO FUERA DEL ÁREA SCROLL) -->
     <header class="md:hidden w-full card-bg border-b border-main px-4 py-2 flex items-center justify-between shadow-xs shrink-0 z-30 transition-colors">
         <div class="flex items-center">
-            <!-- LOGO MÓVIL AMPLIFICADO (h-11) -->
             <img src="assets/lukes-academy-logo.svg" class="h-11 sm:h-12 w-auto object-contain" alt="Lukes English Academy">
         </div>
 
@@ -135,7 +182,7 @@
                 </button>
             </div>
             
-            <button id="mobile-auth-user-btn" onclick="window.toggleBottomSheetProfile()" class="hidden text-[10px] font-bold text-main truncate max-w-[85px] subcard-bg px-2.5 py-1 rounded-lg border border-main">
+            <button id="mobile-auth-user-btn" onclick="window.openUserProfileModal()" class="hidden text-[10px] font-bold text-main truncate max-w-[85px] subcard-bg px-2.5 py-1 rounded-lg border border-main">
                 <span id="mobile-name-display">Estudiante</span>
             </button>
         </div>
@@ -270,7 +317,7 @@
                 <span class="text-[7px] font-bold uppercase tracking-wider mt-0.5">SPEAKING</span>
             </button>
 
-            <button onclick="window.toggleBottomSheetProfile()" class="flex flex-col items-center text-muted hover:text-main cursor-pointer">
+            <button onclick="window.openUserProfileModal()" class="flex flex-col items-center text-muted hover:text-main cursor-pointer">
                 <div class="w-6 h-6 rounded-full flex items-center justify-center">
                     <i class="fa-solid fa-user text-xs"></i>
                 </div>
@@ -306,13 +353,14 @@
                 </button>
             </div>
 
+            <!-- INTERRUPTOR DE MODO OSCURO MÓVIL (CON ELEMENTO PERILLA) -->
             <div class="flex items-center justify-between subcard-bg p-3.5 rounded-2xl border border-main">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-moon text-xs text-main"></i>
                     <span class="text-xs font-bold text-main">MODO OSCURO</span>
                 </div>
-                <button onclick="window.toggleDarkMode()" class="w-11 h-6 bg-[#e3dec3] dark:bg-[#e06a4e] rounded-full p-0.5 transition-colors cursor-pointer flex items-center">
-                    <div class="w-5 h-5 bg-white rounded-full shadow-xs transform dark:translate-x-5 transition-transform"></div>
+                <button onclick="window.toggleDarkMode()" class="w-11 h-6 bg-[#d1c9b0] dark:bg-[#e06a4e] rounded-full p-0.5 transition-colors cursor-pointer flex items-center">
+                    <div class="dark-toggle-thumb w-5 h-5 bg-white rounded-full shadow-xs transform transition-transform duration-300"></div>
                 </button>
             </div>
 
