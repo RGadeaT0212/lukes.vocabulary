@@ -1,1453 +1,910 @@
-================================================================================
-       BANCO DE VOCABULARIO COMPLETO PARA APP DE INGLÉS (1,000 PALABRAS)
-================================================================================
-Estructura: Bloques independientes de 5 palabras agrupados por Nivel y Tema.
-Formato apto para procesamiento de datos, importación a BD o integración directa.
-
-================================================================================
-PARTE 1: NIVEL BÁSICO (A1 - A2) — 500 PALABRAS / EXPRESIONES (100 BLOQUES DE 5)
-================================================================================
-
---- Tema 1: Expresiones Útiles & Interacción Social Básica ---
-
-[Bloque EX-01]
-  1. Please
-  2. Thank you
-  3. You're welcome
-  4. Excuse me
-  5. I'm sorry
-
-[Bloque EX-02]
-  1. Hello
-  2. Goodbye
-  3. See you later
-  4. Good morning
-  5. Good night
-
-[Bloque EX-03]
-  1. Yes
-  2. No
-  3. Maybe
-  4. Of course
-  5. No problem
-
-[Bloque EX-04]
-  1. Help me
-  2. I don't know
-  3. I understand
-  4. Repeat please
-  5. How much
-
-[Bloque EX-05]
-  1. Bless you
-  2. Nice to meet you
-  3. Have a good day
-  4. Take care
-  5. See you tomorrow
-
---- Tema 2: Casa, Habitación y Objetos ---
-
-[Bloque HO-01]
-  1. Kitchen
-  2. Bedroom
-  3. Bathroom
-  4. Living room
-  5. Garden
-
-[Bloque HO-02]
-  1. Door
-  2. Window
-  3. Floor noPicYet
-  4. Wall noPicYet
-  5. Ceiling noPicYet
-
-[Bloque HO-03]
-  1. Roof
-  2. Garage noPicYet
-  3. Balcony 
-  4. Basement noPicYet
-  5. Hallway noPicYet
-
-[Bloque HO-04]
-  1. Bed
-  2. Table
-  3. Chair
-  4. Sofa
-  5. Desk
-
-[Bloque HO-05]
-  1. Lamp
-  2. Mirror
-  3. Closet
-  4. Shelf
-  5. Carpet
-
-[Bloque HO-06]
-  1. Pillow
-  2. Blanket noPicYet
-  3. Towel
-  4. Curtain
-  5. Clock
-
-[Bloque HO-07]
-  1. Fridge
-  2. Oven
-  3. Microwave
-  4. Stove
-  5. Sink
-
-[Bloque HO-08]
-  1. Plate
-  2. Glass
-  3. Cup
-  4. Fork
-  5. Spoon
-
-[Bloque HO-09]
-  1. Knife
-  2. Pan
-  3. Pot
-  4. Bottle
-  5. Can
-
-[Bloque HO-10]
-  1. Soap
-  2. Shampoo
-  3. Toothbrush
-  4. Toilet paper
-  5. Comb
-
-[Bloque HO-11]
-  1. Fan
-  2. Heater noPicYet
-  3. Broom
-  4. Trash can
-  5. Bucket
-
-[Bloque HO-12]
-  1. Needle
-  2. Thread
-  3. Iron
-  4. Pillowcase noPicYet
-  5. Mattress
-
-[Bloque HO-13]
-  1. Mug
-  2. Teapot
-  3. Napkin
-  4. Tray noPicYet
-  5. Pitcher
-
---- Tema 3: Ropa, Accesorios & Apariencia ---
-
-[Bloque CL-01]
-  1. Shirt
-  2. T-shirt
-  3. Pants
-  4. Shorts
-  5. Jeans
-
-[Bloque CL-02]
-  1. Dress
-  2. Skirt
-  3. Jacket
-  4. Coat
-  5. Sweater
-
-[Bloque CL-03]
-  1. Socks
-  2. Shoes
-  3. Boots
-  4. Sneakers noPicYet
-  5. Sandals
-
-[Bloque CL-04]
-  1. Belt
-  2. Hat
-  3. Cap
-  4. Gloves
-  5. Scarf
-
-[Bloque CL-05]
-  1. Ring
-  2. Watch
-  3. Necklace
-  4. Glasses
-  5. Sunglasses
-
-[Bloque CL-06]
-  1. Zipper
-  2. Button
-  3. Pocket noPicYet
-  4. Size noPicYet
-  5. Umbrella
-
-[Bloque CL-07]
-  1. Tie
-  2. Purse
-  3. Wallet
-  4. Suit
-  5. Pyjamas
-
-[Bloque CL-08]
-  1. Sleeve noPicYet
-  2. Collar noPicYet
-  3. Shoelace noPicYet
-  4. Cotton noPicYet
-  5. Wool noPicYet
-
-[Bloque CL-09]
-  1. Vest
-  2. Slipper noPicYet
-  3. Bathrobe
-  4. Uniform noPicYet
-  5. Hanger
-
---- Tema 4: Comida, Bebidas & Restaurante ---
-
-[Bloque FO-01]
-  1. Bread
-  2. Butter
-  3. Cheese
-  4. Milk
-  5. Egg
-
-[Bloque FO-02]
-  1. Meat
-  2. Chicken
-  3. Beef
-  4. Pork noPicYet
-  5. Fish
-
-[Bloque FO-03]
-  1. Rice
-  2. Pasta
-  3. Soup
-  4. Salad
-  5. Sauce
-
-[Bloque FO-04]
-  1. Apple
-  2. Banana
-  3. Orange
-  4. Lemon
-  5. Grape
-
-[Bloque FO-05]
-  1. Potato
-  2. Tomato
-  3. Onion
-  4. Garlic
-  5. Carrot
-
-[Bloque FO-06]
-  1. Lettuce
-  2. Mushroom
-  3. Pepper
-  4. Bean
-  5. Corn
-
-[Bloque FO-07]
-  1. Water
-  2. Coffee
-  3. Tea
-  4. Juice
-  5. Soda
-
-[Bloque FO-08]
-  1. Cake
-  2. Ice cream
-  3. Chocolate
-  4. Sugar
-  5. Salt
-
-[Bloque FO-09]
-  1. Sweet
-  2. Salty
-  3. Sour
-  4. Bitter
-  5. Spicy
-
-[Bloque FO-10]
-  1. Breakfast
-  2. Lunch
-  3. Dinner
-  4. Snack
-  5. Menu
-
-[Bloque FO-11]
-  1. Soup
-  2. Steak
-  3. Salad
-  4. Sandwich
-  5. Pizza
-
-[Bloque FO-12]
-  1. Ham
-  2. Turkey
-  3. Seafood
-  4. Shrimp
-  5. Tuna
-
-[Bloque FO-13]
-  1. Oil
-  2. Vinegar
-  3. Pepper
-  4. Honey
-  5. Jam
-
-[Bloque FO-14]
-  1. Apple juice
-  2. Milkshake
-  3. Beer
-  4. Wine
-  5. Cocktail
-
-[Bloque FO-15]
-  1. Spaghetti
-  2. Noodles
-  3. Omelette
-  4. Toast
-  5. Cereal
-
---- Tema 5: Cuerpo, Salud & Aseo ---
-
-[Bloque HE-01]
-  1. Head
-  2. Face
-  3. Hair
-  4. Eye
-  5. Ear
-
-[Bloque HE-02]
-  1. Nose
-  2. Mouth
-  3. Tooth
-  4. Lip
-  5. Tongue
-
-[Bloque HE-03]
-  1. Neck
-  2. Shoulder
-  3. Arm
-  4. Hand
-  5. Finger
-
-[Bloque HE-04]
-  1. Chest
-  2. Back
-  3. Stomach
-  4. Leg
-  5. Foot
-
-[Bloque HE-05]
-  1. Pain
-  2. Fever
-  3. Cough
-  4. Cold
-  5. Allergy
-
-[Bloque HE-06]
-  1. Doctor
-  2. Nurse
-  3. Hospital
-  4. Pharmacy
-  5. Medicine
-
-[Bloque HE-07]
-  1. Pill
-  2. Bandage
-  3. Injury
-  4. Sick
-  5. Healthy
-
-[Bloque HE-08]
-  1. Knee
-  2. Elbow
-  3. Wrist
-  4. Ankle
-  5. Toe
-
-[Bloque HE-09]
-  1. Skin
-  2. Bone
-  3. Heart
-  4. Brain
-  5. Lungs
-
-[Bloque HE-10]
-  1. Tissue
-  2. Razor
-  3. Cream
-  4. Deodorant
-  5. Perfume
-
-[Bloque HE-11]
-  1. Face wash
-  2. Lotion
-  3. Sunscreen
-  4. Cotton swab
-  5. Nail clipper
-
---- Tema 6: Ciudad, Transporte & Orientación ---
-
-[Bloque CI-01]
-  1. Street
-  2. Avenue
-  3. Park
-  4. Square
-  5. Bridge
-
-[Bloque CI-02]
-  1. Bank
-  2. Post office
-  3. Library
-  4. School
-  5. Church
-
-[Bloque CI-03]
-  1. Supermarket
-  2. Mall
-  3. Bakery
-  4. Pharmacy
-  5. Cinema
-
-[Bloque CI-04]
-  1. Car
-  2. Bus
-  3. Train
-  4. Taxi
-  5. Bicycle
-
-[Bloque CI-05]
-  1. Airplane
-  2. Ship
-  3. Subway
-  4. Motorcycle
-  5. Truck
-
-[Bloque CI-06]
-  1. Station
-  2. Stop
-  3. Airport
-  4. Port
-  5. Parking
-
-[Bloque CI-07]
-  1. Left
-  2. Right
-  3. Straight
-  4. Corner
-  5. Block
-
-[Bloque CI-08]
-  1. North
-  2. South
-  3. East
-  4. West
-  5. Center
-
-[Bloque CI-09]
-  1. Near
-  2. Far
-  3. Next to
-  4. Between
-  5. Opposite
-
-[Bloque CI-10]
-  1. Museum
-  2. Theater
-  3. Zoo
-  4. Stadium
-  5. Gym
-
-[Bloque CI-11]
-  1. Traffic
-  2. Streetlight
-  3. Sidewalk
-  4. Crosswalk
-  5. Highway
-
-[Bloque CI-12]
-  1. Gas station
-  2. Parking lot
-  3. Police station
-  4. Fire station
-  5. City hall
-
-[Bloque CI-13]
-  1. Avenue
-  2. Boulevard
-  3. Alley
-  4. Roundabout
-  5. Overpass
-
---- Tema 7: Tiempo, Fechas & Clima ---
-
-[Bloque TI-01]
-  1. Second
-  2. Minute
-  3. Hour
-  4. Day
-  5. Week
-
-[Bloque TI-02]
-  1. Month
-  2. Year
-  3. Morning
-  4. Afternoon
-  5. Night
-
-[Bloque TI-03]
-  1. Today
-  2. Tomorrow
-  3. Yesterday
-  4. Now
-  5. Later
-
-[Bloque TI-04]
-  1. Monday
-  2. Tuesday
-  3. Wednesday
-  4. Thursday
-  5. Friday
-
-[Bloque TI-05]
-  1. Saturday
-  2. Sunday
-  3. Weekend
-  4. Always
-  5. Never
-
-[Bloque TI-06]
-  1. Sun
-  2. Rain
-  3. Wind
-  4. Snow
-  5. Cloud
-
-[Bloque TI-07]
-  1. Hot
-  2. Cold
-  3. Warm
-  4. Cool
-  5. Weather
-
-[Bloque TI-08]
-  1. January
-  2. February
-  3. March
-  4. April
-  5. May
-
-[Bloque TI-09]
-  1. June
-  2. July
-  3. August
-  4. September
-  5. October
-
-[Bloque TI-10]
-  1. November
-  2. December
-  3. Season
-  4. Storm
-  5. Thunder
-
-[Bloque TI-11]
-  1. Sunrise
-  2. Sunset
-  3. Daylight
-  4. Dusk
-  5. Dawn
-
---- Tema 8: Familia, Personas & Animales ---
-
-[Bloque PE-01]
-  1. Mother
-  2. Father
-  3. Son
-  4. Daughter
-  5. Baby
-
-[Bloque PE-02]
-  1. Brother
-  2. Sister
-  3. Husband
-  4. Wife
-  5. Friend
-
-[Bloque PE-03]
-  1. Boy
-  2. Girl
-  3. Man
-  4. Woman
-  5. Child
-
-[Bloque PE-04]
-  1. Dog
-  2. Cat
-  3. Bird
-  4. Fish
-  5. Horse
-
-[Bloque PE-05]
-  1. Cow
-  2. Pig
-  3. Sheep
-  4. Mouse
-  5. Lion
-
-[Bloque PE-06]
-  1. Uncle
-  2. Aunt
-  3. Cousin
-  4. Nephew
-  5. Niece
-
-[Bloque PE-07]
-  1. Grandfather
-  2. Grandmother
-  3. Grandson
-  4. Granddaughter
-  5. Relative
-
-[Bloque PE-08]
-  1. Duck
-  2. Chicken
-  3. Rabbit
-  4. Bear
-  5. Wolf
-
-[Bloque PE-09]
-  1. Elephant
-  2. Giraffe
-  3. Monkey
-  4. Tiger
-  5. Snake
-
---- Tema 9: Adjetivos Básicos ---
-
-[Bloque AD-01]
-  1. Big
-  2. Small
-  3. Tall
-  4. Short
-  5. Long
-
-[Bloque AD-02]
-  1. Good
-  2. Bad
-  3. Fast
-  4. Slow
-  5. Strong
-
-[Bloque AD-03]
-  1. Happy
-  2. Sad
-  3. Tired
-  4. Angry
-  5. Scared
-
-[Bloque AD-04]
-  1. Clean
-  2. Dirty
-  3. New
-  4. Old
-  5. Young
-
-[Bloque AD-05]
-  1. Cheap
-  2. Expensive
-  3. Easy
-  4. Hard
-  5. Open
-
-[Bloque AD-06]
-  1. Rich
-  2. Poor
-  3. Safe
-  4. Dangerous
-  5. Quiet
-
-[Bloque AD-07]
-  1. Loud
-  2. Bright
-  3. Dark
-  4. Warm
-  5. Cool
-
-[Bloque AD-08]
-  1. Full
-  2. Empty
-  3. Heavy
-  4. Light
-  5. Wet
-
-[Bloque AD-09]
-  1. Soft
-  2. Hard
-  3. Smooth
-  4. Rough
-  5. Sharp
-
---- Tema 10: Verbos Cotidianos Básicos ---
-
-[Bloque VE-01]
-  1. Eat
-  2. Drink
-  3. Sleep
-  4. Wake up
-  5. Wash
-
-[Bloque VE-02]
-  1. Cook
-  2. Clean
-  3. Open
-  4. Close
-  5. Buy
-
-[Bloque VE-03]
-  1. Walk
-  2. Run
-  3. Drive
-  4. Travel
-  5. Go
-
-[Bloque VE-04]
-  1. Speak
-  2. Listen
-  3. Read
-  4. Write
-  5. See
-
-[Bloque VE-05]
-  1. Like
-  2. Want
-  3. Need
-  4. Have
-  5. Work
-
-[Bloque VE-06]
-  1. Sit
-  2. Stand
-  3. Wait
-  4. Stop
-  5. Start
-
-[Bloque VE-07]
-  1. Pay
-  2. Cost
-  3. Sell
-  4. Change
-  5. Choose
-
-[Bloque VE-08]
-  1. Bring
-  2. Take
-  3. Put
-  4. Give
-  5. Get
-
-[Bloque VE-09]
-  1. Find
-  2. Lose
-  3. Look
-  4. Watch
-  5. Show
-
-[Bloque VE-10]
-  1. Play
-  2. Listen
-  3. Dance
-  4. Sing
-  5. Draw
-
-================================================================================
-PARTE 2: NIVEL AVANZADO (B1 - B2) — 500 PALABRAS / EXPRESIONES (100 BLOQUES DE 5)
-================================================================================
-
---- Tema 1: Expresiones Avanzadas, Conectores & Muletillas ---
-
-[Bloque EX-06]
-  1. As far as I know
-  2. In my opinion
-  3. To be honest
-  4. By the way
-  5. On the other hand
-
-[Bloque EX-07]
-  1. Long story short
-  2. It depends on
-  3. Make sure that
-  4. I have no idea
-  5. Never mind
-
-[Bloque EX-08]
-  1. So far so good
-  2. I'm looking forward to
-  3. It's up to you
-  4. I agree with you
-  5. I don't mind
-
-[Bloque EX-09]
-  1. That makes sense
-  2. I get it
-  3. Speaking of which
-  4. At the end of the day
-  5. Out of the blue
-
-[Bloque EX-10]
-  1. Long time no see
-  2. I'm on my way
-  3. Sounds good to me
-  4. It goes without saying
-  5. Better late than never
-
---- Tema 2: Negocios, Trabajo & Entorno Corporativo ---
-
-[Bloque BUS-01]
-  1. Deadline
-  2. Schedule
-  3. Project
-  4. Task
-  5. Report
-
-[Bloque BUS-02]
-  1. Boss
-  2. Employee
-  3. Colleague
-  4. Client
-  5. Partner
-
-[Bloque BUS-03]
-  1. Salary
-  2. Contract
-  3. Resume
-  4. Interview
-  5. Career
-
-[Bloque BUS-04]
-  1. Revenue
-  2. Profit
-  3. Loss
-  4. Budget
-  5. Investment
-
-[Bloque BUS-05]
-  1. Stakeholder
-  2. Market share
-  3. Growth
-  4. Performance
-  5. Strategy
-
-[Bloque BUS-06]
-  1. Meeting
-  2. Presentation
-  3. Feedback
-  4. Goal
-  5. Milestone
-
-[Bloque BUS-07]
-  1. Proposal
-  2. Agreement
-  3. Deal
-  4. Clause
-  5. Compromise
-
-[Bloque BUS-08]
-  1. Overtime
-  2. Promotion
-  3. Resignation
-  4. Layoff
-  5. Workload
-
-[Bloque BUS-09]
-  1. Supplier
-  2. Customer service
-  3. Quality
-  4. Efficiency
-  5. Productivity
-
-[Bloque BUS-10]
-  1. Leadership
-  2. Management
-  3. Teamwork
-  4. Innovation
-  5. Competition
-
-[Bloque BUS-11]
-  1. Outsourcing
-  2. Benchmark
-  3. Brainstorm
-  4. Mindset
-  5. Workflow
-
-[Bloque BUS-12]
-  1. Core competence
-  2. Best practice
-  3. Deliverable
-  4. Key performance
-  5. Scalability
-
-[Bloque BUS-13]
-  1. Turnover
-  2. Severance
-  3. Headhunter
-  4. Onboarding
-  5. Payroll
-
-[Bloque BUS-14]
-  1. Procurement
-  2. Compliance
-  3. Logistics
-  4. Inventory
-  5. Wholesale
-
-[Bloque BUS-15]
-  1. Headquarters
-  2. Subsidiary
-  3. Conglomerate
-  4. Joint venture
-  5. Merger
-
---- Tema 3: Tecnología, Software & Medios Digitales ---
-
-[Bloque TEC-01]
-  1. Password
-  2. Account
-  3. Connection
-  4. File
-  5. Software
-
-[Bloque TEC-02]
-  1. Screen
-  2. Keyboard
-  3. Mouse
-  4. Laptop
-  5. Charger
-
-[Bloque TEC-03]
-  1. Network
-  2. Server
-  3. Database
-  4. Storage
-  5. Security
-
-[Bloque TEC-04]
-  1. Download
-  2. Upload
-  3. Update
-  4. Delete
-  5. Install
-
-[Bloque TEC-05]
-  1. Bug
-  2. Error
-  3. Feature
-  4. Application
-  5. User
-
-[Bloque TEC-06]
-  1. Link
-  2. Website
-  3. Browser
-  4. Search
-  5. Folder
-
-[Bloque TEC-07]
-  1. Cloud
-  2. Backup
-  3. Privacy
-  4. Access
-  5. Code
-
-[Bloque TEC-08]
-  1. Encryption
-  2. Firewall
-  3. Bandwidth
-  4. Algorithm
-  5. Framework
-
-[Bloque TEC-09]
-  1. Interface
-  2. Repository
-  3. Deployment
-  4. Refactoring
-  5. Debugging
-
-[Bloque TEC-10]
-  1. Artificial intelligence
-  2. Machine learning
-  3. Data science
-  4. Automation
-  5. Endpoint
-
-[Bloque TEC-11]
-  1. Bandwidth
-  2. Latency
-  3. Throughput
-  4. Protocol
-  5. Encryption
-
-[Bloque TEC-12]
-  1. Virtualization
-  2. Container
-  3. Kubernetes
-  4. Microservice
-  5. Serverless
-
---- Tema 4: Finanzas, Banca & Comercio ---
-
-[Bloque FIN-01]
-  1. Money
-  2. Cash
-  3. Credit card
-  4. Bank
-  5. Account
-
-[Bloque FIN-02]
-  1. Invoice
-  2. Receipt
-  3. Tax
-  4. Discount
-  5. Debt
-
-[Bloque FIN-03]
-  1. Transfer
-  2. Fee
-  3. Balance
-  4. Loan
-  5. Interest
-
-[Bloque FIN-04]
-  1. Currency
-  2. Exchange rate
-  3. Wealth
-  4. Asset
-  5. Liability
-
-[Bloque FIN-05]
-  1. Mortgage
-  2. Insurance
-  3. Expense
-  4. Saving
-  5. Payment
-
-[Bloque FIN-06]
-  1. Dividend
-  2. Portfolio
-  3. Equity
-  4. Capital
-  5. Bankruptcy
-
-[Bloque FIN-07]
-  1. Hedge
-  2. Audit
-  3. Valuation
-  4. Liquidity
-  5. Insolvency
-
-[Bloque FIN-08]
-  1. Deficit
-  2. Surplus
-  3. Inflation
-  4. Recession
-  5. Stagnation
-
-[Bloque FIN-09]
-  1. Commodity
-  2. Derivative
-  3. Annuity
-  4. Depreciation
-  5. Amortization
-
---- Tema 5: Salud Avanzada, Psicología & Bienestar ---
-
-[Bloque ADV-HE-01]
-  1. Disease
-  2. Infection
-  3. Symptom
-  4. Diagnosis
-  5. Treatment
-
-[Bloque ADV-HE-02]
-  1. Prescription
-  2. Dosage
-  3. Side effect
-  4. Vaccine
-  5. Surgery
-
-[Bloque ADV-HE-03]
-  1. Stress
-  2. Anxiety
-  3. Mental health
-  4. Therapy
-  5. Recovery
-
-[Bloque ADV-HE-04]
-  1. Muscle
-  2. Bone
-  3. Joint
-  4. Brain
-  5. Heart
-
-[Bloque ADV-HE-05]
-  1. Exhaustion
-  2. Insomnia
-  3. Nutrition
-  4. Fitness
-  5. Injury
-
-[Bloque ADV-HE-06]
-  1. Rehabilitation
-  2. Chronic
-  3. Acute
-  4. Transplant
-  5. Quarantine
-
-[Bloque ADV-HE-07]
-  1. Burnout
-  2. Depression
-  3. Cognitive
-  4. Mindfulness
-  5. Resilience
-
-[Bloque ADV-HE-08]
-  1. Prognosis
-  2. Biopsy
-  3. Anesthesia
-  4. Intensive care
-  5. Outpatient
-
---- Tema 6: Viajes Avanzados, Logística & Trámites ---
-
-[Bloque TRA-01]
-  1. Reservation
-  2. Luggage
-  3. Boarding pass
-  4. Customs
-  5. Delay
-
-[Bloque TRA-02]
-  1. Flight
-  2. Departure
-  3. Arrival
-  4. Gate
-  5. Seat
-
-[Bloque TRA-03]
-  1. Visa
-  2. Passport
-  3. Identity
-  4. Border
-  5. Insurance
-
-[Bloque TRA-04]
-  1. Hotel
-  2. Booking
-  3. Check-in
-  4. Check-out
-  5. Reception
-
-[Bloque TRA-05]
-  1. Destination
-  2. Route
-  3. Map
-  4. Guide
-  5. Passenger
-
-[Bloque TRA-06]
-  1. Embassy
-  2. Consulate
-  3. Itinerary
-  4. Layover
-  5. Excursion
-
-[Bloque TRA-07]
-  1. Vaccination
-  2. Declaration
-  3. Duty-free
-  4. Overbooking
-  5. Reimbursement
-
-[Bloque TRA-08]
-  1. Disembark
-  2. Transit
-  3. Transportation
-  4. Waybill
-  5. Freight
-
---- Tema 7: Modismos Corporativos & Idioms ---
-
-[Bloque IDI-01]
-  1. Touch base
-  2. Bottleneck
-  3. Ballpark figure
-  4. Win-win
-  5. Trade-off
-
-[Bloque IDI-02]
-  1. Think outside the box
-  2. Back to square one
-  3. Call it a day
-  4. Cut corners
-  5. Hit the nail on the head
-
-[Bloque IDI-03]
-  1. On the same page
-  2. Play it by ear
-  3. Raise the bar
-  4. Ahead of the curve
-  5. Bite the bullet
-
-[Bloque IDI-04]
-  1. Burn the midnight oil
-  2. Game changer
-  3. Keep me in the loop
-  4. Break the ice
-  5. Red tape
-
-[Bloque IDI-05]
-  1. Take the lead
-  2. Get the ball rolling
-  3. Across the board
-  4. In the loop
-  5. Shed light on
-
-[Bloque IDI-06]
-  1. Pave the way
-  2. Steep learning curve
-  3. Bottom line
-  4. Move the needle
-  5. Touch and go
-
-[Bloque IDI-07]
-  1. In a nutshell
-  2. On the fence
-  3. Play devil's advocate
-  4. See eye to eye
-  5. Under the weather
-
-[Bloque IDI-08]
-  1. Back to the drawing board
-  2. Blessing in disguise
-  3. Call a spade a spade
-  4. Elephant in the room
-  5. Give the benefit of the doubt
-
---- Tema 8: Adjetivos Avanzados & Calificativos ---
-
-[Bloque ADV-AD-01]
-  1. Efficient
-  2. Reliable
-  3. Strict
-  4. Ambitious
-  5. Cautious
-
-[Bloque ADV-AD-02]
-  1. Useful
-  2. Useless
-  3. Expensive
-  4. Reasonable
-  5. Complex
-
-[Bloque ADV-AD-03]
-  1. Suitable
-  2. Relevant
-  3. Significant
-  4. Essential
-  5. Optional
-
-[Bloque ADV-AD-04]
-  1. Likely
-  2. Unlikely
-  3. Doubtful
-  4. Definite
-  5. Temporary
-
-[Bloque ADV-AD-05]
-  1. Permanent
-  2. Accurate
-  3. Flexible
-  4. Crucial
-  5. Obvious
-
-[Bloque ADV-AD-06]
-  1. Inevitable
-  2. Unprecedented
-  3. Substantial
-  4. Pragmatic
-  5. Coherent
-
-[Bloque ADV-AD-07]
-  1. Ambiguous
-  2. Meticulous
-  3. Versatile
-  4. Resilient
-  5. Pivotal
-
-[Bloque ADV-AD-08]
-  1. Sustainable
-  2. Comprehensive
-  3. Feasible
-  4. Proactive
-  5. Redundant
-
-[Bloque ADV-AD-09]
-  1. Paramount
-  2. Indispensable
-  3. Formidable
-  4. Stringent
-  5. Exemplary
-
---- Tema 9: Verbos de Acción Complejos & Trabajo ---
-
-[Bloque ADV-VE-01]
-  1. Confirm
-  2. Cancel
-  3. Update
-  4. Receive
-  5. Request
-
-[Bloque ADV-VE-02]
-  1. Improve
-  2. Increase
-  3. Decrease
-  4. Develop
-  5. Manage
-
-[Bloque ADV-VE-03]
-  1. Negotiate
-  2. Convince
-  3. Achieve
-  4. Avoid
-  5. Resolve
-
-[Bloque ADV-VE-04]
-  1. Suggest
-  2. Recommend
-  3. Require
-  4. Allow
-  5. Prevent
-
-[Bloque ADV-VE-05]
-  1. Analyze
-  2. Compare
-  3. Evaluate
-  4. Identify
-  5. Measure
-
-[Bloque ADV-VE-06]
-  1. Implement
-  2. Optimize
-  3. Streamline
-  4. Prioritize
-  5. Delegate
-
-[Bloque ADV-VE-07]
-  1. Facilitate
-  2. Execute
-  3. Consolidate
-  4. Formulate
-  5. Integrate
-
-[Bloque ADV-VE-08]
-  1. Mitigate
-  2. Leverage
-  3. Synthesize
-  4. Sustain
-  5. Validate
-
-[Bloque ADV-VE-09]
-  1. Negotiate
-  2. Speculate
-  3. Diversify
-  4. Empower
-  5. Acknowledge
-
-[Bloque ADV-VE-10]
-  1. Authorize
-  2. Substantiate
-  3. Consolidate
-  4. Pioneer
-  5. Overhaul
-
-[Bloque ADV-VE-11]
-  1. Standardize
-  2. Reconcile
-  3. Diversify
-  4. Empower
-  5. Instigate
-
---- Tema 10: Conectores Lógicos & Discurso Avanzado ---
-
-[Bloque CON-01]
-  1. Furthermore
-  2. However
-  3. Therefore
-  4. Meanwhile
-  5. Although
-
-[Bloque CON-02]
-  1. Consequently
-  2. Nevertheless
-  3. Otherwise
-  4. In addition
-  5. Despite
-
-[Bloque CON-03]
-  1. Instead of
-  2. According to
-  3. In order to
-  4. Due to
-  5. As a result
-
-[Bloque CON-04]
-  1. In light of
-  2. Given that
-  3. Provided that
-  4. With regard to
-  5. In spite of
-
-[Bloque CON-05]
-  1. To sum up
-  2. In contrast
-  3. On the contrary
-  4. For instance
-  5. Namely
-
-[Bloque CON-06]
-  1. To put it another way
-  2. In essence
-  3. At first glance
-  4. Under these circumstances
-  5. All in all
-
-[Bloque CON-07]
-  1. Be that as it may
-  2. For the most part
-  3. To a certain extent
-  4. In all likelihood
-  5. On the face of it
-
-[Bloque CON-08]
-  1. Notwithstanding
-  2. In light of this
-  3. Suffice it to say
-  4. To put it simply
-  5. Without a doubt
-
-[Bloque CON-09]
-  1. In retrospect
-  2. In tandem with
-  3. For all intents and purposes
-  4. Broadly speaking
-  5. Case in point
-
-[Bloque CON-10]
-  1. By and large
-  2. To state the obvious
-  3. As far as I'm concerned
-  4. It stands to reason
-  5. All things considered
+// ==========================================================================
+// 🪐 VOCABULARY ENGINE v60.1 (CONTROL ESTRICTO DE MAX_CONSECUTIVE Y MANTENIMIENTO TOTAL)
+// ==========================================================================
+import { VOCABULARY_DATABASE } from './database.js';
+import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
+import { MissionsEngine } from './missionsEngine.js';
+import { ProgressManager } from './progressManager.js';
+import { AudioEngine } from './audioEngine.js';
+
+export const BUBBLE_COLOR_PALETTE = [
+    '#e06a4e', '#d4a373', '#2a5c82', '#6b4c82', '#2d7a60',
+    '#c97b34', '#d94f4f', '#3b5998', '#4a5d3e', '#1f6f78'
+];
+
+window.MissionsEngine = MissionsEngine;
+
+export const VocabularyEngine = {
+    allWords: [],
+    currentBlockWords: [],
+    exerciseQueue: [],
+    currentQueueIndex: 0,
+    lessonTotalWords: 0,
+    knownWordsInBlock: new Set(),
+    currentCategory: 'EXPRESSIONS',
+    selectedLevel: 'A1',
+    currentUnitNumber: 1,
+    currentBlockNumber: 1,
+    currentBubbleType: 1,
+    currentSubLesson: 1,
+
+    currentUserState: null,
+    totalErrorsInLesson: 0,
+    totalHitsInLesson: 0,
+
+    failedQueue: [],
+    isReviewMode: false,
+    shadowingQueue: [],
+    isShadowingMode: false,
+    activeTypewriterInterval: null,
+
+    showToast(message, type = 'success') {
+        if (typeof window.showToast === 'function') {
+            window.showToast(message, type);
+        }
+    },
+
+    getTTSRateForLevel() {
+        const levelMap = { 'A1': 0.45, 'A2': 0.55, 'B1': 0.65, 'B2': 0.80 };
+        const levelKey = String(this.selectedLevel).toUpperCase();
+        return levelMap[levelKey] || 0.45;
+    },
+
+    speakStrict(text, isSlow = false) {
+        const baseRate = this.getTTSRateForLevel();
+        const rate = isSlow ? Math.max(0.20, baseRate - 0.15) : baseRate;
+        AudioEngine.speak(text, rate);
+    },
+
+    cleanString(str) {
+        if (!str) return '';
+        return String(str)
+            .toLowerCase()
+            .replace(/[’]/g, "'")
+            .trim()
+            .replace(/[.,/#!$%^&*;:{}=\-_`~()]/g, "")
+            .replace(/\s+/g, " ");
+    },
+
+    loadGymCategories(levelFilter = null) {
+        this.selectedLevel = levelFilter || window.AppState?.activeLevel || 'A1';
+        const filteredWords = VOCABULARY_DATABASE.filter(w => String(w.level || 'A1').toUpperCase() === String(this.selectedLevel).toUpperCase());
+        this.allWords = filteredWords.map(w => ({
+            ...w,
+            english_word: w.word || w.english_word,
+            category_group: w.category,
+            image_url: w.media_url,
+            hasImage: w.hasImage !== undefined ? w.hasImage : true
+        }));
+    },
+
+    startLessonBlock(categoryName, bubbleNum) {
+        this.currentCategory = categoryName || this.currentCategory;
+        const filtered = this.allWords.filter(w => w.category_group === this.currentCategory);
+
+        this.currentBlockNumber = Math.floor((bubbleNum - 1) / 3) + 1;
+        const startIndex = (this.currentBlockNumber - 1) * 5;
+        this.currentBlockWords = filtered.length > 0 ? filtered.slice(startIndex, startIndex + 5) : VOCABULARY_DATABASE.slice(0, 5);
+
+        this.currentBubbleType = bubbleNum;
+        this.currentSubLesson = ((bubbleNum - 1) % 3) + 1;
+        if (this.currentBlockWords.length > 0) {
+            this.currentUnitNumber = this.currentBlockWords[0].unit || 1;
+        }
+
+        AudioEngine.toggleLessonVoiceGender();
+
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (deck) deck.classList.remove('hidden');
+
+        this.totalErrorsInLesson = 0;
+        this.totalHitsInLesson = 0;
+        this.failedQueue = [];
+        this.isReviewMode = false;
+        this.isShadowingMode = false;
+
+        this.buildExerciseQueue();
+        this.loopEngine();
+    },
+
+    buildExerciseQueue() {
+        let targetWords = [...this.currentBlockWords];
+        this.exerciseQueue = [];
+
+        // 1. Fase Introductoria (L1)
+        if (this.currentSubLesson === 1) {
+            targetWords.forEach(word => {
+                const cleanWord = this.cleanString(word.english_word || word.word);
+                this.exerciseQueue.push({
+                    type: 'intro_card',
+                    templateId: 'INTRO',
+                    word,
+                    prompt_text: word.english_word || word.word,
+                    clean_target: cleanWord,
+                    spanish_translation: word.spanish,
+                    hasImage: word.hasImage !== false && !!word.media_url,
+                    media_url: word.media_url
+                });
+            });
+        }
+
+        // 2. Tiempos objetivo por Sublección
+        let targetTimeSeconds = 360; // L1: 6 min
+        let goalPhases = ['recognize', 'associate'];
+
+        if (this.currentSubLesson === 2) {
+            targetTimeSeconds = 420; // L2: 7 min
+            goalPhases = ['recognize', 'associate', 'recall'];
+        } else if (this.currentSubLesson === 3) {
+            targetTimeSeconds = 480; // L3: 8 min
+            goalPhases = ['recall', 'produce'];
+        }
+
+        const currentLevelTag = String(this.selectedLevel).toUpperCase();
+        const allTemplateKeys = Object.keys(VOCABULARY_TEMPLATES);
+        let accumulatedTime = 0;
+        let templateHistory = [];
+        let wordIndex = 0;
+        let phaseIndex = 0;
+
+        while (accumulatedTime < targetTimeSeconds && this.exerciseQueue.length < 40) {
+            const word = targetWords[wordIndex % targetWords.length];
+            wordIndex++;
+
+            const currentGoal = goalPhases[phaseIndex % goalPhases.length];
+            if (wordIndex % targetWords.length === 0) {
+                phaseIndex++;
+            }
+
+            const cleanTarget = this.cleanString(word.english_word || word.word);
+
+            // FILTRADO CON CONTROL RIGUROSO DE MAX_CONSECUTIVE
+            const availableIDs = allTemplateKeys.filter(id => {
+                const tmpl = VOCABULARY_TEMPLATES[id];
+
+                if (tmpl.goal.toLowerCase() !== currentGoal.toLowerCase()) return false;
+                if (!tmpl.level.includes(currentLevelTag)) return false;
+                if (word.hasImage === false && tmpl.require_image) return false;
+
+                // Conteo estricto de repeticiones consecutivas
+                const maxCons = Number(tmpl.max_consecutive) || 2;
+                const hLen = templateHistory.length;
+                let consecutiveCount = 0;
+                for (let i = hLen - 1; i >= 0; i--) {
+                    if (String(templateHistory[i]) === String(id)) {
+                        consecutiveCount++;
+                    } else {
+                        break;
+                    }
+                }
+                
+                // Bloqueo estricto si ya se alcanzó el límite permitido
+                if (consecutiveCount >= maxCons) return false;
+
+                return true;
+            });
+
+            let chosenID = null;
+
+            if (availableIDs.length > 0) {
+                chosenID = availableIDs[Math.floor(Math.random() * availableIDs.length)];
+            } else {
+                // Fallback de emergencia si la fase está restringida por max_consecutive
+                const fallbackCandidate = allTemplateKeys.find(id => {
+                    const tmpl = VOCABULARY_TEMPLATES[id];
+                    if (tmpl.goal.toLowerCase() !== currentGoal.toLowerCase()) return false;
+                    
+                    const maxCons = Number(tmpl.max_consecutive) || 2;
+                    const hLen = templateHistory.length;
+                    let consecutiveCount = 0;
+                    for (let i = hLen - 1; i >= 0; i--) {
+                        if (String(templateHistory[i]) === String(id)) consecutiveCount++;
+                        else break;
+                    }
+                    return consecutiveCount < maxCons;
+                });
+
+                chosenID = fallbackCandidate || (currentGoal === 'produce' ? '31' : '1');
+            }
+
+            templateHistory.push(String(chosenID));
+            const chosenTemplate = VOCABULARY_TEMPLATES[chosenID];
+            accumulatedTime += chosenTemplate.time || 20;
+
+            const isBasicLevel = ['A1', 'A2'].includes(currentLevelTag);
+            const distractorCount = isBasicLevel ? 1 : 3;
+
+            const blockDistractors = targetWords
+                .filter(w => this.cleanString(w.english_word || w.word) !== cleanTarget)
+                .sort(() => 0.5 - Math.random())
+                .slice(0, distractorCount);
+
+            const rawOptions = [word, ...blockDistractors].sort(() => 0.5 - Math.random());
+
+            const formattedOptions = rawOptions.map(opt => ({
+                id: opt.id,
+                text: opt.word || opt.english_word,
+                cleanText: this.cleanString(opt.word || opt.english_word),
+                media_url: opt.media_url,
+                spanish: opt.spanish
+            }));
+
+            const fullBlockOptions = targetWords.map(w => ({
+                id: w.id,
+                text: w.word || w.english_word,
+                cleanText: this.cleanString(w.word || w.english_word),
+                spanish: w.spanish
+            })).sort(() => 0.5 - Math.random());
+
+            this.exerciseQueue.push({
+                type: chosenTemplate.type,
+                templateId: String(chosenTemplate.id),
+                goal: chosenTemplate.goal,
+                skills: chosenTemplate.skills,
+                time: chosenTemplate.time,
+                word,
+                prompt_text: word.english_word || word.word,
+                clean_target: cleanTarget,
+                spanish_translation: word.spanish,
+                hasImage: word.hasImage !== false && !!word.media_url,
+                media_url: word.media_url,
+                options: formattedOptions,
+                blockOptions: fullBlockOptions,
+                correct_answer: cleanTarget
+            });
+        }
+
+        this.currentQueueIndex = 0;
+        this.lessonTotalWords = this.exerciseQueue.length;
+    },
+
+    loopEngine() {
+        if (this.activeTypewriterInterval) clearInterval(this.activeTypewriterInterval);
+
+        if (this.isShadowingMode) {
+            if (this.currentQueueIndex >= this.shadowingQueue.length) {
+                this.renderLessonReport();
+                return;
+            }
+            this.renderShadowingExercise();
+            return;
+        }
+
+        if (this.currentQueueIndex >= this.exerciseQueue.length) {
+            if (!this.isReviewMode && this.failedQueue.length > 0) {
+                this.isReviewMode = true;
+                this.exerciseQueue = [...this.failedQueue];
+                this.failedQueue = [];
+                this.currentQueueIndex = 0;
+                this.showToast("Iniciando modo recuperación.", "warning");
+            } else {
+                if (this.currentSubLesson === 1 || this.currentSubLesson === 2) {
+                    this.startShadowingBonus();
+                    return;
+                }
+                this.renderLessonReport();
+                return;
+            }
+        }
+
+        this.currentUserState = {
+            selectedOptionIndex: null,
+            typedValue: '',
+            tfValue: null
+        };
+
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (!deck) return;
+
+        // FASE INTRODUCTORIA
+        if (ex.type === 'intro_card') {
+            deck.innerHTML = `
+                <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0">
+                    <span class="text-xs font-mono font-black uppercase text-[#23483f] dark:text-white">
+                        INTRODUCCIÓN // ${this.currentQueueIndex + 1}/${this.lessonTotalWords}
+                    </span>
+                    <button onclick="window.VocabularyEngine.exitLessonToHome()" class="bg-[#23483f] text-white font-mono text-[9px] px-3 py-1.5 rounded-lg uppercase font-black cursor-pointer">
+                        SALIR ✕
+                    </button>
+                </div>
+
+                <div class="flex-grow flex flex-col justify-center w-full max-w-xl mx-auto my-auto p-2 sm:p-4 text-center">
+                    <div id="exercise-card-container" class="card-bg p-5 sm:p-7 rounded-3xl border border-main shadow-md flex flex-col gap-3 relative">
+                        
+                        <div class="flex items-center justify-between w-full border-b border-main/10 pb-2">
+                            <span class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider">// PRESENTACIÓN</span>
+                            <button onclick="window.VocabularyEngine.markAsKnown()" 
+                                    class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-[10px] font-mono font-black px-3 py-1 rounded-xl cursor-pointer transition-all active:scale-95 shadow-xs">
+                                ⚡ Ya me la sé
+                            </button>
+                        </div>
+
+                        ${ex.hasImage ? `<img src="${ex.media_url}" class="w-24 h-24 sm:w-28 sm:h-28 mx-auto object-contain my-1" onerror="this.remove()">` : ''}
+
+                        <div class="flex flex-col items-center gap-0.5">
+                            <h2 id="scifi-typewriter" class="title-brand text-2xl sm:text-3xl font-black text-main uppercase min-h-[36px]"></h2>
+                            
+                            <div id="spanish-translation-container" class="mt-1">
+                                <button onclick="window.VocabularyEngine.revealSpanishTranslation()" 
+                                        class="text-[10px] font-mono text-muted hover:text-[#e06a4e] border border-dashed border-main px-2.5 py-1 rounded-lg cursor-pointer">
+                                    👁️ Ver Significado (Español)
+                                </button>
+                                <p id="spanish-translation-text" class="text-sm font-bold text-muted italic hidden">"${ex.spanish_translation}"</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-center gap-3 my-1">
+                            <button type="button" onclick="window.VocabularyEngine.speakActivePrompt(false)" 
+                                    class="flex items-center gap-2 px-4 py-2 bg-[#23483f] text-white rounded-xl text-xs font-mono font-bold uppercase cursor-pointer active:scale-95 transition-all shadow-xs">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                                <span>Normal</span>
+                            </button>
+                            <button type="button" onclick="window.VocabularyEngine.speakActivePrompt(true)" 
+                                    class="flex items-center gap-2 px-4 py-2 subcard-bg text-main border border-main rounded-xl text-xs font-mono font-bold uppercase cursor-pointer active:scale-95 transition-all">
+                                <span class="text-xs">🐢</span>
+                                <span>Lento</span>
+                            </button>
+                        </div>
+
+                        <button onclick="window.VocabularyEngine.advanceIntroCard()" 
+                                class="w-full mt-1 bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-widest cursor-pointer shadow-md">
+                            Entendido, Continuar ➔
+                        </button>
+                    </div>
+                </div>
+
+                <div class="w-full bg-[#f1ede4] dark:bg-[#222d29] h-2 rounded-full overflow-hidden max-w-xl mx-auto shrink-0 mt-1">
+                    <div class="bg-[#e06a4e] h-full transition-all duration-300" style="width: ${((this.currentQueueIndex + 1) / this.lessonTotalWords) * 100}%"></div>
+                </div>
+            `;
+
+            this.speakStrict(ex.prompt_text, false);
+
+            const textNode = document.getElementById('scifi-typewriter');
+            let charIdx = 0;
+            if (textNode) {
+                textNode.textContent = '';
+                this.activeTypewriterInterval = setInterval(() => {
+                    if (charIdx < ex.prompt_text.length) {
+                        textNode.textContent += ex.prompt_text.charAt(charIdx);
+                        charIdx++;
+                    } else {
+                        clearInterval(this.activeTypewriterInterval);
+                    }
+                }, 120);
+            }
+            return;
+        }
+
+        // FASE EJERCICIOS INTERACTIVOS
+        let exerciseInteractiveBody = '';
+
+        if (ex.templateId === '18' || ex.templateId === '19') {
+            const wordBankHtml = ex.blockOptions.map(opt => `
+                <div class="flex items-center gap-1.5 subcard-bg border border-main px-2.5 py-1.5 rounded-xl shadow-2xs">
+                    <button type="button" onclick="window.VocabularyEngine.speakStrict('${opt.text}')" 
+                            class="w-6 h-6 bg-[#23483f] hover:bg-[#19322b] text-white rounded-full flex items-center justify-center text-[10px] cursor-pointer active:scale-90 transition-all">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <span class="text-xs font-mono font-bold text-main select-none">${opt.text}</span>
+                </div>
+            `).join('');
+
+            exerciseInteractiveBody = `
+                <div class="flex flex-col gap-3 mt-1">
+                    <div class="flex flex-wrap justify-center gap-2 p-2.5 bg-[#f1ede4]/60 dark:bg-[#222d29]/60 rounded-2xl border border-dashed border-main">
+                        <span class="w-full text-[9px] font-mono text-muted uppercase font-bold tracking-wider text-center">
+                            🔊 BANCO DE PALABRAS (ESCUCHA Y COMPLETA):
+                        </span>
+                        ${wordBankHtml}
+                    </div>
+
+                    <input type="text" id="type-answer-input" autocomplete="off" placeholder="Escribe la palabra aquí..." 
+                           oninput="window.VocabularyEngine.handleTextInput(this.value)"
+                           onkeypress="if(event.key==='Enter' && !document.getElementById('check-answer-btn').disabled) window.VocabularyEngine.executeCheckAnswer()"
+                           class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-xs sm:text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                </div>
+            `;
+        } else if (ex.templateId === '29' || ex.templateId === '30') {
+            exerciseInteractiveBody = `
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <button id="tf-btn-true" onclick="window.VocabularyEngine.selectTrueFalse(true)" 
+                            class="option-btn-default p-4 rounded-xl font-mono text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-pointer">
+                        ✓ VERDADERO
+                    </button>
+                    <button id="tf-btn-false" onclick="window.VocabularyEngine.selectTrueFalse(false)" 
+                            class="option-btn-default p-4 rounded-xl font-mono text-xs sm:text-sm font-black text-rose-600 dark:text-rose-400 border border-rose-500/30 cursor-pointer">
+                        ✕ FALSO
+                    </button>
+                </div>
+            `;
+        } else if (ex.templateId === '16') {
+            const fullWord = ex.prompt_text;
+            const splitPoint = Math.ceil(fullWord.length / 2);
+            const firstChunk = fullWord.slice(0, splitPoint);
+            const correctSecondChunk = fullWord.slice(splitPoint);
+
+            const chunkOptions = [
+                correctSecondChunk,
+                'ing',
+                'ed',
+                'er'
+            ].filter((v, i, a) => a.indexOf(v) === i).sort(() => 0.5 - Math.random());
+
+            exerciseInteractiveBody = `
+                <div class="flex flex-col items-center gap-3 mt-2">
+                    <div class="flex items-center justify-center gap-2 text-xl sm:text-2xl font-mono font-black text-main">
+                        <span class="bg-[#23483f] text-white px-3 py-1 rounded-xl">${firstChunk}</span>
+                        <span class="text-muted">+</span>
+                        <span id="chunk-placeholder" class="border-b-2 border-dashed border-[#e06a4e] px-3 py-1 text-[#e06a4e]">???</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 w-full mt-2">
+                        ${chunkOptions.map((chk, idx) => `
+                            <button id="chunk-btn-${idx}" onclick="window.VocabularyEngine.selectChunkOption(${idx}, '${chk}')" 
+                                    class="option-btn-default p-3 rounded-xl font-mono text-xs font-bold cursor-pointer">
+                                ${chk}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (ex.templateId === '5') {
+            const maskedWord = ex.prompt_text.replace(/[aeiouAEIOU]/g, '_');
+            exerciseInteractiveBody = `
+                <div class="flex flex-col gap-2 mt-2">
+                    <span class="text-2xl font-mono font-black text-main tracking-widest text-center">${maskedWord}</span>
+                    <input type="text" id="type-answer-input" autocomplete="off" placeholder="Completa la palabra..." 
+                           oninput="window.VocabularyEngine.handleTextInput(this.value)"
+                           onkeypress="if(event.key==='Enter' && !document.getElementById('check-answer-btn').disabled) window.VocabularyEngine.executeCheckAnswer()"
+                           class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-xs sm:text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                </div>
+            `;
+        } else if (ex.type === 'input') {
+            exerciseInteractiveBody = `
+                <div class="flex flex-col gap-2 mt-2">
+                    <input type="text" id="type-answer-input" autocomplete="off" placeholder="Escribe en inglés..." 
+                           oninput="window.VocabularyEngine.handleTextInput(this.value)"
+                           onkeypress="if(event.key==='Enter' && !document.getElementById('check-answer-btn').disabled) window.VocabularyEngine.executeCheckAnswer()"
+                           class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-xs sm:text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                </div>
+            `;
+        } else if (ex.type === 'speaking' || ex.type === 'audio_input') {
+            exerciseInteractiveBody = `
+                <div class="flex flex-col items-center gap-3 mt-2">
+                    <p class="text-xs font-mono font-bold text-muted uppercase">Escucha y repite la palabra:</p>
+                    <button type="button" onclick="window.VocabularyEngine.simulateSpeakingRecorded()" 
+                            class="w-14 h-14 bg-[#e06a4e] hover:bg-[#c8573b] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg active:scale-90 transition-all">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
+                    <span id="speaking-status-text" class="text-[10px] font-mono text-muted">Toca para hablar</span>
+                </div>
+            `;
+        } else {
+            exerciseInteractiveBody = `
+                <div class="grid grid-cols-2 gap-2 sm:gap-3 mt-2">
+                    ${ex.options.map((opt, idx) => `
+                        <button id="opt-btn-${idx}" onclick="window.VocabularyEngine.selectOptionWithTTS(${idx})" 
+                                class="option-btn-default p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate">
+                            ${opt.text}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        deck.innerHTML = `
+            <div class="w-full flex justify-between items-center border-b border-main pb-2 z-10 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-mono font-black uppercase text-[#23483f] dark:text-white">
+                        L${this.currentSubLesson} ${this.isReviewMode ? '// RECUPERACIÓN' : ''} // ${this.currentQueueIndex + 1}/${this.lessonTotalWords}
+                    </span>
+                    <span class="text-[9px] font-mono subcard-bg px-2 py-0.5 rounded-full font-bold text-muted border border-main">
+                        ID:${ex.templateId} [${ex.type}]
+                    </span>
+                </div>
+                <button onclick="window.VocabularyEngine.exitLessonToHome()" class="bg-[#23483f] text-white font-mono text-[9px] px-3 py-1.5 rounded-lg uppercase font-black cursor-pointer">
+                    SALIR ✕
+                </button>
+            </div>
+
+            <div class="flex-grow flex flex-col justify-center w-full max-w-xl mx-auto my-auto p-2 sm:p-4 text-center overflow-y-auto custom-scrollbar">
+                <div id="exercise-card-container" class="card-bg p-4 sm:p-6 rounded-3xl border border-main shadow-xs flex flex-col gap-2.5 relative">
+                    
+                    <div class="flex items-center justify-between w-full border-b border-main/10 pb-1.5">
+                        <span class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider">// EJERCICIO</span>
+                        <button onclick="window.VocabularyEngine.markAsKnown()" 
+                                class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-[10px] font-mono font-black px-2.5 py-1 rounded-xl cursor-pointer transition-all active:scale-95 shadow-xs">
+                            ⚡ Ya me la sé
+                        </button>
+                    </div>
+
+                    ${ex.hasImage ? `<img src="${ex.media_url}" class="w-20 h-20 sm:w-24 sm:h-24 mx-auto object-contain my-0.5" onerror="this.remove()">` : ''}
+
+                    <div class="flex items-center justify-center gap-2">
+                        <button type="button" onclick="window.VocabularyEngine.speakActivePrompt(false)" class="w-9 h-9 bg-[#23483f] text-white rounded-full flex items-center justify-center cursor-pointer active:scale-95">
+                            <i class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                        <button type="button" onclick="window.VocabularyEngine.speakActivePrompt(true)" class="w-7 h-7 subcard-bg text-main border border-main rounded-full flex items-center justify-center cursor-pointer active:scale-95">
+                            <span class="text-xs">🐢</span>
+                        </button>
+                    </div>
+
+                    <div id="spanish-translation-container">
+                        <button onclick="window.VocabularyEngine.revealSpanishTranslation()" 
+                                class="text-[9px] font-mono text-muted hover:text-[#e06a4e] border border-dashed border-main px-2 py-0.5 rounded-lg cursor-pointer">
+                            👁️ Ver Significado (Español)
+                        </button>
+                        <p id="spanish-translation-text" class="text-xs text-muted font-medium italic hidden font-bold">"${ex.spanish_translation}"</p>
+                    </div>
+
+                    ${exerciseInteractiveBody}
+
+                    <button id="check-answer-btn" disabled onclick="window.VocabularyEngine.executeCheckAnswer()" 
+                            class="w-full mt-1.5 subcard-bg text-muted font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider transition-all cursor-not-allowed">
+                        Comprobar Respuesta ➔
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full bg-[#f1ede4] dark:bg-[#222d29] h-2 rounded-full overflow-hidden max-w-xl mx-auto shrink-0 mt-1">
+                <div class="bg-[#e06a4e] h-full transition-all duration-300" style="width: ${((this.currentQueueIndex + 1) / this.lessonTotalWords) * 100}%"></div>
+            </div>
+        `;
+
+        this.speakStrict(ex.prompt_text, false);
+        if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19' || ex.templateId === '5') {
+            setTimeout(() => document.getElementById('type-answer-input')?.focus(), 150);
+        }
+    },
+
+    selectTrueFalse(isTrue) {
+        this.currentUserState.tfValue = isTrue;
+        const btnTrue = document.getElementById('tf-btn-true');
+        const btnFalse = document.getElementById('tf-btn-false');
+
+        if (btnTrue && btnFalse) {
+            btnTrue.className = isTrue ? "option-btn-selected p-4 rounded-xl font-mono text-xs sm:text-sm font-black border border-emerald-500 cursor-pointer" : "option-btn-default p-4 rounded-xl font-mono text-xs sm:text-sm font-black border border-emerald-500/30 cursor-pointer";
+            btnFalse.className = !isTrue ? "option-btn-selected p-4 rounded-xl font-mono text-xs sm:text-sm font-black border border-rose-500 cursor-pointer" : "option-btn-default p-4 rounded-xl font-mono text-xs sm:text-sm font-black border border-rose-500/30 cursor-pointer";
+        }
+        this.activateCheckButton();
+    },
+
+    selectChunkOption(index, chunkValue) {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        const placeholder = document.getElementById('chunk-placeholder');
+        if (placeholder) placeholder.innerText = chunkValue;
+
+        const fullWord = ex.prompt_text;
+        const splitPoint = Math.ceil(fullWord.length / 2);
+        const firstChunk = fullWord.slice(0, splitPoint);
+
+        this.currentUserState.typedValue = firstChunk + chunkValue;
+        this.activateCheckButton();
+    },
+
+    speakActivePrompt(isSlow = false) {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (ex && ex.prompt_text) {
+            this.speakStrict(ex.prompt_text, isSlow);
+        }
+    },
+
+    startShadowingBonus() {
+        this.isShadowingMode = true;
+        this.shadowingQueue = [...this.currentBlockWords];
+        this.currentQueueIndex = 0;
+        this.showToast("✍️ ¡Bonus: Practica escribiendo en el teclado!", "info");
+        this.loopEngine();
+    },
+
+    renderShadowingExercise() {
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (!deck) return;
+
+        const currentWord = this.shadowingQueue[this.currentQueueIndex];
+
+        deck.innerHTML = `
+            <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0">
+                <span class="text-xs font-mono font-black uppercase text-[#e06a4e]">
+                    ✍️ SHADOWING WRITING // BONUS (${this.currentQueueIndex + 1}/5)
+                </span>
+                <span class="text-[9px] font-mono subcard-bg px-2 py-0.5 rounded-full font-bold text-muted border border-main">
+                    SIN TIEMPO NI EVALUACIÓN
+                </span>
+            </div>
+
+            <div class="flex-grow flex flex-col justify-center w-full max-w-xl mx-auto my-auto p-4 text-center">
+                <div class="card-bg p-6 sm:p-8 rounded-3xl border border-main shadow-md flex flex-col gap-4 relative">
+                    
+                    ${currentWord.media_url ? `<img src="${currentWord.media_url}" class="w-24 h-24 mx-auto object-contain my-1" onerror="this.remove()">` : ''}
+
+                    <div class="flex flex-col items-center gap-1 my-1">
+                        <span class="text-[9px] font-mono font-bold text-muted uppercase">// TOCA Y CALCA LA PALABRA:</span>
+                        <h2 class="title-brand text-3xl font-black text-main/35 uppercase tracking-widest select-none">
+                            ${currentWord.english_word || currentWord.word}
+                        </h2>
+                        <p class="text-xs text-muted font-bold italic">"${currentWord.spanish}"</p>
+                    </div>
+
+                    <input type="text" id="shadowing-input" autocomplete="off" placeholder="Escribe aquí..." 
+                           oninput="window.VocabularyEngine.handleShadowingInput(this.value)"
+                           onkeypress="if(event.key==='Enter' && !document.getElementById('shadowing-next-btn').disabled) window.VocabularyEngine.advanceShadowingBonus()"
+                           class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+
+                    <button id="shadowing-next-btn" disabled onclick="window.VocabularyEngine.advanceShadowingBonus()" 
+                            class="w-full mt-2 subcard-bg text-muted font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed">
+                        Siguiente Palabra ➔
+                    </button>
+                </div>
+            </div>
+        `;
+
+        this.speakStrict(currentWord.english_word || currentWord.word, false);
+        setTimeout(() => document.getElementById('shadowing-input')?.focus(), 150);
+    },
+
+    handleShadowingInput(val) {
+        const btn = document.getElementById('shadowing-next-btn');
+        if (!btn) return;
+
+        const currentWord = this.shadowingQueue[this.currentQueueIndex];
+        const targetClean = this.cleanString(currentWord.english_word || currentWord.word);
+
+        if (this.cleanString(val) === targetClean) {
+            btn.disabled = false;
+            btn.className = "w-full mt-2 bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-widest cursor-pointer shadow-md transition-all active:scale-95";
+            btn.innerText = "¡EXCELENTE! CONTINUAR ➔ (ENTER)";
+        } else {
+            btn.disabled = true;
+            btn.className = "w-full mt-2 subcard-bg text-muted font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-widest cursor-not-allowed";
+            btn.innerText = "Siguiente Palabra ➔";
+        }
+    },
+
+    advanceShadowingBonus() {
+        this.currentQueueIndex++;
+        this.loopEngine();
+    },
+
+    advanceIntroCard() {
+        this.currentQueueIndex++;
+        this.loopEngine();
+    },
+
+    revealSpanishTranslation() {
+        const text = document.getElementById('spanish-translation-text');
+        const container = document.getElementById('spanish-translation-container');
+        if (text && container) {
+            text.classList.remove('hidden');
+            const btn = container.querySelector('button');
+            if (btn) btn.classList.add('hidden');
+        }
+    },
+
+    selectOptionWithTTS(index) {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        const selectedOpt = ex.options[index];
+        if (!selectedOpt) return;
+
+        ex.options.forEach((_, idx) => {
+            const btn = document.getElementById(`opt-btn-${idx}`);
+            if (btn) btn.className = "option-btn-default p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
+        });
+
+        const selectedBtn = document.getElementById(`opt-btn-${index}`);
+        if (selectedBtn) {
+            selectedBtn.className = "option-btn-selected p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
+        }
+
+        this.speakStrict(selectedOpt.text, false);
+        this.currentUserState.selectedOptionIndex = index;
+        this.activateCheckButton();
+    },
+
+    handleTextInput(value) {
+        this.currentUserState.typedValue = value;
+        if (this.cleanString(value).length > 0) {
+            this.activateCheckButton();
+        } else {
+            this.deactivateCheckButton();
+        }
+    },
+
+    simulateSpeakingRecorded() {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        const statusText = document.getElementById('speaking-status-text');
+        if (statusText) statusText.innerText = "¡Escuchado correctamente! ✓";
+
+        this.currentUserState.typedValue = ex.correct_answer;
+        this.activateCheckButton();
+    },
+
+    activateCheckButton() {
+        const btn = document.getElementById('check-answer-btn');
+        if (btn) {
+            btn.disabled = false;
+            btn.className = "w-full mt-2 bg-[#e06a4e] hover:bg-[#c8573b] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-xs active:scale-98";
+        }
+    },
+
+    deactivateCheckButton() {
+        const btn = document.getElementById('check-answer-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.className = "w-full mt-2 subcard-bg text-muted font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider cursor-not-allowed";
+        }
+    },
+
+    executeCheckAnswer() {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        let isCorrect = false;
+
+        if (ex.templateId === '29' || ex.templateId === '30') {
+            isCorrect = this.currentUserState.tfValue === true;
+        } else if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19' || ex.templateId === '5' || ex.templateId === '16' || ex.type === 'speaking' || ex.type === 'audio_input') {
+            const typedClean = this.cleanString(this.currentUserState.typedValue);
+            isCorrect = typedClean === ex.correct_answer;
+        } else {
+            const selectedOpt = ex.options[this.currentUserState.selectedOptionIndex];
+            isCorrect = selectedOpt && selectedOpt.cleanText === ex.correct_answer;
+        }
+
+        const checkBtn = document.getElementById('check-answer-btn');
+        const cardContainer = document.getElementById('exercise-card-container');
+        const tmplSkills = ex.skills || ['reading'];
+
+        if (isCorrect) {
+            this.totalHitsInLesson++;
+
+            if (ProgressManager.updateSkillMastery) {
+                const points = this.isReviewMode ? 0.5 : 1.5;
+                ProgressManager.updateSkillMastery(tmplSkills, points);
+            }
+
+            if (cardContainer) cardContainer.classList.add('animate-correct');
+            if (checkBtn) {
+                checkBtn.className = "w-full mt-2 bg-[#23483f] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider shadow-md";
+                checkBtn.innerText = "CORRECT! ✓";
+            }
+
+            setTimeout(() => {
+                this.currentQueueIndex++;
+                this.loopEngine();
+            }, 650);
+        } else {
+            if (cardContainer) {
+                cardContainer.classList.add('animate-shake');
+                setTimeout(() => cardContainer.classList.remove('animate-shake'), 400);
+            }
+
+            this.totalErrorsInLesson++;
+
+            if (ProgressManager.updateSkillMastery) {
+                ProgressManager.updateSkillMastery(tmplSkills, -1.0);
+            }
+
+            if (checkBtn) {
+                checkBtn.className = "w-full mt-2 bg-rose-500 text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider";
+                checkBtn.innerText = "INCORRECTO - REINTENTANDO AL FINAL";
+            }
+
+            if (!this.failedQueue.includes(ex)) {
+                this.failedQueue.push({ ...ex });
+            }
+
+            setTimeout(() => {
+                this.currentQueueIndex++;
+                this.loopEngine();
+            }, 1100);
+        }
+    },
+
+    markAsKnown() {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (ex && ex.prompt_text) {
+            this.knownWordsInBlock.add(ex.prompt_text);
+        }
+        this.totalHitsInLesson++;
+        this.currentQueueIndex++;
+        this.loopEngine();
+    },
+
+    exitLessonToHome() {
+        if (typeof window.showConfirmModal === 'function') {
+            window.showConfirmModal({
+                title: "¿Salir de la Lección?",
+                message: "Si sales ahora perderás el progreso de los ejercicios actuales.",
+                onConfirm: () => {
+                    const deck = document.getElementById('lesson-interactive-deck');
+                    if (deck) deck.classList.add('hidden');
+                    if (typeof window.renderHomeLessonsModule === 'function') {
+                        window.renderHomeLessonsModule();
+                    }
+                }
+            });
+        } else {
+            const deck = document.getElementById('lesson-interactive-deck');
+            if (deck) deck.classList.add('hidden');
+            if (typeof window.renderHomeLessonsModule === 'function') {
+                window.renderHomeLessonsModule();
+            }
+        }
+    },
+
+    renderLessonReport() {
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (!deck) return;
+
+        const totalAttempts = this.totalHitsInLesson + this.totalErrorsInLesson;
+        const accuracyPercentage = totalAttempts > 0 ? Math.round((this.totalHitsInLesson / totalAttempts) * 100) : 100;
+
+        let pawsEarned = 0;
+        if (accuracyPercentage >= 100) pawsEarned = 5;
+        else if (accuracyPercentage >= 80) pawsEarned = 4;
+        else if (accuracyPercentage >= 60) pawsEarned = 3;
+        else if (accuracyPercentage >= 40) pawsEarned = 2;
+        else if (accuracyPercentage >= 20) pawsEarned = 1;
+
+        const levelTag = `L${this.currentSubLesson}`;
+        const blockWordIds = this.currentBlockWords.map(w => w.id);
+
+        ProgressManager.recordLessonCompletion(
+            this.currentUnitNumber,
+            this.currentBlockNumber,
+            levelTag,
+            this.totalHitsInLesson,
+            totalAttempts,
+            blockWordIds
+        );
+
+        ProgressManager.addPaws(pawsEarned);
+        ProgressManager.completeBubble(this.currentBubbleType);
+
+        deck.innerHTML = `
+            <div class="flex-grow flex flex-col items-center justify-center p-4">
+                <div class="card-bg p-7 rounded-3xl border border-main shadow-2xl max-w-sm w-full text-center font-mono">
+                    <span class="text-[9px] text-muted font-bold tracking-widest block uppercase mb-1">// REPORTE DE LECCIÓN ${levelTag} //</span>
+                    <h3 class="text-xl font-black text-[#23483f] dark:text-emerald-400 mt-1">🏆 ¡LECCIÓN FINALIZADA!</h3>
+                    
+                    <div class="my-5 subcard-bg p-4 rounded-2xl border border-main flex flex-col gap-3">
+                        <div>
+                            <span class="text-[9px] text-muted font-bold block uppercase">PORCENTAJE DE EXCELENCIA</span>
+                            <span class="text-3xl font-black text-main">${accuracyPercentage}%</span>
+                        </div>
+                        <div class="w-full h-px bg-main/20"></div>
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-2xl">🐾</span>
+                            <div class="text-left">
+                                <span class="text-[9px] text-muted font-bold block uppercase">RECOMPENSA OBTENIDA</span>
+                                <span class="text-base font-black text-[#e06a4e]">+${pawsEarned} paws</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="window.VocabularyEngine.exitLessonWithTransition()" 
+                            class="bg-[#23483f] hover:bg-[#19322b] text-white font-bold text-xs py-4 px-6 rounded-xl cursor-pointer uppercase w-full shadow-md transition-all active:scale-95">
+                        Continuar al Mapa ➔
+                    </button>
+                </div>
+            </div>
+        `;
+
+        if (window.confetti) window.confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+    },
+
+    exitLessonWithTransition() {
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (deck) deck.classList.add('hidden');
+
+        if (typeof window.triggerHomeCarouselTransition === 'function') {
+            window.triggerHomeCarouselTransition(this.currentBubbleType);
+        } else if (typeof window.renderHomeLessonsModule === 'function') {
+            window.renderHomeLessonsModule();
+        }
+    }
+};
+
+window.VocabularyEngine = VocabularyEngine;
+window.speakStrict = (text, isSlow = false) => VocabularyEngine.speakStrict(text, isSlow);
