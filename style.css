@@ -1,25 +1,26 @@
 /* ==========================================================================
-   🪐 LUKES ACADEMY - HOJA DE ESTILOS Y TEMAS CENTRALIZADOS
+   🪐 LUKES ACADEMY - HOJA DE ESTILOS Y TEMAS CENTRALIZADOS v60.0
    ========================================================================== */
 
 :root {
-    --bg-main: #f8f6f0;
-    --bg-card: #ffffff;
-    --bg-subcard: #f1ede4;
-    --text-main: #1e2623;
-    --text-muted: #737d77;
-    --border-color: #e3dec3;
-    --accent-orange: #e06a4e;
-    --accent-green: #23483f; /* Verde Bosque exclusivo para completados */
+    /* Paleta Neutra Balanceada (Mate / No deslumbrante) */
+    --bg-main: #efebd9;
+    --bg-card: #f8f5ea;
+    --bg-subcard: #e5dfcb;
+    --text-main: #1d2522;
+    --text-muted: #646e68;
+    --border-color: #d1c9b0;
+    --accent-orange: #d96245;
+    --accent-green: #23483f;
 }
 
 .dark {
-    --bg-main: #111614;
-    --bg-card: #19221f;
-    --bg-subcard: #222d29;
-    --text-main: #f8f6f0;
-    --text-muted: #8b9690;
-    --border-color: #2a3833;
+    --bg-main: #121816;
+    --bg-card: #1a2320;
+    --bg-subcard: #232f2b;
+    --text-main: #f2efe4;
+    --text-muted: #88958f;
+    --border-color: #2e3c37;
     --accent-orange: #e06a4e;
     --accent-green: #23483f;
 }
@@ -32,7 +33,7 @@
 .text-muted { color: var(--text-muted); }
 .border-main { border-color: var(--border-color); }
 
-/* 🎨 OPCIONES DE SELECCIÓN MÚLTIPLE (LECTURA CLARA EN INGLÉS) */
+/* 🎨 OPCIONES DE SELECCIÓN MÚLTIPLE */
 .option-btn-default {
     background-color: var(--bg-subcard);
     border: 2px solid var(--border-color);
@@ -41,12 +42,12 @@
 }
 
 .option-btn-selected {
-    background-color: rgba(224, 106, 78, 0.12) !important;
+    background-color: rgba(217, 98, 69, 0.12) !important;
     border: 2px solid var(--accent-orange) !important;
     color: var(--text-main) !important;
     font-weight: 800 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(224, 106, 78, 0.15);
+    box-shadow: 0 4px 12px rgba(217, 98, 69, 0.15);
 }
 
 .dark .option-btn-selected {
@@ -55,46 +56,42 @@
     color: #ffffff !important;
 }
 
-/* 🎨 ESTADOS DE BURBUJAS DE MAPA */
-.bubble-lesson {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 1.1rem;
+/* 💳 ANIMACIÓN DE TARJETA GOLD 3D (FLIP CARD) */
+.flip-card-container {
+    perspective: 1000px;
+}
+
+.flip-card-inner {
     position: relative;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 3px solid var(--border-color);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
 }
 
-.bubble-lesson.locked {
-    background-color: var(--bg-subcard) !important;
-    color: var(--text-muted) !important;
-    opacity: 0.6;
-    cursor: not-allowed;
+.flip-card-container.is-flipped .flip-card-inner {
+    transform: rotateY(180deg);
 }
 
-.bubble-lesson.active {
-    cursor: pointer;
-    animation: pulse-active 2s infinite;
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 1rem;
+    overflow: hidden;
 }
 
-.bubble-lesson.completed {
-    background-color: var(--accent-green) !important;
-    color: #ffffff !important;
-    border-color: var(--accent-green) !important;
-    box-shadow: 0 6px 16px rgba(35, 72, 63, 0.4);
+.flip-card-back {
+    transform: rotateY(180deg);
 }
 
 /* 🌟 ANIMACIONES Y EFECTOS VISUALES */
 @keyframes pulse-active {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 106, 78, 0.4); }
-    70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(224, 106, 78, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(224, 106, 78, 0); }
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 98, 69, 0.4); }
+    70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(217, 98, 69, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 98, 69, 0); }
 }
 
 @keyframes unlock-bounce {
@@ -133,14 +130,13 @@ main {
     overscroll-behavior-y: contain;
 }
 
-/* Fondo del anillo circular */
+/* Anillos de progreso */
 .circle-bg {
     fill: none;
     stroke: var(--bg-subcard);
     stroke-width: 3.8;
 }
 
-/* Anillo de progreso activo */
 .circle-progress {
     fill: none;
     stroke-width: 3.8;
@@ -148,7 +144,6 @@ main {
     transition: stroke-dasharray 0.5s ease;
 }
 
-/* Números del centro de las estadísticas */
 #stat-words-learned,
 #stat-challenges-completed,
 #stat-missions-completed {
@@ -157,7 +152,6 @@ main {
     line-height: 1;
 }
 
-/* Asegurar que las etiquetas SVG respondan al tema oscuro / claro */
 .dark #stat-words-learned,
 .dark #stat-challenges-completed,
 .dark #stat-missions-completed {
