@@ -18,12 +18,11 @@ export const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABAS
 export const supabase = supabaseClient;
 
 /**
- * Registra una nueva cuenta de estudiante en Supabase Auth
+ * Registra una nueva cuenta de estudiante en Supabase Auth y redirige a verify.html
  */
 export async function registerNewStudent(email, password, firstName) {
     try {
-        const currentOrigin = window.location.origin + window.location.pathname.replace('index.html', '');
-        const redirectUrl = `${currentOrigin}verify.html`;
+        const redirectUrl = window.location.origin + window.location.pathname.replace('index.html', '') + 'verify.html';
 
         const { data, error } = await supabaseClient.auth.signUp({
             email,
