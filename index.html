@@ -11,20 +11,20 @@
     <meta name="author" content="Lukes English Academy">
     <meta name="robots" content="index, follow">
 
-<!-- Open Graph / Redes Sociales y Chatbots (WhatsApp, Facebook, LinkedIn) -->
+    <!-- Open Graph / Redes Sociales y Chatbots (WhatsApp, Facebook, LinkedIn) -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rgadeat0212.github.io/lukes.vocabulary/">
     <meta property="og:title" content="Lukes English Academy - Domina el Vocabulario en Inglés">
     <meta property="og:description" content="Aprende y retén vocabulario en inglés rápido mediante retos interactivos, práctica oral con inteligencia de voz y recompensas diarias.">
     <meta property="og:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
 
-<!-- Twitter / X -->
+    <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Lukes English Academy - Aprende Inglés Rápido">
     <meta name="twitter:description" content="Aprende y retén vocabulario en inglés con un método acelerado e interactivo.">
     <meta name="twitter:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
 
-<!-- Datos Estructurados JSON-LD (Lectura Directa para IAs y Búsquedas Inteligentes) -->
+    <!-- Datos Estructurados JSON-LD (Lectura Directa para IAs y Búsquedas Inteligentes) -->
     <script type="application/ld+json">
     {
      "@context": "https://schema.org",
@@ -85,13 +85,23 @@
                 <img src="assets/lukes-academy-logo.svg" class="w-full max-w-[190px] h-auto object-contain transition-transform hover:scale-105" alt="Lukes English Academy">
             </div>
 
-            <!-- IDIOMA ACTIVO -->
-            <div class="flex items-center justify-between subcard-bg px-3 py-2 rounded-xl border border-main text-xs font-mono font-bold">
-                <div class="flex items-center gap-2">
-                    <span class="text-base">🇺🇸</span>
-                    <span class="text-[10px] text-main uppercase">Aprendiendo</span>
+            <!-- SELECTOR MULTI-IDIOMA DE APRENDIZAJE -->
+            <div class="relative group">
+                <button class="w-full flex items-center justify-between subcard-bg px-3 py-2 rounded-xl border border-main text-xs font-mono font-bold cursor-pointer">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base active-target-flag">🇺🇸</span>
+                        <span class="text-[10px] text-main uppercase">Aprendiendo</span>
+                    </div>
+                    <span class="text-[10px] font-bold text-[#e06a4e] active-target-name">English</span>
+                </button>
+                <div class="absolute left-0 right-0 top-full mt-1 subcard-bg border border-main rounded-xl p-1.5 shadow-xl hidden group-hover:flex flex-col gap-1 z-50">
+                    <button onclick="window.I18nManager.setTargetLanguage('en')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇺🇸 English</button>
+                    <button onclick="window.I18nManager.setTargetLanguage('es')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇪🇸 Español</button>
+                    <button onclick="window.I18nManager.setTargetLanguage('it')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇮🇹 Italiano</button>
+                    <button onclick="window.I18nManager.setTargetLanguage('fr')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇫🇷 Français</button>
+                    <button onclick="window.I18nManager.setTargetLanguage('pt')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇵🇹 Português</button>
+                    <button onclick="window.I18nManager.setTargetLanguage('de')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇩🇪 Deutsch</button>
                 </div>
-                <span class="text-[10px] font-bold text-[#e06a4e]">Inglés</span>
             </div>
 
             <nav class="flex flex-col gap-1.5">
@@ -111,11 +121,16 @@
                     <i class="fa-solid fa-gamepad text-sm"></i>
                     <span>Desafíos</span>
                 </button>
+                <!-- BOTÓN TUTORIAL EN DESKTOP -->
+                <button onclick="window.I18nManager.startInteractiveTutorial()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-amber-600 dark:text-amber-400 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left border border-amber-500/20 subcard-bg mt-1">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                    <span>Tutorial ❓</span>
+                </button>
             </nav>
         </div>
 
         <div class="border-t border-main pt-4 flex flex-col gap-3">
-            <!-- INTERRUPTOR DE MODO OSCURO (CON ELEMENTO PERILLA) -->
+            <!-- INTERRUPTOR DE MODO OSCURO -->
             <div class="flex items-center justify-between subcard-bg p-2 rounded-xl border border-main">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-moon text-xs text-main"></i>
@@ -137,7 +152,6 @@
                 </button>
             </div>
 
-            <!-- VINCULACIÓN AL PERFIL EN EL BOTÓN DE USUARIO LOGUEADO -->
             <div id="logged-user-actions" class="hidden flex flex-col gap-2">
                 <div onclick="window.openUserProfileModal()" class="flex items-center justify-between subcard-bg p-2 rounded-xl border border-main cursor-pointer hover:border-[#e06a4e] transition-all">
                     <div class="flex items-center gap-2">
@@ -161,7 +175,7 @@
         </div>
     </aside>
 
-    <!-- HEADER MÓVIL (ESTÁTICO FUERA DEL ÁREA SCROLL) -->
+    <!-- HEADER MÓVIL -->
     <header class="md:hidden w-full card-bg border-b border-main px-4 py-2 flex items-center justify-between shadow-xs shrink-0 z-30 transition-colors">
         <div class="flex items-center">
             <img src="assets/lukes-academy-logo.svg" class="h-11 sm:h-12 w-auto object-contain" alt="Lukes English Academy">
@@ -300,7 +314,7 @@
 
     </main>
 
-    <!-- FOOTER MÓVIL (ESTÁTICO FUERA DEL ÁREA SCROLL) -->
+    <!-- FOOTER MÓVIL -->
     <footer class="md:hidden card-bg border-t border-main py-2 w-full shrink-0 shadow-md z-30 transition-colors">
         <nav class="flex justify-around items-center">
             <button onclick="window.location.reload()" class="flex flex-col items-center text-main cursor-pointer">
@@ -332,10 +346,10 @@
             
             <div class="flex justify-between items-center border-b border-main pb-3">
                 <div class="flex items-center gap-2">
-                    <span class="text-base">🇺🇸</span>
-                    <span class="text-xs font-bold text-main uppercase">// INGLÉS APRENDIENDO</span>
+                    <span class="text-base active-target-flag">🇺🇸</span>
+                    <span class="text-xs font-bold text-main uppercase">// <span class="active-target-name">English</span> APRENDIENDO</span>
                 </div>
-                <button onclick="window.toggleBottomSheetProfile()" class="w-7 h-7 rounded-full subcard-bg text-main flex items-center justify-center text-xs">✕</button>
+                <button onclick="window.toggleBottomSheetProfile()" class="w-7 h-7 rounded-full subcard-bg text-main flex items-center justify-center text-xs cursor-pointer">✕</button>
             </div>
 
             <div class="subcard-bg p-4 rounded-2xl border border-main flex items-center justify-between">
@@ -353,7 +367,13 @@
                 </button>
             </div>
 
-            <!-- INTERRUPTOR DE MODO OSCURO MÓVIL (CON ELEMENTO PERILLA) -->
+            <!-- BOTÓN TUTORIAL EN MÓVIL -->
+            <button onclick="window.toggleBottomSheetProfile(); window.I18nManager.startInteractiveTutorial()" class="w-full subcard-bg border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-bold py-3 rounded-xl uppercase cursor-pointer flex items-center justify-center gap-2">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Ver Tutorial de Inicio ❓</span>
+            </button>
+
+            <!-- INTERRUPTOR DE MODO OSCURO MÓVIL -->
             <div class="flex items-center justify-between subcard-bg p-3.5 rounded-2xl border border-main">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-moon text-xs text-main"></i>
@@ -365,17 +385,17 @@
             </div>
 
             <div class="flex flex-col gap-2 mt-2">
-                <button onclick="window.ProgressManager.syncToSupabase(); window.showToast('¡Progreso guardado en la nube!', 'success');" class="w-full bg-[#23483f] text-white text-xs font-bold py-3 rounded-xl uppercase">
+                <button onclick="window.ProgressManager.syncToSupabase(); window.showToast('¡Progreso guardado en la nube!', 'success');" class="w-full bg-[#23483f] text-white text-xs font-bold py-3 rounded-xl uppercase cursor-pointer">
                     ☁️ Sincronizar Progreso
                 </button>
-                <button onclick="window.handleLogout()" class="w-full bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-bold py-3 rounded-xl uppercase">
+                <button onclick="window.handleLogout()" class="w-full bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-900 text-xs font-bold py-3 rounded-xl uppercase cursor-pointer">
                     Cerrar Sesión
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL AUTENTICACIÓN -->
+    <!-- MODAL AUTENTICACIÓN (CON CHECKBOX LEGAL OBLIGATORIO) -->
     <div id="auth-modal" class="fixed inset-0 bg-[#1e2623]/70 backdrop-blur-md z-50 flex items-center justify-center p-4 font-sans opacity-0 pointer-events-none transition-opacity duration-300 select-none">
         <div class="card-bg border border-main text-main w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col gap-4 text-center relative transition-colors">
             <button onclick="window.closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer transition-all">✕</button>
@@ -390,31 +410,68 @@
                 <button id="tab-register-btn" onclick="window.switchAuthTab('register')" class="flex-1 py-1.5 rounded-lg text-xs font-mono font-bold transition-all text-muted">Registrarse</button>
             </div>
 
-            <form id="auth-form" class="flex flex-col gap-3 text-left mt-1">
-                <div id="field-name-group" class="hidden">
-                    <label class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider block mb-1">Nombre Completo:</label>
-                    <input type="text" id="auth-name-input" placeholder="Tu nombre" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-mono font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+            <!-- PANTALLA DE ESPERA DE CONFIRMACIÓN DE EMAIL -->
+            <div id="auth-pending-notice" class="hidden flex flex-col items-center text-center gap-3 py-4 font-mono">
+                <div class="w-14 h-14 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl border border-amber-500/20 animate-pulse">
+                    <i class="fa-solid fa-envelope"></i>
                 </div>
-
-                <div>
-                    <label class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider block mb-1">Correo Electrónico:</label>
-                    <input type="email" id="auth-email-input" required placeholder="correo@ejemplo.com" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-mono font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                <h4 class="font-black text-sm uppercase text-main">¡Revisa tu correo!</h4>
+                <p class="text-xs text-muted leading-relaxed">
+                    Hemos enviado un enlace de confirmación a <strong id="pending-email-target" class="text-[#e06a4e]"></strong>. 
+                    Por favor, abre el enlace en tu teléfono o navegador para activar tu cuenta.
+                </p>
+                <div class="subcard-bg p-3 rounded-xl border border-main/20 text-[10px] text-muted flex items-center gap-2 mt-2 w-full justify-center">
+                    <i class="fa-solid fa-circle-notch animate-spin text-[#e06a4e]"></i>
+                    <span>Esperando confirmación en tiempo real...</span>
                 </div>
+            </div>
 
-                <div>
-                    <label class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider block mb-1">Contraseña:</label>
-                    <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-mono font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
-                </div>
+            <!-- FORMULARIO DE ACCESO/REGISTRO CON CAMPO LEGAL -->
+            <div id="auth-form-content">
+                <form id="auth-form" class="flex flex-col gap-3 text-left mt-1 font-mono">
+                    <div id="field-name-group" class="hidden">
+                        <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Nombre Completo:</label>
+                        <input type="text" id="auth-name-input" placeholder="Tu nombre" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                    </div>
 
-                <div id="field-confirm-group" class="hidden">
-                    <label class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider block mb-1">Confirmar Contraseña:</label>
-                    <input type="password" id="auth-confirm-input" placeholder="••••••••" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-mono font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
-                </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Correo Electrónico:</label>
+                        <input type="email" id="auth-email-input" required placeholder="correo@ejemplo.com" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                    </div>
 
-                <button type="submit" id="auth-submit-btn" class="w-full bg-[#e06a4e] hover:bg-[#c8573b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-widest cursor-pointer transition-all active:scale-95 shadow-md mt-2">
-                    Ingresar a la Plataforma ➔
-                </button>
-            </form>
+                    <div class="relative">
+                        <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Contraseña:</label>
+                        <div class="relative w-full">
+                            <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full subcard-bg border border-main rounded-xl p-3 pr-10 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                            <button type="button" onclick="window.togglePasswordVisibility('auth-password-input', 'eye-icon-pass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted cursor-pointer hover:text-main">
+                                <i id="eye-icon-pass" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="field-confirm-group" class="hidden relative">
+                        <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Confirmar Contraseña:</label>
+                        <div class="relative w-full">
+                            <input type="password" id="auth-confirm-input" placeholder="••••••••" class="w-full subcard-bg border border-main rounded-xl p-3 pr-10 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                            <button type="button" onclick="window.togglePasswordVisibility('auth-confirm-input', 'eye-icon-confirm')" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted cursor-pointer hover:text-main">
+                                <i id="eye-icon-confirm" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 📜 CHECKBOX OBLIGATORIO DE POLÍTICA DE PRIVACIDAD -->
+                    <div id="field-privacy-group" class="hidden flex items-start gap-2.5 mt-1 subcard-bg p-2.5 rounded-xl border border-main">
+                        <input type="checkbox" id="auth-privacy-checkbox" class="mt-0.5 w-4 h-4 rounded border-main text-[#e06a4e] focus:ring-0 cursor-pointer">
+                        <label for="auth-privacy-checkbox" class="text-[9px] text-muted leading-tight cursor-pointer select-none">
+                            Acepto la <button type="button" onclick="window.openPrivacyPolicyModal()" class="text-[#e06a4e] font-bold underline hover:text-main">Política de Privacidad</button> y Términos. Entiendo que mi correo solo se utilizará para sincronizar mi progreso académico.
+                        </label>
+                    </div>
+
+                    <button type="submit" id="auth-submit-btn" class="w-full bg-[#e06a4e] hover:bg-[#c8573b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-widest cursor-pointer transition-all active:scale-95 shadow-md mt-1">
+                        Ingresar a la Plataforma ➔
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
