@@ -21,7 +21,7 @@ export const ProgressManager = {
             writing: 50,
             speaking: 50
         },
-        completed_bubbles: [1],
+        completed_bubbles: [],
         completed_blocks: {},
         mastered_words_ids: [],
         claimed_missions: [],
