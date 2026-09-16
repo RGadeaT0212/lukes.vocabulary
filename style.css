@@ -1,39 +1,75 @@
 /* ==========================================================================
-   🪐 LUKES ACADEMY - HOJA DE ESTILOS Y TEMAS CENTRALIZADOS v60.0
+   🪐 LUKES ACADEMY - HOJA DE ESTILOS Y TEMAS CENTRALIZADOS v61.0
    ========================================================================== */
 
 :root {
-    /* Paleta Neutra Balanceada (Mate / No deslumbrante) */
-    --bg-main: #efebd9;
-    --bg-card: #f8f5ea;
-    --bg-subcard: #e5dfcb;
-    --text-main: #1d2522;
-    --text-muted: #646e68;
-    --border-color: #d1c9b0;
-    --accent-orange: #d96245;
-    --accent-green: #23483f;
+    /* 🎨 Paleta Pedagógica UICode (Tema Claro - Máxima Limpieza y Enfoque) */
+    --bg-main: #FFFFFF;         /* Blanco Puro - Máxima limpieza y contraste */
+    --bg-card: #F7FAFC;         /* Gris Técnico Muy Claro - Elevación suave */
+    --bg-subcard: #EDF2F7;      /* Gris Contenedor Secundario */
+    --text-main: #2D3748;       /* Pizarra - Lectura accesible y sin fatiga */
+    --text-muted: #718096;      /* Gris Neutro Mediano */
+    --border-color: #E2E8F0;    /* Borde Fino Limpio */
+    
+    /* Colores Semánticos */
+    --brand-blue: #3182CE;     /* Azul Energía - Identidad y botones principales */
+    --accent-green: #48BB78;    /* Verde Esmeralda - Aciertos, medallas y rachas */
+    --accent-orange: #ED8936;   /* Naranja Vivo - Tiempos, ejercicios y alertas */
+    --accent-rose: #E53E3E;     /* Coral Suave - Feedback de error sin frustración */
 }
 
 .dark {
-    --bg-main: #121816;
-    --bg-card: #1a2320;
-    --bg-subcard: #232f2b;
-    --text-main: #f2efe4;
-    --text-muted: #88958f;
-    --border-color: #2e3c37;
-    --accent-orange: #e06a4e;
-    --accent-green: #23483f;
+    /* 🌙 Paleta Pedagógica (Tema Oscuro - Bajo Brillo / Modo Lectura) */
+    --bg-main: #1A202C;         /* Azul Pizarra Oscuro (No negro puro) */
+    --bg-card: #2D3748;         /* Elevación de tarjeta clara sobre el fondo */
+    --bg-subcard: #20293A;      /* Contenedor de subcard profundo */
+    --text-main: #F7FAFC;       /* Blanco Calido */
+    --text-muted: #A0AEC0;      /* Gris Claro Muted */
+    --border-color: #4A5568;    /* Borde Oscuro Estructurado */
+    
+    /* Adaptación Semántica para Modo Oscuro (Brillo Luminoso) */
+    --brand-blue: #4299E1;     /* Azul Neón Suave */
+    --accent-green: #38A169;    /* Verde Esmeralda Nocturno */
+    --accent-orange: #F6AD55;   /* Naranja Cálido */
+    --accent-rose: #FC8181;     /* Coral Pastel */
 }
 
-.app-bg { background-color: var(--bg-main); transition: background-color 0.3s ease; }
-.card-bg { background-color: var(--bg-card); color: var(--text-main); border-color: var(--border-color); transition: all 0.3s ease; }
-.card-hover:hover { background-color: var(--bg-subcard); }
-.subcard-bg { background-color: var(--bg-subcard); border-color: var(--border-color); color: var(--text-main); }
+/* 🧱 CLASES ESTRUCTURALES DE LA PLATAFORMA */
+.app-bg { 
+    background-color: var(--bg-main); 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+}
+
+.card-bg { 
+    background-color: var(--bg-card); 
+    color: var(--text-main); 
+    border-color: var(--border-color); 
+    transition: all 0.3s ease; 
+}
+
+.card-hover:hover { 
+    background-color: var(--bg-subcard); 
+}
+
+.subcard-bg { 
+    background-color: var(--bg-subcard); 
+    border-color: var(--border-color); 
+    color: var(--text-main); 
+}
+
 .text-main { color: var(--text-main); }
 .text-muted { color: var(--text-muted); }
 .border-main { border-color: var(--border-color); }
 
-/* 🎨 OPCIONES DE SELECCIÓN MÚLTIPLE */
+/* 🔒 MEJORA DE UX: ESTADO BLOQUEADO / CANDADO */
+.is-locked-card, [disabled] {
+    opacity: 0.55 !important;
+    filter: grayscale(40%);
+    border-style: dashed !important;
+    cursor: not-allowed !important;
+}
+
+/* 🎯 OPCIONES DE SELECCIÓN MÚLTIPLE (INTERACTIVIDAD) */
 .option-btn-default {
     background-color: var(--bg-subcard);
     border: 2px solid var(--border-color);
@@ -41,19 +77,24 @@
     transition: all 0.2s ease;
 }
 
+.option-btn-default:hover:not([disabled]) {
+    border-color: var(--brand-blue);
+    transform: translateY(-1px);
+}
+
 .option-btn-selected {
-    background-color: rgba(217, 98, 69, 0.12) !important;
-    border: 2px solid var(--accent-orange) !important;
-    color: var(--text-main) !important;
+    background-color: rgba(49, 130, 206, 0.12) !important;
+    border: 2px solid var(--brand-blue) !important;
+    color: var(--brand-blue) !important;
     font-weight: 800 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(217, 98, 69, 0.15);
+    box-shadow: 0 4px 12px rgba(49, 130, 206, 0.18);
 }
 
 .dark .option-btn-selected {
-    background-color: rgba(224, 106, 78, 0.25) !important;
-    border: 2px solid var(--accent-orange) !important;
-    color: #ffffff !important;
+    background-color: rgba(66, 153, 225, 0.22) !important;
+    border: 2px solid var(--brand-blue) !important;
+    color: #FFFFFF !important;
 }
 
 /* 💳 ANIMACIÓN DE TARJETA GOLD 3D (FLIP CARD) */
@@ -87,13 +128,7 @@
     transform: rotateY(180deg);
 }
 
-/* 🌟 ANIMACIONES Y EFECTOS VISUALES */
-@keyframes pulse-active {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 98, 69, 0.4); }
-    70% { transform: scale(1.06); box-shadow: 0 0 0 12px rgba(217, 98, 69, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(217, 98, 69, 0); }
-}
-
+/* 🌟 ANIMACIONES DE RETROALIMENTACIÓN DE LECCIÓN */
 @keyframes unlock-bounce {
     0% { transform: scale(0.8) rotate(-10deg); }
     50% { transform: scale(1.25) rotate(10deg); }
@@ -130,7 +165,7 @@ main {
     overscroll-behavior-y: contain;
 }
 
-/* Anillos de progreso */
+/* 📊 ANILLOS DE ESTADÍSTICAS Y PROGRESO */
 .circle-bg {
     fill: none;
     stroke: var(--bg-subcard);
@@ -150,10 +185,4 @@ main {
     color: var(--text-main) !important;
     font-weight: 900;
     line-height: 1;
-}
-
-.dark #stat-words-learned,
-.dark #stat-challenges-completed,
-.dark #stat-missions-completed {
-    color: #ffffff !important;
 }
