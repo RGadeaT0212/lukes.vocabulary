@@ -1,5 +1,5 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v60.3
+// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v61.0 (AUTH & REALTIME SYNC)
 // ==========================================================================
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
@@ -477,6 +477,21 @@ window.openSpeakingManager = function() { SpeakingEngine.initSpeakingModule(); }
 window.openChallengesManager = function() { ChallengesEngine.openChallengesHub(); };
 window.openMissionsManager = function() { MissionsEngine.initMissionsModule(); };
 
+// 👁️ VISIBILIDAD DE CONTRASEÑA (TOGGLE EYE)
+window.togglePasswordVisibility = function(inputId, eyeIconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(eyeIconId);
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) icon.className = 'fa-solid fa-eye-slash text-muted';
+    } else {
+        input.type = 'password';
+        if (icon) icon.className = 'fa-solid fa-eye text-muted';
+    }
+};
+
 window.openAuthModal = function(tab = 'login') {
     const modal = document.getElementById('auth-modal');
     if (modal) {
@@ -496,6 +511,13 @@ window.switchAuthTab = function(tab) {
     const btnSubmit = document.getElementById('auth-submit-btn');
     const nameGroup = document.getElementById('field-name-group');
     const confirmGroup = document.getElementById('field-confirm-group');
+    const formContent = document.getElementById('auth-form-content');
+    const pendingNotice = document.getElementById('auth-pending-notice');
+
+    if (formContent && pendingNotice) {
+        formContent.classList.remove('hidden');
+        pendingNotice.classList.add('hidden');
+    }
 
     if (tab === 'register') {
         if (title) title.textContent = "Crear Cuenta";
@@ -509,6 +531,19 @@ window.switchAuthTab = function(tab) {
         if (confirmGroup) confirmGroup.classList.add('hidden');
     }
 };
+
+// 📩 PANTALLA DE ESPERA DE CONFIRMACIÓN DE CORREO
+function showPendingEmailNotice(email) {
+    const formContent = document.getElementById('auth-form-content');
+    const pendingNotice = document.getElementById('auth-pending-notice');
+    const emailTarget = document.getElementById('pending-email-target');
+
+    if (formContent && pendingNotice) {
+        formContent.classList.add('hidden');
+        pendingNotice.classList.remove('hidden');
+        if (emailTarget) emailTarget.textContent = email;
+    }
+}
 
 function updateUI(isLoggedIn) {
     const guestBlock = document.getElementById('guest-auth-actions');
@@ -544,6 +579,9 @@ async function checkSession() {
                 email: session.user.email,
                 name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
             };
+
+            // 🧹 AISLAMIENTO DE CACHÉ PARA CUENTAS NUEVAS LIMPIAS
+            await ProgressManager.init();
             updateUI(true);
             return;
         }
@@ -552,6 +590,34 @@ async function checkSession() {
     }
     window.AppState.user = null;
     updateUI(false);
+}
+
+// ⚡ LISTENER EN TIEMPO REAL: DETECTA CONFIRMACIÓN DE CORREO DESDE CUALQUIER DISPOSITIVO
+function initRealtimeAuthListener() {
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        console.log(`// Evento de autenticación en tiempo real: ${event}`);
+
+        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+            window.AppState.user = {
+                id: session.user.id,
+                email: session.user.email,
+                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
+            };
+
+            // Resetear caché si es una cuenta recién creada sin progreso previo
+            if (ProgressManager.resetProgressState) {
+                const isNewUser = !session.user.last_sign_in_at || session.user.last_sign_in_at === session.user.created_at;
+                if (isNewUser) ProgressManager.resetProgressState();
+            }
+
+            await ProgressManager.init();
+            updateUI(true);
+            window.closeAuthModal();
+            window.updateStatsDisplay();
+            window.renderHomeLessonsModule();
+            window.showToast(`🎉 ¡Cuenta confirmada! Bienvenido, ${window.AppState.user.name}`, 'success');
+        }
+    });
 }
 
 function bindAuthEvents() {
@@ -577,27 +643,42 @@ function bindAuthEvents() {
                     return;
                 }
 
+                // URL de redirección directa a verify.html en GitHub Pages
+                const redirectUrl = window.location.origin.includes('github.io')
+                    ? `${window.location.origin}/lukes.vocabulary/verify.html`
+                    : `${window.location.origin}/verify.html`;
+
                 const { error } = await supabaseClient.auth.signUp({
                     email,
                     password,
-                    options: { data: { first_name: name || 'Estudiante' } }
+                    options: {
+                        data: { first_name: name || 'Estudiante' },
+                        emailRedirectTo: redirectUrl
+                    }
                 });
 
                 if (error) throw error;
-                window.showToast("¡Registro enviado! Revisa tu correo.", 'success');
-                window.closeAuthModal();
+                showPendingEmailNotice(email);
             } else {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
+
+                // Aislamiento de caché limpia para cuenta ingresada
+                if (ProgressManager.resetProgressState) {
+                    ProgressManager.resetProgressState();
+                }
 
                 window.AppState.user = {
                     id: data.user.id,
                     email: data.user.email,
                     name: data.user.user_metadata?.first_name || data.user.email.split('@')[0]
                 };
+                await ProgressManager.init();
                 updateUI(true);
                 window.showToast(`¡Bienvenido, ${window.AppState.user.name}!`, 'success');
                 window.closeAuthModal();
+                window.updateStatsDisplay();
+                window.renderHomeLessonsModule();
             }
         } catch (err) {
             window.showToast(`Error: ${err.message}`, 'error');
@@ -608,7 +689,6 @@ function bindAuthEvents() {
     });
 }
 
-// 🔐 CIERRA SESIÓN Y REINICIA EL MAPA Y LAS ESTADÍSTICAS A ESTADO INVITADO
 // 🛑 MODAL CENTRADO DE CONFIRMACIÓN GLOBAL (YES / NO)
 window.showConfirmModal = function({ title = "¿Seguro que quieres salir?", message = "Perderás el progreso que no hayas guardado.", onConfirm }) {
     let modal = document.getElementById('global-confirm-modal');
@@ -728,6 +808,7 @@ async function mainAppBoot() {
     await ProgressManager.init();
     initCarousel();
     checkSession();
+    initRealtimeAuthListener();
     bindAuthEvents();
     window.updateStatsDisplay();
     window.renderHomeLessonsModule();
@@ -739,3 +820,54 @@ if (document.readyState === "loading") {
 } else {
     mainAppBoot();
 }
+
+// ==========================================================================
+// 📜 MODAL DE POLÍTICA DE PRIVACIDAD Y MARCO LEGAL EN SITE.JS
+// ==========================================================================
+window.openPrivacyPolicyModal = function() {
+    let modal = document.getElementById('privacy-policy-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'privacy-policy-modal';
+        modal.className = "fixed inset-0 bg-[#1c2321]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 font-mono select-none animate-fade-in";
+        document.body.appendChild(modal);
+    } else {
+        modal.classList.remove('hidden');
+    }
+
+    modal.innerHTML = `
+        <div class="card-bg border border-main text-main w-full max-w-lg rounded-3xl p-6 shadow-2xl flex flex-col gap-4 relative max-h-[85vh] overflow-y-auto custom-scrollbar text-left">
+            <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer">✕</button>
+
+            <div class="border-b border-main/10 pb-3">
+                <span class="text-[9px] text-[#e06a4e] font-bold uppercase tracking-widest">// MARCO LEGAL Y PROTECCIÓN DE DATOS</span>
+                <h3 class="font-black text-base text-main uppercase mt-0.5">Política de Privacidad</h3>
+            </div>
+
+            <div class="flex flex-col gap-3 text-xs text-muted leading-relaxed font-sans">
+                <p>En <strong>Lukes English Academy</strong>, respetamos y protegemos la privacidad de nuestros estudiantes. Esta política describe cómo manejamos tus datos:</p>
+                
+                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
+                    <strong class="text-main uppercase">1. Uso Exclusivo del Correo Electrónico:</strong>
+                    <p>Tu correo electrónico se recopila únicamente para autenticar tu identidad y guardar en tiempo real tu progreso académico, vocabulario aprendido y recompensas.</p>
+                </div>
+
+                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
+                    <strong class="text-main uppercase">2. No Spam y Cero Correos No Deseados:</strong>
+                    <p>No enviamos boletines publicitarios ni correos comerciales. Únicamente recibirás mensajes esenciales del sistema (como enlaces de activación de cuenta o restablecimiento de contraseña).</p>
+                </div>
+
+                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
+                    <strong class="text-main uppercase">3. Confidencialidad y No Compartición:</strong>
+                    <p>Tus datos personales jamás serán vendidos, alquilados ni compartidos con empresas terceras ni anunciantes.</p>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
+                    class="w-full bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md mt-2">
+                Entendido y Cerrar ➔
+            </button>
+        </div>
+    `;
+};
