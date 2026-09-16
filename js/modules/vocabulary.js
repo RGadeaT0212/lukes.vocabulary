@@ -1,11 +1,13 @@
 // ==========================================================================
-// 🪐 VOCABULARY ENGINE v60.1 (CONTROL ESTRICTO DE MAX_CONSECUTIVE Y MANTENIMIENTO TOTAL)
+// 🪐 VOCABULARY ENGINE v63.0 (PERCENTAGE-BASED GENERATOR & STRICT SEQUENCING)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
 import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
 import { AudioEngine } from './audioEngine.js';
+import { startListening, stopListening } from './speechEngine.js';
+import { I18nManager } from './i18n.js';
 
 export const BUBBLE_COLOR_PALETTE = [
     '#e06a4e', '#d4a373', '#2a5c82', '#6b4c82', '#2d7a60',
@@ -37,6 +39,7 @@ export const VocabularyEngine = {
     shadowingQueue: [],
     isShadowingMode: false,
     activeTypewriterInterval: null,
+    canUserSpeakNow: true,
 
     showToast(message, type = 'success') {
         if (typeof window.showToast === 'function') {
@@ -66,9 +69,18 @@ export const VocabularyEngine = {
             .replace(/\s+/g, " ");
     },
 
+    // 🌐 CARGA DE VOCABULARIO FILTRADO POR NIVEL E IDIOMA DE APRENDIZAJE
     loadGymCategories(levelFilter = null) {
         this.selectedLevel = levelFilter || window.AppState?.activeLevel || 'A1';
-        const filteredWords = VOCABULARY_DATABASE.filter(w => String(w.level || 'A1').toUpperCase() === String(this.selectedLevel).toUpperCase());
+        const targetLang = window.AppState?.targetLanguage || I18nManager?.targetLang || 'en';
+
+        // Filtrado por Nivel y por Idioma de Destino (soporte multilingüe extensible)
+        const filteredWords = VOCABULARY_DATABASE.filter(w => {
+            const matchesLevel = String(w.level || w.euroLevel || 'A1').toUpperCase() === String(this.selectedLevel).toUpperCase();
+            const matchesLang = w.lang ? String(w.lang).toLowerCase() === String(targetLang).toLowerCase() : true;
+            return matchesLevel && matchesLang;
+        });
+
         this.allWords = filteredWords.map(w => ({
             ...w,
             english_word: w.word || w.english_word,
@@ -107,6 +119,7 @@ export const VocabularyEngine = {
         this.loopEngine();
     },
 
+    // 🎯 CONSTRUCCIÓN DE LA COLA SEGÚN LA MATRIZ DE PORCENTAJES COGNITIVOS EXACTA
     buildExerciseQueue() {
         let targetWords = [...this.currentBlockWords];
         this.exerciseQueue = [];
@@ -128,134 +141,138 @@ export const VocabularyEngine = {
             });
         }
 
-        // 2. Tiempos objetivo por Sublección
-        let targetTimeSeconds = 360; // L1: 6 min
-        let goalPhases = ['recognize', 'associate'];
-
-        if (this.currentSubLesson === 2) {
-            targetTimeSeconds = 420; // L2: 7 min
-            goalPhases = ['recognize', 'associate', 'recall'];
+        // 2. Definición exacta de proporciones según la Sublección (Matriz Pedagógica)
+        let goalDistribution = [];
+        if (this.currentSubLesson === 1) {
+            // Sublección L1: 60% recognize, 40% associate
+            goalDistribution = [
+                { goal: 'recognize', count: 6 },
+                { goal: 'associate', count: 4 }
+            ];
+        } else if (this.currentSubLesson === 2) {
+            // Sublección L2: 30% recognize, 40% associate, 30% recall
+            goalDistribution = [
+                { goal: 'recognize', count: 3 },
+                { goal: 'associate', count: 4 },
+                { goal: 'recall', count: 3 }
+            ];
         } else if (this.currentSubLesson === 3) {
-            targetTimeSeconds = 480; // L3: 8 min
-            goalPhases = ['recall', 'produce'];
+            // Sublección L3: 40% recall, 60% produce
+            goalDistribution = [
+                { goal: 'recall', count: 4 },
+                { goal: 'produce', count: 6 }
+            ];
         }
 
         const currentLevelTag = String(this.selectedLevel).toUpperCase();
         const allTemplateKeys = Object.keys(VOCABULARY_TEMPLATES);
-        let accumulatedTime = 0;
         let templateHistory = [];
-        let wordIndex = 0;
-        let phaseIndex = 0;
+        let wordPointer = 0;
 
-        while (accumulatedTime < targetTimeSeconds && this.exerciseQueue.length < 40) {
-            const word = targetWords[wordIndex % targetWords.length];
-            wordIndex++;
+        // Bucle Secuencial que genera los ejercicios respetando el porcentaje estricto de cada meta
+        goalDistribution.forEach(phaseSpec => {
+            for (let i = 0; i < phaseSpec.count; i++) {
+                const word = targetWords[wordPointer % targetWords.length];
+                wordPointer++;
 
-            const currentGoal = goalPhases[phaseIndex % goalPhases.length];
-            if (wordIndex % targetWords.length === 0) {
-                phaseIndex++;
-            }
+                const cleanTarget = this.cleanString(word.english_word || word.word);
 
-            const cleanTarget = this.cleanString(word.english_word || word.word);
-
-            // FILTRADO CON CONTROL RIGUROSO DE MAX_CONSECUTIVE
-            const availableIDs = allTemplateKeys.filter(id => {
-                const tmpl = VOCABULARY_TEMPLATES[id];
-
-                if (tmpl.goal.toLowerCase() !== currentGoal.toLowerCase()) return false;
-                if (!tmpl.level.includes(currentLevelTag)) return false;
-                if (word.hasImage === false && tmpl.require_image) return false;
-
-                // Conteo estricto de repeticiones consecutivas
-                const maxCons = Number(tmpl.max_consecutive) || 2;
-                const hLen = templateHistory.length;
-                let consecutiveCount = 0;
-                for (let i = hLen - 1; i >= 0; i--) {
-                    if (String(templateHistory[i]) === String(id)) {
-                        consecutiveCount++;
-                    } else {
-                        break;
-                    }
-                }
-                
-                // Bloqueo estricto si ya se alcanzó el límite permitido
-                if (consecutiveCount >= maxCons) return false;
-
-                return true;
-            });
-
-            let chosenID = null;
-
-            if (availableIDs.length > 0) {
-                chosenID = availableIDs[Math.floor(Math.random() * availableIDs.length)];
-            } else {
-                // Fallback de emergencia si la fase está restringida por max_consecutive
-                const fallbackCandidate = allTemplateKeys.find(id => {
+                // Filtrado de Plantillas Disponibles para la Meta Activa
+                const availableIDs = allTemplateKeys.filter(id => {
                     const tmpl = VOCABULARY_TEMPLATES[id];
-                    if (tmpl.goal.toLowerCase() !== currentGoal.toLowerCase()) return false;
-                    
+
+                    if (tmpl.goal.toLowerCase() !== phaseSpec.goal.toLowerCase()) return false;
+                    if (!tmpl.level.includes(currentLevelTag)) return false;
+                    if (word.hasImage === false && tmpl.require_image) return false;
+
+                    // Exclusión estricta de plantillas orales si el micrófono está apagado
+                    if (!this.canUserSpeakNow && (tmpl.type === 'speaking' || tmpl.type === 'audio_input')) {
+                        return false;
+                    }
+
+                    // CONTROL ESTRICTO DE REPETICIÓN CONSECUTIVA (max_consecutive)
                     const maxCons = Number(tmpl.max_consecutive) || 2;
                     const hLen = templateHistory.length;
                     let consecutiveCount = 0;
-                    for (let i = hLen - 1; i >= 0; i--) {
-                        if (String(templateHistory[i]) === String(id)) consecutiveCount++;
+                    for (let j = hLen - 1; j >= 0; j--) {
+                        if (String(templateHistory[j]) === String(id)) consecutiveCount++;
                         else break;
                     }
+                    
                     return consecutiveCount < maxCons;
                 });
 
-                chosenID = fallbackCandidate || (currentGoal === 'produce' ? '31' : '1');
+                let chosenID = null;
+
+                if (availableIDs.length > 0) {
+                    chosenID = availableIDs[Math.floor(Math.random() * availableIDs.length)];
+                } else {
+                    // Selección de reserva manteniendo la meta cognitiva activa
+                    const candidates = allTemplateKeys.filter(id => {
+                        const tmpl = VOCABULARY_TEMPLATES[id];
+                        if (tmpl.goal.toLowerCase() !== phaseSpec.goal.toLowerCase()) return false;
+                        if (!this.canUserSpeakNow && (tmpl.type === 'speaking' || tmpl.type === 'audio_input')) return false;
+                        return true;
+                    });
+                    chosenID = candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : '1';
+                }
+
+                templateHistory.push(String(chosenID));
+                const chosenTemplate = VOCABULARY_TEMPLATES[chosenID];
+
+                const isBasicLevel = ['A1', 'A2'].includes(currentLevelTag);
+                const distractorCount = isBasicLevel ? 1 : 3;
+
+                const blockDistractors = targetWords
+                    .filter(w => this.cleanString(w.english_word || w.word) !== cleanTarget)
+                    .sort(() => 0.5 - Math.random())
+                    .slice(0, distractorCount);
+
+                const formattedOptions = [word, ...blockDistractors]
+                    .sort(() => 0.5 - Math.random())
+                    .map(opt => ({
+                        id: opt.id,
+                        text: opt.word || opt.english_word,
+                        cleanText: this.cleanString(opt.word || opt.english_word),
+                        media_url: opt.media_url,
+                        spanish: opt.spanish
+                    }));
+
+                const fullBlockOptions = targetWords.map(w => ({
+                    id: w.id,
+                    text: w.word || w.english_word,
+                    cleanText: this.cleanString(w.word || w.english_word),
+                    spanish: w.spanish
+                })).sort(() => 0.5 - Math.random());
+
+                this.exerciseQueue.push({
+                    type: chosenTemplate.type,
+                    templateId: String(chosenTemplate.id),
+                    goal: chosenTemplate.goal,
+                    skills: chosenTemplate.skills,
+                    time: chosenTemplate.time,
+                    word,
+                    prompt_text: word.english_word || word.word,
+                    clean_target: cleanTarget,
+                    spanish_translation: word.spanish,
+                    hasImage: word.hasImage !== false && !!word.media_url,
+                    media_url: word.media_url,
+                    options: formattedOptions,
+                    blockOptions: fullBlockOptions,
+                    correct_answer: cleanTarget
+                });
             }
-
-            templateHistory.push(String(chosenID));
-            const chosenTemplate = VOCABULARY_TEMPLATES[chosenID];
-            accumulatedTime += chosenTemplate.time || 20;
-
-            const isBasicLevel = ['A1', 'A2'].includes(currentLevelTag);
-            const distractorCount = isBasicLevel ? 1 : 3;
-
-            const blockDistractors = targetWords
-                .filter(w => this.cleanString(w.english_word || w.word) !== cleanTarget)
-                .sort(() => 0.5 - Math.random())
-                .slice(0, distractorCount);
-
-            const rawOptions = [word, ...blockDistractors].sort(() => 0.5 - Math.random());
-
-            const formattedOptions = rawOptions.map(opt => ({
-                id: opt.id,
-                text: opt.word || opt.english_word,
-                cleanText: this.cleanString(opt.word || opt.english_word),
-                media_url: opt.media_url,
-                spanish: opt.spanish
-            }));
-
-            const fullBlockOptions = targetWords.map(w => ({
-                id: w.id,
-                text: w.word || w.english_word,
-                cleanText: this.cleanString(w.word || w.english_word),
-                spanish: w.spanish
-            })).sort(() => 0.5 - Math.random());
-
-            this.exerciseQueue.push({
-                type: chosenTemplate.type,
-                templateId: String(chosenTemplate.id),
-                goal: chosenTemplate.goal,
-                skills: chosenTemplate.skills,
-                time: chosenTemplate.time,
-                word,
-                prompt_text: word.english_word || word.word,
-                clean_target: cleanTarget,
-                spanish_translation: word.spanish,
-                hasImage: word.hasImage !== false && !!word.media_url,
-                media_url: word.media_url,
-                options: formattedOptions,
-                blockOptions: fullBlockOptions,
-                correct_answer: cleanTarget
-            });
-        }
+        });
 
         this.currentQueueIndex = 0;
         this.lessonTotalWords = this.exerciseQueue.length;
+    },
+
+    toggleSpeechMode(canSpeak) {
+        this.canUserSpeakNow = canSpeak;
+        this.showToast(canSpeak ? "🎙️ Micrófono Activado" : "⌨️ Modo Teclado Activado", "info");
+        this.buildExerciseQueue();
+        this.loopEngine();
     },
 
     loopEngine() {
@@ -287,12 +304,7 @@ export const VocabularyEngine = {
             }
         }
 
-        this.currentUserState = {
-            selectedOptionIndex: null,
-            typedValue: '',
-            tfValue: null
-        };
-
+        this.currentUserState = { selectedOptionIndex: null, typedValue: '', tfValue: null };
         const ex = this.exerciseQueue[this.currentQueueIndex];
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
@@ -313,7 +325,9 @@ export const VocabularyEngine = {
                     <div id="exercise-card-container" class="card-bg p-5 sm:p-7 rounded-3xl border border-main shadow-md flex flex-col gap-3 relative">
                         
                         <div class="flex items-center justify-between w-full border-b border-main/10 pb-2">
-                            <span class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider">// PRESENTACIÓN</span>
+                            <span class="text-[10px] font-mono font-bold text-[#e06a4e] uppercase tracking-wider">
+                                ${I18nManager.getInstruction(ex.templateId, ex.type)}
+                            </span>
                             <button onclick="window.VocabularyEngine.markAsKnown()" 
                                     class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-[10px] font-mono font-black px-3 py-1 rounded-xl cursor-pointer transition-all active:scale-95 shadow-xs">
                                 ⚡ Ya me la sé
@@ -328,7 +342,7 @@ export const VocabularyEngine = {
                             <div id="spanish-translation-container" class="mt-1">
                                 <button onclick="window.VocabularyEngine.revealSpanishTranslation()" 
                                         class="text-[10px] font-mono text-muted hover:text-[#e06a4e] border border-dashed border-main px-2.5 py-1 rounded-lg cursor-pointer">
-                                    👁️ Ver Significado (Español)
+                                    👁️ Ver Significado
                                 </button>
                                 <p id="spanish-translation-text" class="text-sm font-bold text-muted italic hidden">"${ex.spanish_translation}"</p>
                             </div>
@@ -395,7 +409,7 @@ export const VocabularyEngine = {
                 <div class="flex flex-col gap-3 mt-1">
                     <div class="flex flex-wrap justify-center gap-2 p-2.5 bg-[#f1ede4]/60 dark:bg-[#222d29]/60 rounded-2xl border border-dashed border-main">
                         <span class="w-full text-[9px] font-mono text-muted uppercase font-bold tracking-wider text-center">
-                            🔊 BANCO DE PALABRAS (ESCUCHA Y COMPLETA):
+                            🔊 BANCO DE PALABRAS:
                         </span>
                         ${wordBankHtml}
                     </div>
@@ -425,12 +439,7 @@ export const VocabularyEngine = {
             const firstChunk = fullWord.slice(0, splitPoint);
             const correctSecondChunk = fullWord.slice(splitPoint);
 
-            const chunkOptions = [
-                correctSecondChunk,
-                'ing',
-                'ed',
-                'er'
-            ].filter((v, i, a) => a.indexOf(v) === i).sort(() => 0.5 - Math.random());
+            const chunkOptions = [correctSecondChunk, 'ing', 'ed', 'er'].filter((v, i, a) => a.indexOf(v) === i).sort(() => 0.5 - Math.random());
 
             exerciseInteractiveBody = `
                 <div class="flex flex-col items-center gap-3 mt-2">
@@ -470,15 +479,19 @@ export const VocabularyEngine = {
                            class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-xs sm:text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
                 </div>
             `;
-        } else if (ex.type === 'speaking' || ex.type === 'audio_input') {
+        } else if ((ex.type === 'speaking' || ex.type === 'audio_input') && this.canUserSpeakNow) {
             exerciseInteractiveBody = `
-                <div class="flex flex-col items-center gap-3 mt-2">
-                    <p class="text-xs font-mono font-bold text-muted uppercase">Escucha y repite la palabra:</p>
-                    <button type="button" onclick="window.VocabularyEngine.simulateSpeakingRecorded()" 
+                <div class="flex flex-col items-center gap-2.5 mt-2">
+                    <button id="mic-lesson-btn" type="button" onclick="window.VocabularyEngine.listenLessonVoiceAnswer()" 
                             class="w-14 h-14 bg-[#e06a4e] hover:bg-[#c8573b] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg active:scale-90 transition-all">
                         <i class="fa-solid fa-microphone"></i>
                     </button>
-                    <span id="speaking-status-text" class="text-[10px] font-mono text-muted">Toca para hablar</span>
+                    <span id="speaking-status-text" class="text-[10px] font-mono text-muted">Toca para encender micrófono</span>
+                    
+                    <button type="button" onclick="window.VocabularyEngine.toggleSpeechMode(false)" 
+                            class="text-[9px] font-mono text-muted hover:text-main underline cursor-pointer mt-1">
+                        🚫 No puedo hablar ahora (Desactivar ejercicios orales)
+                    </button>
                 </div>
             `;
         } else {
@@ -513,7 +526,9 @@ export const VocabularyEngine = {
                 <div id="exercise-card-container" class="card-bg p-4 sm:p-6 rounded-3xl border border-main shadow-xs flex flex-col gap-2.5 relative">
                     
                     <div class="flex items-center justify-between w-full border-b border-main/10 pb-1.5">
-                        <span class="text-[10px] font-mono font-bold text-muted uppercase tracking-wider">// EJERCICIO</span>
+                        <span class="text-[10px] font-mono font-bold text-[#e06a4e] uppercase tracking-wider">
+                            ${I18nManager.getInstruction(ex.templateId, ex.type)}
+                        </span>
                         <button onclick="window.VocabularyEngine.markAsKnown()" 
                                 class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-[10px] font-mono font-black px-2.5 py-1 rounded-xl cursor-pointer transition-all active:scale-95 shadow-xs">
                             ⚡ Ya me la sé
@@ -534,7 +549,7 @@ export const VocabularyEngine = {
                     <div id="spanish-translation-container">
                         <button onclick="window.VocabularyEngine.revealSpanishTranslation()" 
                                 class="text-[9px] font-mono text-muted hover:text-[#e06a4e] border border-dashed border-main px-2 py-0.5 rounded-lg cursor-pointer">
-                            👁️ Ver Significado (Español)
+                            👁️ Ver Significado
                         </button>
                         <p id="spanish-translation-text" class="text-xs text-muted font-medium italic hidden font-bold">"${ex.spanish_translation}"</p>
                     </div>
@@ -557,6 +572,51 @@ export const VocabularyEngine = {
         if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19' || ex.templateId === '5') {
             setTimeout(() => document.getElementById('type-answer-input')?.focus(), 150);
         }
+    },
+
+    listenLessonVoiceAnswer() {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (!ex) return;
+
+        const targetWord = ex.clean_target || this.cleanString(ex.prompt_text);
+        const statusText = document.getElementById('speaking-status-text');
+        const micBtn = document.getElementById('mic-lesson-btn');
+
+        if (micBtn) micBtn.className = "w-14 h-14 bg-amber-500 text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg animate-pulse transition-all";
+        if (statusText) statusText.innerText = "Escuchando tu voz...";
+
+        startListening(
+            (spokenText) => {
+                stopListening();
+                const cleanSpoken = this.cleanString(spokenText);
+                if (micBtn) micBtn.className = "w-14 h-14 bg-[#23483f] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg transition-all";
+
+                const isMatch = cleanSpoken.includes(targetWord) || targetWord.includes(cleanSpoken);
+
+                if (isMatch) {
+                    if (statusText) {
+                        statusText.className = "text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 mt-1";
+                        statusText.innerText = `Pronunciaste: "${spokenText}" ✓`;
+                    }
+                    this.currentUserState.typedValue = ex.correct_answer;
+                    this.activateCheckButton();
+                } else {
+                    if (statusText) {
+                        statusText.className = "text-xs font-mono font-bold text-rose-500 mt-1";
+                        statusText.innerText = `Escuchado: "${spokenText}". ¡Inténtalo de nuevo!`;
+                    }
+                    this.deactivateCheckButton();
+                }
+            },
+            (error) => {
+                stopListening();
+                if (micBtn) micBtn.className = "w-14 h-14 bg-[#e06a4e] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg transition-all";
+                if (statusText) {
+                    statusText.className = "text-xs font-mono font-bold text-rose-500 mt-1";
+                    statusText.innerText = "No se detectó audio o el micrófono está apagado.";
+                }
+            }
+        );
     },
 
     selectTrueFalse(isTrue) {
@@ -586,9 +646,7 @@ export const VocabularyEngine = {
 
     speakActivePrompt(isSlow = false) {
         const ex = this.exerciseQueue[this.currentQueueIndex];
-        if (ex && ex.prompt_text) {
-            this.speakStrict(ex.prompt_text, isSlow);
-        }
+        if (ex && ex.prompt_text) this.speakStrict(ex.prompt_text, isSlow);
     },
 
     startShadowingBonus() {
@@ -617,7 +675,6 @@ export const VocabularyEngine = {
 
             <div class="flex-grow flex flex-col justify-center w-full max-w-xl mx-auto my-auto p-4 text-center">
                 <div class="card-bg p-6 sm:p-8 rounded-3xl border border-main shadow-md flex flex-col gap-4 relative">
-                    
                     ${currentWord.media_url ? `<img src="${currentWord.media_url}" class="w-24 h-24 mx-auto object-contain my-1" onerror="this.remove()">` : ''}
 
                     <div class="flex flex-col items-center gap-1 my-1">
@@ -694,9 +751,7 @@ export const VocabularyEngine = {
         });
 
         const selectedBtn = document.getElementById(`opt-btn-${index}`);
-        if (selectedBtn) {
-            selectedBtn.className = "option-btn-selected p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
-        }
+        if (selectedBtn) selectedBtn.className = "option-btn-selected p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
 
         this.speakStrict(selectedOpt.text, false);
         this.currentUserState.selectedOptionIndex = index;
@@ -705,20 +760,8 @@ export const VocabularyEngine = {
 
     handleTextInput(value) {
         this.currentUserState.typedValue = value;
-        if (this.cleanString(value).length > 0) {
-            this.activateCheckButton();
-        } else {
-            this.deactivateCheckButton();
-        }
-    },
-
-    simulateSpeakingRecorded() {
-        const ex = this.exerciseQueue[this.currentQueueIndex];
-        const statusText = document.getElementById('speaking-status-text');
-        if (statusText) statusText.innerText = "¡Escuchado correctamente! ✓";
-
-        this.currentUserState.typedValue = ex.correct_answer;
-        this.activateCheckButton();
+        if (this.cleanString(value).length > 0) this.activateCheckButton();
+        else this.deactivateCheckButton();
     },
 
     activateCheckButton() {
@@ -757,10 +800,8 @@ export const VocabularyEngine = {
 
         if (isCorrect) {
             this.totalHitsInLesson++;
-
             if (ProgressManager.updateSkillMastery) {
-                const points = this.isReviewMode ? 0.5 : 1.5;
-                ProgressManager.updateSkillMastery(tmplSkills, points);
+                ProgressManager.updateSkillMastery(tmplSkills, this.isReviewMode ? 0.5 : 1.5);
             }
 
             if (cardContainer) cardContainer.classList.add('animate-correct');
@@ -780,7 +821,6 @@ export const VocabularyEngine = {
             }
 
             this.totalErrorsInLesson++;
-
             if (ProgressManager.updateSkillMastery) {
                 ProgressManager.updateSkillMastery(tmplSkills, -1.0);
             }
@@ -790,9 +830,7 @@ export const VocabularyEngine = {
                 checkBtn.innerText = "INCORRECTO - REINTENTANDO AL FINAL";
             }
 
-            if (!this.failedQueue.includes(ex)) {
-                this.failedQueue.push({ ...ex });
-            }
+            if (!this.failedQueue.includes(ex)) this.failedQueue.push({ ...ex });
 
             setTimeout(() => {
                 this.currentQueueIndex++;
@@ -803,9 +841,7 @@ export const VocabularyEngine = {
 
     markAsKnown() {
         const ex = this.exerciseQueue[this.currentQueueIndex];
-        if (ex && ex.prompt_text) {
-            this.knownWordsInBlock.add(ex.prompt_text);
-        }
+        if (ex && ex.prompt_text) this.knownWordsInBlock.add(ex.prompt_text);
         this.totalHitsInLesson++;
         this.currentQueueIndex++;
         this.loopEngine();
@@ -819,17 +855,13 @@ export const VocabularyEngine = {
                 onConfirm: () => {
                     const deck = document.getElementById('lesson-interactive-deck');
                     if (deck) deck.classList.add('hidden');
-                    if (typeof window.renderHomeLessonsModule === 'function') {
-                        window.renderHomeLessonsModule();
-                    }
+                    if (typeof window.renderHomeLessonsModule === 'function') window.renderHomeLessonsModule();
                 }
             });
         } else {
             const deck = document.getElementById('lesson-interactive-deck');
             if (deck) deck.classList.add('hidden');
-            if (typeof window.renderHomeLessonsModule === 'function') {
-                window.renderHomeLessonsModule();
-            }
+            if (typeof window.renderHomeLessonsModule === 'function') window.renderHomeLessonsModule();
         }
     },
 
@@ -863,8 +895,8 @@ export const VocabularyEngine = {
         ProgressManager.completeBubble(this.currentBubbleType);
 
         deck.innerHTML = `
-            <div class="flex-grow flex flex-col items-center justify-center p-4">
-                <div class="card-bg p-7 rounded-3xl border border-main shadow-2xl max-w-sm w-full text-center font-mono">
+            <div class="flex-grow flex flex-col items-center justify-center p-4 font-mono">
+                <div class="card-bg p-7 rounded-3xl border border-main shadow-2xl max-w-sm w-full text-center">
                     <span class="text-[9px] text-muted font-bold tracking-widest block uppercase mb-1">// REPORTE DE LECCIÓN ${levelTag} //</span>
                     <h3 class="text-xl font-black text-[#23483f] dark:text-emerald-400 mt-1">🏆 ¡LECCIÓN FINALIZADA!</h3>
                     
@@ -907,4 +939,4 @@ export const VocabularyEngine = {
 };
 
 window.VocabularyEngine = VocabularyEngine;
-window.speakStrict = (text, isSlow = false) => VocabularyEngine.speakStrict(text, isSlow);
+export default VocabularyEngine;
