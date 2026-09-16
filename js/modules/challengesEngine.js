@@ -1,5 +1,5 @@
 // ==========================================================================
-// ⚡ LUKES ACADEMY - CHALLENGES & REAL GAMES ENGINE v4.3 (TEMPORIZADOR & SILENT SEQUENCE)
+// ⚡ LUKES ACADEMY - CHALLENGES & REAL GAMES ENGINE v6.0 (3-LESSONS LOCK)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
 import { ProgressManager } from './progressManager.js';
@@ -38,7 +38,13 @@ export const ChallengesEngine = {
         deck.classList.remove('hidden');
         const userPaws = ProgressManager?.state?.stats?.paws || 0;
         const learnedWords = this.getLearnedWordsPool();
+        const learnedWordsCount = learnedWords.length;
         const imageWordsCount = learnedWords.filter(w => w.hasImage !== false && !!w.media_url).length;
+        const isCardLinked = ProgressManager?.state?.is_gold_card_linked || false;
+
+        // 🔒 BLOQUEO HASTA COMPLETAR 3 LECCIONES (O 15 PALABRAS APRENDIDAS)
+        const completedBubblesCount = ProgressManager?.state?.completed_bubbles?.length || 0;
+        const isArenaUnlocked = completedBubblesCount >= 3 || learnedWordsCount >= 15;
 
         deck.innerHTML = `
             <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0 font-mono">
@@ -59,55 +65,69 @@ export const ChallengesEngine = {
             <div class="flex-grow flex flex-col justify-start sm:justify-center w-full max-w-4xl mx-auto my-auto p-2 sm:p-4 overflow-hidden">
                 <div class="card-bg w-full h-full sm:h-auto max-h-[82vh] p-4 sm:p-6 rounded-3xl border border-main shadow-md flex flex-col gap-5 relative font-mono overflow-y-auto custom-scrollbar">
                     
+                    <!-- BLOQUE DESAFÍOS DIARIOS -->
                     <div class="flex flex-col gap-2.5 border-b border-main/10 pb-4">
-                        <div class="text-left">
-                            <span class="text-xs font-bold text-main uppercase tracking-wider block">DESAFÍOS DIARIOS DE HOY (3)</span>
-                            <span class="text-[10px] text-muted block">Gana Paws demostrando el nivel de retención de tus palabras aprendidas:</span>
+                        <div class="text-left flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-bold text-main uppercase tracking-wider block">DESAFÍOS DIARIOS DE HOY (3)</span>
+                                <span class="text-[10px] text-muted block">Gana Paws demostrando el nivel de retención de tus palabras aprendidas:</span>
+                            </div>
+                            ${!isArenaUnlocked ? `<span class="text-[9px] bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 font-bold px-2.5 py-1 rounded-lg uppercase">🔒 Requiere 3 lecciones completadas (${Math.min(3, completedBubblesCount)}/3)</span>` : ''}
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-1">
-                            <div onclick="window.ChallengesEngine.startDailyChallenge('lesson_a')" 
-                                 class="subcard-bg border border-main hover:border-[#e06a4e] p-3.5 rounded-2xl cursor-pointer transition-all flex justify-between items-center group">
-                                <div class="text-left">
-                                    <span class="text-[8px] font-mono font-bold text-[#e06a4e] uppercase">// DESAFÍO 1</span>
-                                    <h4 class="font-black text-xs text-main uppercase mt-0.5">Lección Exprés 1</h4>
-                                    <p class="text-[9px] text-muted">Acierta 10 palabras aprendidas</p>
+                            ${isArenaUnlocked ? `
+                                <div onclick="window.ChallengesEngine.startDailyChallenge('lesson_a')" 
+                                     class="subcard-bg border border-main hover:border-[#e06a4e] p-3.5 rounded-2xl cursor-pointer transition-all flex justify-between items-center group">
+                                    <div class="text-left">
+                                        <span class="text-[8px] font-mono font-bold text-[#e06a4e] uppercase">// DESAFÍO 1</span>
+                                        <h4 class="font-black text-xs text-main uppercase mt-0.5">Lección Exprés 1</h4>
+                                        <p class="text-[9px] text-muted">Acierta 10 palabras aprendidas</p>
+                                    </div>
+                                    <span class="text-base group-hover:scale-110 transition-transform">🎯</span>
                                 </div>
-                                <span class="text-base group-hover:scale-110 transition-transform">🎯</span>
-                            </div>
 
-                            <div onclick="window.ChallengesEngine.startDailyChallenge('lesson_b')" 
-                                 class="subcard-bg border border-main hover:border-[#e06a4e] p-3.5 rounded-2xl cursor-pointer transition-all flex justify-between items-center group">
-                                <div class="text-left">
-                                    <span class="text-[8px] font-mono font-bold text-[#e06a4e] uppercase">// DESAFÍO 2</span>
-                                    <h4 class="font-black text-xs text-main uppercase mt-0.5">Lección Exprés 2</h4>
-                                    <p class="text-[9px] text-muted">Reto de precisión escrita</p>
+                                <div onclick="window.ChallengesEngine.startDailyChallenge('lesson_b')" 
+                                     class="subcard-bg border border-main hover:border-[#e06a4e] p-3.5 rounded-2xl cursor-pointer transition-all flex justify-between items-center group">
+                                    <div class="text-left">
+                                        <span class="text-[8px] font-mono font-bold text-[#e06a4e] uppercase">// DESAFÍO 2</span>
+                                        <h4 class="font-black text-xs text-main uppercase mt-0.5">Lección Exprés 2</h4>
+                                        <p class="text-[9px] text-muted">Reto de precisión escrita</p>
+                                    </div>
+                                    <span class="text-base group-hover:scale-110 transition-transform">✍️</span>
                                 </div>
-                                <span class="text-base group-hover:scale-110 transition-transform">✍️</span>
-                            </div>
 
-                            <div onclick="window.ChallengesEngine.startRandomGameChallenge()" 
-                                 class="subcard-bg border border-main hover:border-[#e06a4e] p-3.5 rounded-2xl cursor-pointer transition-all flex justify-between items-center group">
-                                <div class="text-left">
-                                    <span class="text-[8px] font-mono font-bold text-[#e06a4e] uppercase">// DESAFÍO 3</span>
-                                    <h4 class="font-black text-xs text-main uppercase mt-0.5">Juego Diario</h4>
-                                    <p class="text-[9px] text-muted">Reto al azar sin costo de Paws</p>
+                                <div onclick="window.ChallengesEngine.startRandomGameChallenge()" 
+                                     class="subcard-bg border border-main hover:border-[#e06a4e] p-3.5 rounded-2xl cursor-pointer transition-all flex justify-between items-center group">
+                                    <div class="text-left">
+                                        <span class="text-[8px] font-mono font-bold text-[#e06a4e] uppercase">// DESAFÍO 3</span>
+                                        <h4 class="font-black text-xs text-main uppercase mt-0.5">Juego Diario</h4>
+                                        <p class="text-[9px] text-muted">Reto al azar sin costo de Paws</p>
+                                    </div>
+                                    <span class="text-base group-hover:scale-110 transition-transform">🎲</span>
                                 </div>
-                                <span class="text-base group-hover:scale-110 transition-transform">🎲</span>
-                            </div>
+                            ` : `
+                                <div class="col-span-3 subcard-bg border border-dashed border-main/30 p-4 rounded-2xl text-center flex flex-col items-center gap-1 opacity-60">
+                                    <span class="text-2xl">🔒</span>
+                                    <span class="font-bold text-xs text-main uppercase">Arena Bloqueada</span>
+                                    <span class="text-[10px] text-muted">Completa tus primeras 3 lecciones en el mapa para desbloquear los desafíos (${Math.min(3, completedBubblesCount)}/3 lecciones finalizadas).</span>
+                                </div>
+                            `}
                         </div>
                     </div>
 
+                    <!-- BLOQUE MINIJUEGOS -->
                     <div class="flex flex-col gap-2.5">
                         <div class="text-left flex justify-between items-center">
                             <div>
                                 <span class="text-xs font-bold text-main uppercase tracking-wider block">🎮 MINIJUEGOS (SIN TIEMPO NI PRISA)</span>
                                 <span class="text-[10px] text-muted block">Juega libremente pagando con Paws. Sin recompensas monetarias.</span>
                             </div>
+                            ${!isCardLinked ? `<span class="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-bold px-2 py-1 rounded-lg uppercase">💳 Requiere vincular Tarjeta Gold</span>` : ''}
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <button onclick="window.ChallengesEngine.launchWordSearchGame(3)" 
+                            <button onclick="window.ChallengesEngine.handleGameClick('wordsearch', 3)" 
                                     class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
                                 <span class="text-lg">🔍</span>
                                 <span class="font-black text-[10px] uppercase">Sopa de Letras</span>
@@ -115,7 +135,7 @@ export const ChallengesEngine = {
                             </button>
 
                             ${imageWordsCount >= 5 ? `
-                                <button onclick="window.ChallengesEngine.launchCrosswordGame(3)" 
+                                <button onclick="window.ChallengesEngine.handleGameClick('crossword', 3)" 
                                         class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
                                     <span class="text-lg">🧩</span>
                                     <span class="font-black text-[10px] uppercase">Crucigrama</span>
@@ -129,7 +149,7 @@ export const ChallengesEngine = {
                                 </div>
                             `}
 
-                            <button onclick="window.ChallengesEngine.launchHangmanGame(2)" 
+                            <button onclick="window.ChallengesEngine.handleGameClick('hangman', 2)" 
                                     class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
                                 <span class="text-lg">🔤</span>
                                 <span class="font-black text-[10px] uppercase">Ahorcado</span>
@@ -137,7 +157,7 @@ export const ChallengesEngine = {
                             </button>
 
                             ${imageWordsCount >= 4 ? `
-                                <button onclick="window.ChallengesEngine.launchMemoryGame(1)" 
+                                <button onclick="window.ChallengesEngine.handleGameClick('memory', 1)" 
                                         class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
                                     <span class="text-lg">🃏</span>
                                     <span class="font-black text-[10px] uppercase">Memorama</span>
@@ -158,12 +178,118 @@ export const ChallengesEngine = {
         `;
     },
 
+    handleGameClick(gameType, cost) {
+        const isCardLinked = ProgressManager?.state?.is_gold_card_linked || false;
+
+        if (!isCardLinked) {
+            this.renderCardAssociationModal(gameType, cost);
+            return;
+        }
+
+        this.executeLaunchGame(gameType, cost);
+    },
+
+    renderCardAssociationModal(pendingGameType, pendingCost) {
+        const user = window.AppState?.user || { name: 'ESTUDIANTE LUKES' };
+        const studentName = (user.name || 'ESTUDIANTE').toUpperCase();
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (!deck) return;
+
+        deck.innerHTML = `
+            <div class="w-full flex justify-between items-center border-b border-main pb-2 z-10 shrink-0 font-mono">
+                <span class="text-xs font-black uppercase text-[#23483f] dark:text-white">💳 ACTIVACIÓN DE TARJETA VIRTUAL GOLD</span>
+                <button onclick="window.ChallengesEngine.openChallengesHub()" class="bg-[#23483f] text-white text-[9px] px-3 py-1.5 rounded-lg uppercase font-black cursor-pointer">
+                    CANCELAR ✕
+                </button>
+            </div>
+
+            <div class="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 text-center font-mono my-auto">
+                <div class="card-bg p-5 rounded-3xl border border-main shadow-2xl max-w-md w-full flex flex-col gap-4 relative">
+                    
+                    <div class="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 rounded-2xl p-4 text-stone-900 shadow-lg text-left relative overflow-hidden border border-amber-300">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-stone-900">LUKES GOLD CARD 🐾</span>
+                            <span class="text-xs font-black italic">VIRTUAL</span>
+                        </div>
+                        <div class="mt-4 text-center font-mono font-black text-sm tracking-widest text-stone-950">
+                            4892 •••• •••• 9012
+                        </div>
+                        <div class="mt-4 flex justify-between items-end text-[9px] font-bold uppercase">
+                            <div>
+                                <span class="block text-[7px] text-stone-800">TITULAR DE LA TARJETA</span>
+                                <span class="font-black text-stone-950">${studentName}</span>
+                            </div>
+                            <div>
+                                <span class="block text-[7px] text-stone-800">EXPIRA</span>
+                                <span class="font-black text-stone-950">12/28</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-left">
+                        <h4 class="font-black text-xs uppercase text-main">Asocia tu tarjeta para compras en la tienda</h4>
+                        <p class="text-[10px] text-muted">Transcribe los datos visibles de tu tarjeta virtual para asociarla a tu cuenta de estudiante (Simulación educativa).</p>
+                    </div>
+
+                    <form id="gold-card-form" onsubmit="window.ChallengesEngine.submitCardAssociation(event, '${pendingGameType}', ${pendingCost})" class="flex flex-col gap-2.5 text-left">
+                        <div>
+                            <label class="text-[9px] font-bold text-muted uppercase block mb-0.5">Nombre del Titular:</label>
+                            <input type="text" required id="card-input-name" placeholder="${studentName}" value="${studentName}" class="w-full subcard-bg border border-main rounded-xl p-2.5 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-[9px] font-bold text-muted uppercase block mb-0.5">Número de Tarjeta (16 dígitos):</label>
+                                <input type="text" required id="card-input-number" maxlength="16" placeholder="4892000000009012" class="w-full subcard-bg border border-main rounded-xl p-2.5 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                            </div>
+                            <div>
+                                <label class="text-[9px] font-bold text-muted uppercase block mb-0.5">Código CVV (3 dígitos):</label>
+                                <input type="text" required id="card-input-cvv" maxlength="3" placeholder="789" class="w-full subcard-bg border border-main rounded-xl p-2.5 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full mt-2 bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md">
+                            Asociar Tarjeta Gold a la Plataforma ➔
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+        `;
+    },
+
+    submitCardAssociation(event, pendingGameType, pendingCost) {
+        event.preventDefault();
+        
+        if (ProgressManager.state) {
+            ProgressManager.state.is_gold_card_linked = true;
+            ProgressManager.syncToSupabase();
+        }
+
+        if (typeof window.showToast === 'function') {
+            window.showToast("💳 ¡Tarjeta Lukes Gold asociada con éxito!", "success");
+        }
+
+        if (window.confetti) window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
+
+        setTimeout(() => {
+            this.executeLaunchGame(pendingGameType, pendingCost);
+        }, 800);
+    },
+
+    executeLaunchGame(gameType, cost) {
+        if (gameType === 'wordsearch') this.launchWordSearchGame(cost);
+        else if (gameType === 'hangman') this.launchHangmanGame(cost);
+        else if (gameType === 'crossword') this.launchCrosswordGame(cost);
+        else if (gameType === 'memory') this.launchMemoryGame(cost);
+    },
+
     startDailyChallenge(type) {
         const learnedWords = this.getLearnedWordsPool();
 
-        if (learnedWords.length < 3) {
+        if (learnedWords.length < 5) {
             if (typeof window.showToast === 'function') {
-                window.showToast("🔒 Completa primero tus primeras lecciones en el Mapa para generar Desafíos.", "warning");
+                window.showToast("🔒 Completa primero 3 lecciones en el Mapa para generar Desafíos.", "warning");
             }
             return;
         }
@@ -192,8 +318,7 @@ export const ChallengesEngine = {
     startRandomGameChallenge() {
         const games = ['wordsearch', 'hangman'];
         const randomGame = games[Math.floor(Math.random() * games.length)];
-        if (randomGame === 'wordsearch') this.launchWordSearchGame(0);
-        else this.launchHangmanGame(0);
+        this.handleGameClick(randomGame, 0);
     },
 
     startTimer() {
@@ -240,7 +365,6 @@ export const ChallengesEngine = {
                 <div class="flex items-center gap-3">
                     <span class="text-xs font-black uppercase text-[#23483f] dark:text-white">DESAFÍO ${this.currentIndex + 1}/${this.totalQuestions}</span>
                     
-                    <!-- TEMPORIZADOR VISIBLE DESTACADO -->
                     <span id="challenge-timer-display" class="text-xs bg-[#e06a4e] text-white px-3 py-1 rounded-full font-black shadow-xs">
                         ⏱️ ${mins}:${secs < 10 ? '0' : ''}${secs}
                     </span>
@@ -313,7 +437,6 @@ export const ChallengesEngine = {
                 btn.innerText = "¡CORRECTO! ✓";
             }
 
-            // Transición limpia sin locución "great"
             setTimeout(() => {
                 this.currentIndex++;
                 this.renderChallengeQuestion();
