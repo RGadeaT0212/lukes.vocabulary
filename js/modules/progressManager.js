@@ -1,5 +1,5 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - PROGRESS MANAGER (REAL-TIME SUPABASE SYNC) v59.1
+// 🪐 LUKES ACADEMY - PROGRESS MANAGER (REAL-TIME SUPABASE SYNC) v60.0
 // ==========================================================================
 import { supabase } from './supabaseClient.js';
 
@@ -16,25 +16,20 @@ export const ProgressManager = {
             currentLevel: 'A1'
         },
         skill_mastery: {
-            listening: 50,
-            reading: 50,
-            writing: 50,
-            speaking: 50
+            listening: 0,
+            reading: 0,
+            writing: 0,
+            speaking: 0
         },
-        completed_bubbles: [],
+        completed_bubbles: [], // 👈 Estado inicial completamente limpio
         completed_blocks: {},
         mastered_words_ids: [],
         claimed_missions: [],
         completed_speaking_session: 0,
-        spaced_repetition: {
-            low: [],
-            medium: [],
-            high: [],
-            schedule: {}
-        }
+        spaced_repetition: { low: [], medium: [], high: [], schedule: {} }
     },
 
-    // 🧹 RESET COMPLETO DE PROGRESO AL CERRAR SESIÓN
+    // 🧹 PURGA Y RESET ABSOLUTO DE CACHÉ LOCAL Y MEMORIA
     resetProgressState() {
         this.state = {
             student_id: null,
@@ -45,12 +40,7 @@ export const ProgressManager = {
                 paws: 0,
                 currentLevel: 'A1'
             },
-            skill_mastery: {
-                listening: 0,
-                reading: 0,
-                writing: 0,
-                speaking: 0
-            },
+            skill_mastery: { listening: 0, reading: 0, writing: 0, speaking: 0 },
             completed_bubbles: [],
             completed_blocks: {},
             mastered_words_ids: [],
@@ -60,10 +50,11 @@ export const ProgressManager = {
         };
 
         try {
-            localStorage.removeItem(CACHE_KEY);
+            localStorage.clear(); // 🧹 Purga total del almacenamiento del navegador
             if (window.AppState) {
                 window.AppState.studentStats = this.state.stats;
-                window.AppState.completedBubbles = new Set([]);
+                window.AppState.completedBubbles = new Set();
+                window.AppState.homeBubbleIndex = 0;
             }
         } catch (e) {
             console.error('[ProgressManager] Error al limpiar caché:', e);
@@ -74,20 +65,21 @@ export const ProgressManager = {
     async init() {
         try {
             const { data: { user } } = await supabase.auth.getUser();
+            
+            // Si es un invitado / no hay usuario autenticado
             if (!user) {
                 const localData = localStorage.getItem(CACHE_KEY);
-                if (localData) this.state = JSON.parse(localData);
+                if (localData) {
+                    this.state = JSON.parse(localData);
+                } else {
+                    this.state.completed_bubbles = [];
+                }
                 this.ensureLevelFormat();
                 this.refreshUI();
                 return this.state;
             }
 
             this.state.student_id = user.id;
-
-            const localData = localStorage.getItem(CACHE_KEY);
-            if (localData) {
-                this.state = JSON.parse(localData);
-            }
 
             const { data, error } = await supabase
                 .from('student_progress')
@@ -104,19 +96,17 @@ export const ProgressManager = {
 
             if (data) {
                 const remoteBubbles = data.completed_bubbles || [];
-                const localBubbles = this.state.completed_bubbles || [];
-                const mergedBubbles = Array.from(new Set([...remoteBubbles, ...localBubbles]));
-
+                
                 this.state = {
                     student_id: data.student_id,
                     stats: data.stats || this.state.stats,
-                    skill_mastery: data.skill_mastery || this.state.skill_mastery || { listening: 50, reading: 50, writing: 50, speaking: 50 },
-                    completed_bubbles: mergedBubbles,
-                    completed_blocks: data.completed_blocks || this.state.completed_blocks,
-                    mastered_words_ids: data.mastered_words_ids || this.state.mastered_words_ids,
-                    claimed_missions: data.claimed_missions || this.state.claimed_missions || [],
-                    completed_speaking_session: data.completed_speaking_session || this.state.completed_speaking_session || 0,
-                    spaced_repetition: data.spaced_repetition || this.state.spaced_repetition
+                    skill_mastery: data.skill_mastery || { listening: 0, reading: 0, writing: 0, speaking: 0 },
+                    completed_bubbles: remoteBubbles,
+                    completed_blocks: data.completed_blocks || {},
+                    mastered_words_ids: data.mastered_words_ids || [],
+                    claimed_missions: data.claimed_missions || [],
+                    completed_speaking_session: data.completed_speaking_session || 0,
+                    spaced_repetition: data.spaced_repetition || { low: [], medium: [], high: [], schedule: {} }
                 };
 
                 this.state.stats.wordsLearned = this.state.mastered_words_ids.length;
@@ -125,6 +115,8 @@ export const ProgressManager = {
                 this.ensureLevelFormat();
                 this.saveToLocal();
             } else {
+                // CUANTA NUEVA EN SUPABASE: Iniciar con estado Cero limpio
+                this.state.completed_bubbles = [];
                 this.ensureLevelFormat();
                 await this.syncToSupabase();
             }
@@ -201,7 +193,7 @@ export const ProgressManager = {
 
     updateSkillMastery(skills = [], delta = 1.0) {
         if (!this.state.skill_mastery) {
-            this.state.skill_mastery = { listening: 50, reading: 50, writing: 50, speaking: 50 };
+            this.state.skill_mastery = { listening: 0, reading: 0, writing: 0, speaking: 0 };
         }
 
         skills.forEach(skill => {
