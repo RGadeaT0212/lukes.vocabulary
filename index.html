@@ -2,7 +2,8 @@
 <html lang="es" class="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Viewport optimizado para evitar zoom accidental por doble clic en móviles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <!-- SEO Principal / Motores de Búsqueda -->
     <title>Lukes English Academy - Aprende Vocabulario en Inglés Rápido</title>
@@ -24,7 +25,7 @@
     <meta name="twitter:description" content="Aprende y retén vocabulario en inglés con un método acelerado e interactivo.">
     <meta name="twitter:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
 
-    <!-- Datos Estructurados JSON-LD (Lectura Directa para IAs y Búsquedas Inteligentes) -->
+    <!-- Datos Estructurados JSON-LD -->
     <script type="application/ld+json">
     {
      "@context": "https://schema.org",
@@ -65,7 +66,7 @@
     <!-- HOJA DE ESTILOS CENTRALIZADA -->
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="font-sans h-screen w-screen flex flex-col md:flex-row select-none app-bg text-main overflow-hidden">
+<body class="font-sans h-[100dvh] w-screen flex flex-col md:flex-row select-none app-bg text-main overflow-hidden [touch-action:manipulation]">
 
     <!-- 0. SPLASH SCREEN DE CARGA -->
     <div id="app-splash-screen" class="fixed inset-0 app-bg z-50 flex flex-col items-center justify-center pointer-events-auto splash-morph">
@@ -113,14 +114,25 @@
                     <i class="fa-solid fa-microphone text-sm"></i>
                     <span>Speaking</span>
                 </button>
-                <button onclick="window.openMissionsManager()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-muted font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left">
-                    <i class="fa-solid fa-bullseye text-sm"></i>
-                    <span>Misiones</span>
+
+                <!-- BOTÓN MISIONES DESKTOP (CON BADGE !) -->
+                <button onclick="window.openMissionsManager()" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-muted font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-bullseye text-sm"></i>
+                        <span>Misiones</span>
+                    </div>
+                    <span id="missions-badge-desktop" class="hidden"></span>
                 </button>
-                <button onclick="window.openChallengesManager()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-muted font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left">
-                    <i class="fa-solid fa-gamepad text-sm"></i>
-                    <span>Desafíos</span>
+
+                <!-- BOTÓN DESAFÍOS DESKTOP (CON BADGE !) -->
+                <button onclick="window.openChallengesManager()" class="nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-muted font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-gamepad text-sm"></i>
+                        <span>Desafíos</span>
+                    </div>
+                    <span id="challenges-badge-desktop" class="hidden"></span>
                 </button>
+
                 <!-- BOTÓN TUTORIAL EN DESKTOP -->
                 <button onclick="window.I18nManager.startInteractiveTutorial()" class="nav-btn flex items-center gap-3 px-4 py-3 rounded-xl text-amber-600 dark:text-amber-400 font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left border border-amber-500/20 subcard-bg mt-1">
                     <i class="fa-solid fa-graduation-cap text-sm"></i>
@@ -175,7 +187,7 @@
         </div>
     </aside>
 
-    <!-- HEADER MÓVIL -->
+    <!-- HEADER MÓVIL FIJO (shrink-0 e inamovible) -->
     <header class="md:hidden w-full card-bg border-b border-main px-4 py-2 flex items-center justify-between shadow-xs shrink-0 z-30 transition-colors">
         <div class="flex items-center">
             <img src="assets/lukes-academy-logo.svg" class="h-11 sm:h-12 w-auto object-contain" alt="Lukes English Academy">
@@ -202,7 +214,7 @@
         </div>
     </header>
 
-    <!-- 2. CONTENEDOR PRINCIPAL CON SCROLL INDEPENDIENTE EN MÓVIL -->
+    <!-- 2. CONTENEDOR PRINCIPAL CON SCROLL INTERNO ÚNICO EN MÓVIL (flex-1) -->
     <main class="flex-1 overflow-y-auto md:overflow-hidden w-full p-3 sm:p-5 flex flex-col justify-between gap-4 max-w-5xl mx-auto md:mx-0 md:pr-12 custom-scrollbar">
 
         <!-- CARRUSEL PUBLICITARIO -->
@@ -217,7 +229,7 @@
         <section class="w-full card-bg border border-main rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs flex flex-col gap-3 transition-colors">
             <div class="w-full flex justify-between items-center border-b border-main pb-2">
                 <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-mono font-bold text-muted uppercase">// TEMA ACTUAL:</span>
+                    <span class="text-[9px] font-mono font-bold text-muted uppercase"></span>
                     <h3 id="home-category-title" class="title-brand font-black text-sm sm:text-lg text-main uppercase tracking-tight">EXPRESSIONS</h3>
                 </div>
 
@@ -260,19 +272,25 @@
             </div>
 
             <div onclick="window.openMissionsManager()" 
-                 class="card-bg card-hover border border-main border-b-4 border-b-[#23483f] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 shadow-xs cursor-pointer transition-all active:translate-y-0.5">
-                <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#23483f] dark:text-[#8b9690] text-xs sm:text-sm shrink-0 border border-main">
-                    <i class="fa-solid fa-bullseye"></i>
+                 class="card-bg card-hover border border-main border-b-4 border-b-[#23483f] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#23483f] dark:text-[#8b9690] text-xs sm:text-sm shrink-0 border border-main">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Misiones</span>
                 </div>
-                <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Misiones</span>
+                <span id="missions-badge-mobile" class="hidden"></span>
             </div>
 
             <div onclick="window.openChallengesManager()" 
-                 class="card-bg card-hover border border-main border-b-4 border-b-[#d4a373] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 shadow-xs cursor-pointer transition-all active:translate-y-0.5">
-                <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#d4a373] text-xs sm:text-sm shrink-0 border border-main">
-                    <i class="fa-solid fa-trophy"></i>
+                 class="card-bg card-hover border border-main border-b-4 border-b-[#d4a373] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#d4a373] text-xs sm:text-sm shrink-0 border border-main">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Desafíos</span>
                 </div>
-                <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Desafíos</span>
+                <span id="challenges-badge-mobile" class="hidden"></span>
             </div>
         </section>
 
@@ -282,9 +300,9 @@
                 <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle-progress" stroke="#23483f" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle-progress" stroke="#23483f" stroke-dasharray="0, 100" id="circle-words-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
-                    <span id="stat-words-learned" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0</span>
+                    <span id="stat-words-learned" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
                 </div>
                 <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Aprendidas</span>
             </div>
@@ -293,7 +311,7 @@
                 <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle-progress" stroke="#d4a373" stroke-dasharray="80, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle-progress" stroke="#d4a373" stroke-dasharray="0, 100" id="circle-challenges-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
                     <span id="stat-challenges-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0</span>
                 </div>
@@ -304,9 +322,9 @@
                 <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
                     <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                         <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle-progress" stroke="#e06a4e" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="circle-progress" stroke="#e06a4e" stroke-dasharray="0, 100" id="circle-missions-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     </svg>
-                    <span id="stat-missions-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0</span>
+                    <span id="stat-missions-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
                 </div>
                 <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Misiones</span>
             </div>
@@ -314,7 +332,7 @@
 
     </main>
 
-    <!-- FOOTER MÓVIL -->
+    <!-- FOOTER MÓVIL FIJO (shrink-0, visible en el pie de pantalla) -->
     <footer class="md:hidden card-bg border-t border-main py-2 w-full shrink-0 shadow-md z-30 transition-colors">
         <nav class="flex justify-around items-center">
             <button onclick="window.location.reload()" class="flex flex-col items-center text-main cursor-pointer">
@@ -401,7 +419,7 @@
             <button onclick="window.closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer transition-all">✕</button>
 
             <div>
-                <span class="text-[9px] font-mono text-muted font-bold uppercase tracking-widest">// LUKES ENGLISH ACADEMY</span>
+                <span class="text-[9px] font-mono text-muted font-bold uppercase tracking-widest">LUKES ENGLISH ACADEMY</span>
                 <h2 id="auth-modal-title" class="title-brand font-black text-xl text-main uppercase tracking-tight mt-1">Iniciar Sesión</h2>
             </div>
 
@@ -422,7 +440,7 @@
                 </p>
                 <div class="subcard-bg p-3 rounded-xl border border-main/20 text-[10px] text-muted flex items-center gap-2 mt-2 w-full justify-center">
                     <i class="fa-solid fa-circle-notch animate-spin text-[#e06a4e]"></i>
-                    <span>Esperando confirmación en tiempo real...</span>
+                    <span>Esperando confirmación <del></del> correo electrónico..</span>
                 </div>
             </div>
 
@@ -436,13 +454,13 @@
 
                     <div>
                         <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Correo Electrónico:</label>
-                        <input type="email" id="auth-email-input" required placeholder="correo@ejemplo.com" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                        <input type="email" id="auth-email-input" required placeholder="correo@ejemplo.com" autocomplete="email" class="w-full subcard-bg border border-main rounded-xl p-3 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
                     </div>
 
                     <div class="relative">
                         <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Contraseña:</label>
                         <div class="relative w-full">
-                            <input type="password" id="auth-password-input" required placeholder="••••••••" class="w-full subcard-bg border border-main rounded-xl p-3 pr-10 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                            <input type="password" id="auth-password-input" required placeholder="••••••••" autocomplete="new-password" class="w-full subcard-bg border border-main rounded-xl p-3 pr-10 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
                             <button type="button" onclick="window.togglePasswordVisibility('auth-password-input', 'eye-icon-pass')" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted cursor-pointer hover:text-main">
                                 <i id="eye-icon-pass" class="fa-solid fa-eye text-xs"></i>
                             </button>
@@ -452,7 +470,7 @@
                     <div id="field-confirm-group" class="hidden relative">
                         <label class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Confirmar Contraseña:</label>
                         <div class="relative w-full">
-                            <input type="password" id="auth-confirm-input" placeholder="••••••••" class="w-full subcard-bg border border-main rounded-xl p-3 pr-10 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
+                            <input type="password" id="auth-confirm-input" placeholder="••••••••" autocomplete="new-password" class="w-full subcard-bg border border-main rounded-xl p-3 pr-10 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e] transition-colors">
                             <button type="button" onclick="window.togglePasswordVisibility('auth-confirm-input', 'eye-icon-confirm')" class="absolute right-3 top-1/2 -translate-y-1/2 text-muted cursor-pointer hover:text-main">
                                 <i id="eye-icon-confirm" class="fa-solid fa-eye text-xs"></i>
                             </button>
