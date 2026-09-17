@@ -1,15 +1,16 @@
 // ==========================================================================
-// MOTOR NATIVO DE RECONOCIMIENTO DE VOZ (WEB SPEECH RECOGNITION API)
+// 🎙️ MOTOR NATIVO DE RECONOCIMIENTO DE VOZ OPTIMIZADO PARA MÓVILES Y DESKTOP
 // ==========================================================================
 
 let recognition = null;
+let isListeningActive = false;
 
 /**
  * Inicializa y configura el motor de escucha del micrófono de forma nativa.
  * @returns {Object|null} Instancia del reconocedor de voz configurada.
  */
 function initSpeechRecognition() {
-    // 1. Validar compatibilidad entre navegadores (Webkit para Chrome/Safari/Edge)
+    // 1. Compatibilidad Multi-Navegador (Chrome / Safari iOS / Edge / Android)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
@@ -19,58 +20,95 @@ function initSpeechRecognition() {
 
     const instance = new SpeechRecognition();
     
-    // 2. Ajustes de captura fonética
-    instance.lang = 'en-US';              // Forzamos la captura en inglés americano nativo
-    instance.continuous = false;          // Detiene la escucha automáticamente cuando el alumno hace una pausa larga
-    instance.interimResults = false;       // Solo nos interesa el resultado final procesado, no los borradores en tiempo real
+    // 2. Ajustes de captura fonética para teléfonos móviles
+    instance.lang = 'en-US';              // Captura en inglés americano
+    instance.continuous = false;          // Finaliza tras capturar la frase
+    instance.interimResults = false;       // Solo procesa el resultado final procesado
+    instance.maxAlternatives = 1;          // Coincidencia con mayor índice de confianza
 
     return instance;
 }
 
 /**
  * Escucha al usuario a través del micrófono y devuelve el texto procesado.
- * @param {Function} onResultCallback - Función que recibe el texto final pronunciado por el alumno.
- * @param {Function} onErrorCallback - Función que captura errores de hardware (micrófono apagado, bloqueo de permisos, etc).
+ * @param {Function} onResultCallback - Recibe el texto final pronunciado.
+ * @param {Function} onErrorCallback - Captura errores de hardware o silencios.
  */
 export function startListening(onResultCallback, onErrorCallback) {
     if (!recognition) {
         recognition = initSpeechRecognition();
     }
 
-    if (!recognition) return;
+    if (!recognition) {
+        if (onErrorCallback) onErrorCallback("not-supported");
+        return;
+    }
 
-    // 3. Configurar eventos de captura de datos
+    // Si la captura estaba activa en el teléfono, la reseteamos de forma segura
+    if (isListeningActive) {
+        try {
+            recognition.abort();
+        } catch (e) {}
+    }
+
+    // 3. Configurar eventos de captura
     recognition.onstart = () => {
-        console.log("// Micrófono Activo: Escuchando fonemas en inglés...");
+        isListeningActive = true;
+        console.log("// Micrófono Móvil/Desktop Activo: Escuchando...");
     };
 
     recognition.onresult = (event) => {
-        // Extraemos el string de texto de la primera coincidencia con mayor índice de confianza
-        const spokenText = event.results[0][0].transcript;
-        console.log(`// Texto detectado en el canal de entrada: "${spokenText}"`);
-        onResultCallback(spokenText);
+        isListeningActive = false;
+        if (event.results && event.results[0] && event.results[0][0]) {
+            const spokenText = event.results[0][0].transcript;
+            console.log(`// Texto detectado en el canal de entrada: "${spokenText}"`);
+            if (onResultCallback) onResultCallback(spokenText);
+        }
     };
 
     recognition.onerror = (event) => {
-        console.error(`// Fallo en la captura del micrófono [Código: ${event.error}]`);
+        isListeningActive = false;
+        console.error(`// Fallo en captura de micrófono [Código: ${event.error}]`);
         if (onErrorCallback) onErrorCallback(event.error);
     };
 
-    // 4. Encendido del hardware
+    recognition.onend = () => {
+        isListeningActive = false;
+        console.log("// Canal del micrófono cerrado.");
+    };
+
+    // 4. Encendido del hardware en móviles (Invocación directa)
     try {
         recognition.start();
     } catch (e) {
-        // Previene caídas del sistema si el usuario hace clic repetidamente antes de que cierre el ciclo anterior
-        window.speechSynthesis.cancel();
+        isListeningActive = false;
+        // Si el reconocedor estaba colgado, lo abortamos y reiniciamos
+        try {
+            recognition.abort();
+            setTimeout(() => {
+                try { recognition.start(); } catch (err) {}
+            }, 100);
+        } catch (err) {}
     }
 }
 
 /**
- * Apaga forzadamente la captura del micrófono si la lección se cancela.
+ * Apaga forzadamente la captura del micrófono.
  */
 export function stopListening() {
-    if (recognition) {
-        recognition.stop();
+    if (recognition && isListeningActive) {
+        try {
+            recognition.stop();
+        } catch(e) {}
+        isListeningActive = false;
         console.log("// Canal del micrófono cerrado de forma segura.");
     }
 }
+
+export const SpeechEngine = {
+    startListening,
+    stopListening
+};
+
+window.SpeechEngine = SpeechEngine;
+export default SpeechEngine;
