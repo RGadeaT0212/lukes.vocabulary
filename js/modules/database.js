@@ -1,4 +1,4 @@
-const SUPABASE_BASE_URL = "https://ylhjsbeliblhzkquxjss.supabase.co/storage/v1/object/public/vocabulary-pics";
+const SUPABASE_BASE_URL = "https://ylhjsbeliblhzkquxjss.supabase.co/storage/v1/object/public/vocabulary-pics/";
 
 // ==========================================================================
 // 1. TAXONOMÍA OFICIAL
@@ -74,17 +74,17 @@ export const RAW_VOCABULARIO = [
     [24, "House", "Casa", "Living Places", "house_part", 1, true],
     [25, "Apartment", "Apartamento", "Living Places", "house_part", 1, true],
 
-    [26, "Father", "Papá", "Close Family", "personal_data", 1, true],
-    [27, "Mother", "Mamá", "Close Family", "personal_data", 1, true],
-    [28, "Sister", "Hermana", "Close Family", "personal_data", 1, true],
-    [29, "Brother", "Hermano", "Close Family", "personal_data", 1, true],
-    [30, "Baby", "Bebé", "Close Family", "personal_data", 1, true],
+    [26, "Father", "Papá", "Close Family", "people", 1, true],
+    [27, "Mother", "Mamá", "Close Family", "people", 1, true],
+    [28, "Sister", "Hermana", "Close Family", "people", 1, true],
+    [29, "Brother", "Hermano", "Close Family", "people", 1, true],
+    [30, "Baby", "Bebé", "Close Family", "people", 1, true],
 
-    [31, "Grandma", "Abuela", "Extended Family", "personal_data", 1, true],
-    [32, "Grandpa", "Abuelo", "Extended Family", "personal_data", 1, true],
-    [33, "Aunt", "Tía", "Extended Family", "personal_data", 1, true],
-    [34, "Uncle", "Tío", "Extended Family", "personal_data", 1, true],
-    [35, "Cousin", "Primo/a", "Extended Family", "personal_data", 1, true],
+    [31, "Grandma", "Abuela", "Extended Family", "people", 1, true],
+    [32, "Grandpa", "Abuelo", "Extended Family", "people", 1, true],
+    [33, "Aunt", "Tía", "Extended Family", "people", 1, true],
+    [34, "Uncle", "Tío", "Extended Family", "people", 1, true],
+    [35, "Cousin", "Primo/a", "Extended Family", "people", 1, true],
 
     [36, "Zero", "Cero", "Basic Numbers 1", "numbers_basic", 1, false],
     [37, "One", "Uno", "Basic Numbers 1", "numbers_basic", 1, false],
