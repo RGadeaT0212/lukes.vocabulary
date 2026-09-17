@@ -1,5 +1,5 @@
 // ==========================================================================
-// 🪐 VOCABULARY ENGINE v63.0 (PERCENTAGE-BASED GENERATOR & STRICT SEQUENCING)
+// 🪐 VOCABULARY ENGINE v72.0 (STRICT SHADOWING SPACE-FIX & SMOOTH MAP TRANSITION)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
 import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
@@ -69,12 +69,32 @@ export const VocabularyEngine = {
             .replace(/\s+/g, " ");
     },
 
-    // 🌐 CARGA DE VOCABULARIO FILTRADO POR NIVEL E IDIOMA DE APRENDIZAJE
+    advanceIntroCard() {
+        this.currentQueueIndex++;
+        this.loopEngine();
+    },
+
+    speakActivePrompt(isSlow = false) {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (ex && ex.prompt_text) {
+            this.speakStrict(ex.prompt_text, isSlow);
+        }
+    },
+
+    revealSpanishTranslation() {
+        const text = document.getElementById('spanish-translation-text');
+        const container = document.getElementById('spanish-translation-container');
+        if (text && container) {
+            text.classList.remove('hidden');
+            const btn = container.querySelector('button');
+            if (btn) btn.classList.add('hidden');
+        }
+    },
+
     loadGymCategories(levelFilter = null) {
         this.selectedLevel = levelFilter || window.AppState?.activeLevel || 'A1';
         const targetLang = window.AppState?.targetLanguage || I18nManager?.targetLang || 'en';
 
-        // Filtrado por Nivel y por Idioma de Destino (soporte multilingüe extensible)
         const filteredWords = VOCABULARY_DATABASE.filter(w => {
             const matchesLevel = String(w.level || w.euroLevel || 'A1').toUpperCase() === String(this.selectedLevel).toUpperCase();
             const matchesLang = w.lang ? String(w.lang).toLowerCase() === String(targetLang).toLowerCase() : true;
@@ -119,12 +139,10 @@ export const VocabularyEngine = {
         this.loopEngine();
     },
 
-    // 🎯 CONSTRUCCIÓN DE LA COLA SEGÚN LA MATRIZ DE PORCENTAJES COGNITIVOS EXACTA
     buildExerciseQueue() {
         let targetWords = [...this.currentBlockWords];
         this.exerciseQueue = [];
 
-        // 1. Fase Introductoria (L1)
         if (this.currentSubLesson === 1) {
             targetWords.forEach(word => {
                 const cleanWord = this.cleanString(word.english_word || word.word);
@@ -136,31 +154,33 @@ export const VocabularyEngine = {
                     clean_target: cleanWord,
                     spanish_translation: word.spanish,
                     hasImage: word.hasImage !== false && !!word.media_url,
-                    media_url: word.media_url
+                    media_url: word.media_url,
+                    time: 0
                 });
             });
         }
 
-        // 2. Definición exacta de proporciones según la Sublección (Matriz Pedagógica)
+        let totalLessonTimeGoal = 360;
         let goalDistribution = [];
+
         if (this.currentSubLesson === 1) {
-            // Sublección L1: 60% recognize, 40% associate
+            totalLessonTimeGoal = 360;
             goalDistribution = [
-                { goal: 'recognize', count: 6 },
-                { goal: 'associate', count: 4 }
+                { goal: 'recognize', ratio: 0.60 },
+                { goal: 'associate', ratio: 0.40 }
             ];
         } else if (this.currentSubLesson === 2) {
-            // Sublección L2: 30% recognize, 40% associate, 30% recall
+            totalLessonTimeGoal = 420;
             goalDistribution = [
-                { goal: 'recognize', count: 3 },
-                { goal: 'associate', count: 4 },
-                { goal: 'recall', count: 3 }
+                { goal: 'recognize', ratio: 0.30 },
+                { goal: 'associate', ratio: 0.40 },
+                { goal: 'recall', ratio: 0.30 }
             ];
         } else if (this.currentSubLesson === 3) {
-            // Sublección L3: 40% recall, 60% produce
+            totalLessonTimeGoal = 480;
             goalDistribution = [
-                { goal: 'recall', count: 4 },
-                { goal: 'produce', count: 6 }
+                { goal: 'recall', ratio: 0.40 },
+                { goal: 'produce', ratio: 0.60 }
             ];
         }
 
@@ -169,28 +189,28 @@ export const VocabularyEngine = {
         let templateHistory = [];
         let wordPointer = 0;
 
-        // Bucle Secuencial que genera los ejercicios respetando el porcentaje estricto de cada meta
-        goalDistribution.forEach(phaseSpec => {
-            for (let i = 0; i < phaseSpec.count; i++) {
-                const word = targetWords[wordPointer % targetWords.length];
-                wordPointer++;
+        const isBasicLevel = ['A1', 'A2'].includes(currentLevelTag);
+        const distractorCount = isBasicLevel ? 1 : 3;
 
+        goalDistribution.forEach(phaseSpec => {
+            const targetPhaseTime = Math.round(totalLessonTimeGoal * phaseSpec.ratio);
+            let accumulatedPhaseTime = 0;
+
+            while (accumulatedPhaseTime < targetPhaseTime) {
+                const word = targetWords[wordPointer % targetWords.length];
                 const cleanTarget = this.cleanString(word.english_word || word.word);
 
-                // Filtrado de Plantillas Disponibles para la Meta Activa
-                const availableIDs = allTemplateKeys.filter(id => {
+                const validCandidates = allTemplateKeys.filter(id => {
                     const tmpl = VOCABULARY_TEMPLATES[id];
 
                     if (tmpl.goal.toLowerCase() !== phaseSpec.goal.toLowerCase()) return false;
                     if (!tmpl.level.includes(currentLevelTag)) return false;
                     if (word.hasImage === false && tmpl.require_image) return false;
 
-                    // Exclusión estricta de plantillas orales si el micrófono está apagado
                     if (!this.canUserSpeakNow && (tmpl.type === 'speaking' || tmpl.type === 'audio_input')) {
                         return false;
                     }
 
-                    // CONTROL ESTRICTO DE REPETICIÓN CONSECUTIVA (max_consecutive)
                     const maxCons = Number(tmpl.max_consecutive) || 2;
                     const hLen = templateHistory.length;
                     let consecutiveCount = 0;
@@ -198,30 +218,33 @@ export const VocabularyEngine = {
                         if (String(templateHistory[j]) === String(id)) consecutiveCount++;
                         else break;
                     }
-                    
                     return consecutiveCount < maxCons;
                 });
 
                 let chosenID = null;
 
-                if (availableIDs.length > 0) {
-                    chosenID = availableIDs[Math.floor(Math.random() * availableIDs.length)];
+                if (validCandidates.length > 0) {
+                    chosenID = validCandidates[Math.floor(Math.random() * validCandidates.length)];
                 } else {
-                    // Selección de reserva manteniendo la meta cognitiva activa
-                    const candidates = allTemplateKeys.filter(id => {
+                    const lastUsed = templateHistory[templateHistory.length - 1];
+                    const alternativeCandidates = allTemplateKeys.filter(id => {
                         const tmpl = VOCABULARY_TEMPLATES[id];
                         if (tmpl.goal.toLowerCase() !== phaseSpec.goal.toLowerCase()) return false;
                         if (!this.canUserSpeakNow && (tmpl.type === 'speaking' || tmpl.type === 'audio_input')) return false;
-                        return true;
+                        return String(id) !== String(lastUsed);
                     });
-                    chosenID = candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : '1';
+
+                    chosenID = alternativeCandidates.length > 0 
+                        ? alternativeCandidates[Math.floor(Math.random() * alternativeCandidates.length)]
+                        : (lastUsed === '1' ? '2' : '1');
                 }
 
                 templateHistory.push(String(chosenID));
                 const chosenTemplate = VOCABULARY_TEMPLATES[chosenID];
+                const templateDuration = Number(chosenTemplate.time) || 20;
 
-                const isBasicLevel = ['A1', 'A2'].includes(currentLevelTag);
-                const distractorCount = isBasicLevel ? 1 : 3;
+                wordPointer++;
+                accumulatedPhaseTime += templateDuration;
 
                 const blockDistractors = targetWords
                     .filter(w => this.cleanString(w.english_word || w.word) !== cleanTarget)
@@ -245,12 +268,16 @@ export const VocabularyEngine = {
                     spanish: w.spanish
                 })).sort(() => 0.5 - Math.random());
 
+                // PREPARACIÓN DE FICHAS TÁCTILES EXTRAIENDO ÚNICAMENTE CARACTERES ALFANUMÉRICOS
+                const wordUpperClean = (word.english_word || word.word).toUpperCase().replace(/[^A-Z0-9]/g, '');
+                const scrambledTiles = wordUpperClean.split('').sort(() => 0.5 - Math.random());
+
                 this.exerciseQueue.push({
                     type: chosenTemplate.type,
                     templateId: String(chosenTemplate.id),
                     goal: chosenTemplate.goal,
                     skills: chosenTemplate.skills,
-                    time: chosenTemplate.time,
+                    time: templateDuration,
                     word,
                     prompt_text: word.english_word || word.word,
                     clean_target: cleanTarget,
@@ -259,6 +286,7 @@ export const VocabularyEngine = {
                     media_url: word.media_url,
                     options: formattedOptions,
                     blockOptions: fullBlockOptions,
+                    scrambledTiles,
                     correct_answer: cleanTarget
                 });
             }
@@ -271,7 +299,10 @@ export const VocabularyEngine = {
     toggleSpeechMode(canSpeak) {
         this.canUserSpeakNow = canSpeak;
         this.showToast(canSpeak ? "🎙️ Micrófono Activado" : "⌨️ Modo Teclado Activado", "info");
+        
+        const currentIndexBackup = this.currentQueueIndex;
         this.buildExerciseQueue();
+        this.currentQueueIndex = Math.min(currentIndexBackup, this.exerciseQueue.length - 1);
         this.loopEngine();
     },
 
@@ -304,7 +335,7 @@ export const VocabularyEngine = {
             }
         }
 
-        this.currentUserState = { selectedOptionIndex: null, typedValue: '', tfValue: null };
+        this.currentUserState = { selectedOptionIndex: null, typedValue: '', tfValue: null, placedTiles: [] };
         const ex = this.exerciseQueue[this.currentQueueIndex];
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
@@ -394,7 +425,36 @@ export const VocabularyEngine = {
         // FASE EJERCICIOS INTERACTIVOS
         let exerciseInteractiveBody = '';
 
-        if (ex.templateId === '18' || ex.templateId === '19') {
+        if (ex.type === 'shadowing_text' || ex.type === 'shadowing_image') {
+            const targetCleanLetters = ex.prompt_text.toUpperCase().replace(/[^A-Z0-9]/g, '').split('');
+
+            exerciseInteractiveBody = `
+                <div class="flex flex-col items-center gap-3 mt-2 font-mono">
+                    <span class="text-[9px] font-bold text-muted uppercase tracking-wider">// ORDENA LAS FICHAS SIGUIENDO LA GUÍA OPACHA:</span>
+                    
+                    <div id="shadowing-boxes-container" class="flex flex-wrap justify-center gap-1.5 my-1">
+                        ${targetCleanLetters.map((letter, idx) => `
+                            <div id="shadow-box-${idx}" 
+                                 onclick="window.VocabularyEngine.removeTactileTile(${idx})"
+                                 class="w-10 h-12 border-2 border-dashed border-main/40 rounded-xl flex items-center justify-center font-black text-xl text-main/30 uppercase subcard-bg cursor-pointer transition-all">
+                                ${letter}
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div id="tiles-bank-container" class="flex flex-wrap justify-center gap-2 mt-2 p-3 subcard-bg border border-main rounded-2xl w-full">
+                        ${ex.scrambledTiles.map((tileLetter, tileIdx) => `
+                            <button id="tile-btn-${tileIdx}" 
+                                    type="button"
+                                    onclick="window.VocabularyEngine.pickTactileTile('${tileLetter}', ${tileIdx})" 
+                                    class="w-10 h-10 bg-[#23483f] hover:bg-[#19322b] text-white font-black text-base rounded-xl cursor-pointer shadow-md active:scale-95 transition-all">
+                                ${tileLetter}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        } else if (ex.templateId === '18' || ex.templateId === '19') {
             const wordBankHtml = ex.blockOptions.map(opt => `
                 <div class="flex items-center gap-1.5 subcard-bg border border-main px-2.5 py-1.5 rounded-xl shadow-2xs">
                     <button type="button" onclick="window.VocabularyEngine.speakStrict('${opt.text}')" 
@@ -433,41 +493,30 @@ export const VocabularyEngine = {
                     </button>
                 </div>
             `;
-        } else if (ex.templateId === '16') {
-            const fullWord = ex.prompt_text;
-            const splitPoint = Math.ceil(fullWord.length / 2);
-            const firstChunk = fullWord.slice(0, splitPoint);
-            const correctSecondChunk = fullWord.slice(splitPoint);
-
-            const chunkOptions = [correctSecondChunk, 'ing', 'ed', 'er'].filter((v, i, a) => a.indexOf(v) === i).sort(() => 0.5 - Math.random());
-
+        } else if (ex.type === 'choice_audio_audio' || ex.type === 'choice_image_audio') {
             exerciseInteractiveBody = `
-                <div class="flex flex-col items-center gap-3 mt-2">
-                    <div class="flex items-center justify-center gap-2 text-xl sm:text-2xl font-mono font-black text-main">
-                        <span class="bg-[#23483f] text-white px-3 py-1 rounded-xl">${firstChunk}</span>
-                        <span class="text-muted">+</span>
-                        <span id="chunk-placeholder" class="border-b-2 border-dashed border-[#e06a4e] px-3 py-1 text-[#e06a4e]">???</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 w-full mt-2">
-                        ${chunkOptions.map((chk, idx) => `
-                            <button id="chunk-btn-${idx}" onclick="window.VocabularyEngine.selectChunkOption(${idx}, '${chk}')" 
-                                    class="option-btn-default p-3 rounded-xl font-mono text-xs font-bold cursor-pointer">
-                                ${chk}
-                            </button>
-                        `).join('')}
-                    </div>
+                <div class="grid grid-cols-2 gap-3 mt-2">
+                    ${ex.options.map((opt, idx) => `
+                        <button id="opt-btn-${idx}" onclick="window.VocabularyEngine.selectAudioOption(${idx}, '${opt.text}')" 
+                                class="option-btn-default p-4 rounded-2xl flex flex-col items-center gap-2 cursor-pointer">
+                            <div class="w-10 h-10 bg-[#23483f] text-white rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-volume-high text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-mono font-bold text-muted">Opción ${idx + 1}</span>
+                        </button>
+                    `).join('')}
                 </div>
             `;
-        } else if (ex.templateId === '5') {
-            const maskedWord = ex.prompt_text.replace(/[aeiouAEIOU]/g, '_');
+        } else if (ex.type === 'choice_text_image') {
             exerciseInteractiveBody = `
-                <div class="flex flex-col gap-2 mt-2">
-                    <span class="text-2xl font-mono font-black text-main tracking-widest text-center">${maskedWord}</span>
-                    <input type="text" id="type-answer-input" autocomplete="off" placeholder="Completa la palabra..." 
-                           oninput="window.VocabularyEngine.handleTextInput(this.value)"
-                           onkeypress="if(event.key==='Enter' && !document.getElementById('check-answer-btn').disabled) window.VocabularyEngine.executeCheckAnswer()"
-                           class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-xs sm:text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
+                <div class="grid grid-cols-2 gap-3 mt-2">
+                    ${ex.options.map((opt, idx) => `
+                        <button id="opt-btn-${idx}" onclick="window.VocabularyEngine.selectOptionWithTTS(${idx})" 
+                                class="option-btn-default p-2 rounded-2xl flex flex-col items-center gap-1 cursor-pointer">
+                            ${opt.media_url ? `<img src="${opt.media_url}" class="w-16 h-16 object-contain mx-auto" onerror="this.remove()">` : ''}
+                            <span class="text-xs font-mono font-bold text-main truncate">${opt.text}</span>
+                        </button>
+                    `).join('')}
                 </div>
             `;
         } else if (ex.type === 'input') {
@@ -569,8 +618,79 @@ export const VocabularyEngine = {
         `;
 
         this.speakStrict(ex.prompt_text, false);
-        if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19' || ex.templateId === '5') {
+        if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19') {
             setTimeout(() => document.getElementById('type-answer-input')?.focus(), 150);
+        }
+    },
+
+    pickTactileTile(letter, tileIdx) {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (!ex) return;
+
+        if (!this.currentUserState.placedTiles) this.currentUserState.placedTiles = [];
+        const placed = this.currentUserState.placedTiles;
+
+        const targetCleanLetters = ex.prompt_text.toUpperCase().replace(/[^A-Z0-9]/g, '').split('');
+        if (placed.length >= targetCleanLetters.length) return;
+
+        placed.push({ letter, tileIdx });
+
+        const tileBtn = document.getElementById(`tile-btn-${tileIdx}`);
+        if (tileBtn) tileBtn.classList.add('invisible', 'pointer-events-none');
+
+        this.updateShadowingBoxesDisplay(targetCleanLetters.join(''));
+    },
+
+    removeTactileTile(boxIdx) {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (!ex || !this.currentUserState.placedTiles) return;
+
+        const placed = this.currentUserState.placedTiles;
+        if (boxIdx >= placed.length) return;
+
+        const removedItem = placed.splice(boxIdx, 1)[0];
+
+        if (removedItem) {
+            const tileBtn = document.getElementById(`tile-btn-${removedItem.tileIdx}`);
+            if (tileBtn) tileBtn.classList.remove('invisible', 'pointer-events-none');
+        }
+
+        const targetCleanLetters = ex.prompt_text.toUpperCase().replace(/[^A-Z0-9]/g, '').split('');
+        this.updateShadowingBoxesDisplay(targetCleanLetters.join(''));
+    },
+
+    updateShadowingBoxesDisplay(targetCleanString) {
+        const placed = this.currentUserState.placedTiles || [];
+        const lettersArray = targetCleanString.split('');
+
+        let currentString = '';
+
+        lettersArray.forEach((originalLetter, idx) => {
+            const box = document.getElementById(`shadow-box-${idx}`);
+            if (!box) return;
+
+            if (idx < placed.length) {
+                const userLetter = placed[idx].letter;
+                currentString += userLetter;
+                box.textContent = userLetter;
+
+                if (userLetter === originalLetter) {
+                    box.className = "w-10 h-12 border-2 border-emerald-500 rounded-xl flex items-center justify-center font-black text-xl text-emerald-600 dark:text-emerald-400 uppercase bg-emerald-500/10 shadow-xs cursor-pointer";
+                } else {
+                    box.className = "w-10 h-12 border-2 border-rose-500 rounded-xl flex items-center justify-center font-black text-xl text-rose-500 uppercase bg-rose-500/10 shadow-xs cursor-pointer";
+                }
+            } else {
+                box.textContent = originalLetter;
+                box.className = "w-10 h-12 border-2 border-dashed border-main/40 rounded-xl flex items-center justify-center font-black text-xl text-main/30 uppercase subcard-bg cursor-pointer transition-all";
+            }
+        });
+
+        this.currentUserState.typedValue = currentString;
+
+        if (currentString === targetCleanString) {
+            this.activateCheckButton();
+        } else {
+            this.deactivateCheckButton();
         }
     },
 
@@ -631,22 +751,123 @@ export const VocabularyEngine = {
         this.activateCheckButton();
     },
 
-    selectChunkOption(index, chunkValue) {
+    selectAudioOption(index, optionText) {
         const ex = this.exerciseQueue[this.currentQueueIndex];
-        const placeholder = document.getElementById('chunk-placeholder');
-        if (placeholder) placeholder.innerText = chunkValue;
+        if (!ex) return;
 
-        const fullWord = ex.prompt_text;
-        const splitPoint = Math.ceil(fullWord.length / 2);
-        const firstChunk = fullWord.slice(0, splitPoint);
+        ex.options.forEach((_, idx) => {
+            const btn = document.getElementById(`opt-btn-${idx}`);
+            if (btn) btn.className = "option-btn-default p-4 rounded-2xl flex flex-col items-center gap-2 cursor-pointer";
+        });
 
-        this.currentUserState.typedValue = firstChunk + chunkValue;
+        const selectedBtn = document.getElementById(`opt-btn-${index}`);
+        if (selectedBtn) selectedBtn.className = "option-btn-selected p-4 rounded-2xl flex flex-col items-center gap-2 cursor-pointer";
+
+        this.speakStrict(optionText, false);
+        this.currentUserState.selectedOptionIndex = index;
         this.activateCheckButton();
     },
 
-    speakActivePrompt(isSlow = false) {
+    selectOptionWithTTS(index) {
         const ex = this.exerciseQueue[this.currentQueueIndex];
-        if (ex && ex.prompt_text) this.speakStrict(ex.prompt_text, isSlow);
+        const selectedOpt = ex.options[index];
+        if (!selectedOpt) return;
+
+        ex.options.forEach((_, idx) => {
+            const btn = document.getElementById(`opt-btn-${idx}`);
+            if (btn) btn.className = "option-btn-default p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
+        });
+
+        const selectedBtn = document.getElementById(`opt-btn-${index}`);
+        if (selectedBtn) selectedBtn.className = "option-btn-selected p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
+
+        this.speakStrict(selectedOpt.text, false);
+        this.currentUserState.selectedOptionIndex = index;
+        this.activateCheckButton();
+    },
+
+    handleTextInput(value) {
+        this.currentUserState.typedValue = value;
+        if (this.cleanString(value).length > 0) this.activateCheckButton();
+        else this.deactivateCheckButton();
+    },
+
+    activateCheckButton() {
+        const btn = document.getElementById('check-answer-btn');
+        if (btn) {
+            btn.disabled = false;
+            btn.className = "w-full mt-2 bg-[#e06a4e] hover:bg-[#c8573b] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-xs active:scale-98";
+        }
+    },
+
+    deactivateCheckButton() {
+        const btn = document.getElementById('check-answer-btn');
+        if (btn) {
+            btn.disabled = true;
+            btn.className = "w-full mt-2 subcard-bg text-muted font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider cursor-not-allowed";
+        }
+    },
+
+    executeCheckAnswer() {
+        const ex = this.exerciseQueue[this.currentQueueIndex];
+        let isCorrect = false;
+
+        if (ex.templateId === '29' || ex.templateId === '30') {
+            isCorrect = this.currentUserState.tfValue === true;
+        } else if (ex.type === 'shadowing_text' || ex.type === 'shadowing_image') {
+            const targetClean = ex.prompt_text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            isCorrect = this.currentUserState.typedValue === targetClean;
+        } else if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19' || ex.type === 'speaking' || ex.type === 'audio_input') {
+            const typedClean = this.cleanString(this.currentUserState.typedValue);
+            isCorrect = typedClean === ex.correct_answer;
+        } else {
+            const selectedOpt = ex.options[this.currentUserState.selectedOptionIndex];
+            isCorrect = selectedOpt && selectedOpt.cleanText === ex.correct_answer;
+        }
+
+        const checkBtn = document.getElementById('check-answer-btn');
+        const cardContainer = document.getElementById('exercise-card-container');
+        const tmplSkills = ex.skills || ['reading'];
+
+        if (isCorrect) {
+            this.totalHitsInLesson++;
+            if (ProgressManager.updateSkillMastery) {
+                ProgressManager.updateSkillMastery(tmplSkills, this.isReviewMode ? 0.5 : 1.5);
+            }
+
+            if (cardContainer) cardContainer.classList.add('animate-correct');
+            if (checkBtn) {
+                checkBtn.className = "w-full mt-2 bg-[#23483f] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider shadow-md";
+                checkBtn.innerText = "CORRECT! ✓";
+            }
+
+            setTimeout(() => {
+                this.currentQueueIndex++;
+                this.loopEngine();
+            }, 650);
+        } else {
+            if (cardContainer) {
+                cardContainer.classList.add('animate-shake');
+                setTimeout(() => cardContainer.classList.remove('animate-shake'), 400);
+            }
+
+            this.totalErrorsInLesson++;
+            if (ProgressManager.updateSkillMastery) {
+                ProgressManager.updateSkillMastery(tmplSkills, -1.0);
+            }
+
+            if (checkBtn) {
+                checkBtn.className = "w-full mt-2 bg-rose-500 text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider";
+                checkBtn.innerText = "INCORRECTO - REINTENTANDO AL FINAL";
+            }
+
+            if (!this.failedQueue.includes(ex)) this.failedQueue.push({ ...ex });
+
+            setTimeout(() => {
+                this.currentQueueIndex++;
+                this.loopEngine();
+            }, 1100);
+        }
     },
 
     startShadowingBonus() {
@@ -723,120 +944,6 @@ export const VocabularyEngine = {
     advanceShadowingBonus() {
         this.currentQueueIndex++;
         this.loopEngine();
-    },
-
-    advanceIntroCard() {
-        this.currentQueueIndex++;
-        this.loopEngine();
-    },
-
-    revealSpanishTranslation() {
-        const text = document.getElementById('spanish-translation-text');
-        const container = document.getElementById('spanish-translation-container');
-        if (text && container) {
-            text.classList.remove('hidden');
-            const btn = container.querySelector('button');
-            if (btn) btn.classList.add('hidden');
-        }
-    },
-
-    selectOptionWithTTS(index) {
-        const ex = this.exerciseQueue[this.currentQueueIndex];
-        const selectedOpt = ex.options[index];
-        if (!selectedOpt) return;
-
-        ex.options.forEach((_, idx) => {
-            const btn = document.getElementById(`opt-btn-${idx}`);
-            if (btn) btn.className = "option-btn-default p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
-        });
-
-        const selectedBtn = document.getElementById(`opt-btn-${index}`);
-        if (selectedBtn) selectedBtn.className = "option-btn-selected p-3 sm:p-3.5 rounded-xl font-mono text-xs font-bold cursor-pointer truncate";
-
-        this.speakStrict(selectedOpt.text, false);
-        this.currentUserState.selectedOptionIndex = index;
-        this.activateCheckButton();
-    },
-
-    handleTextInput(value) {
-        this.currentUserState.typedValue = value;
-        if (this.cleanString(value).length > 0) this.activateCheckButton();
-        else this.deactivateCheckButton();
-    },
-
-    activateCheckButton() {
-        const btn = document.getElementById('check-answer-btn');
-        if (btn) {
-            btn.disabled = false;
-            btn.className = "w-full mt-2 bg-[#e06a4e] hover:bg-[#c8573b] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-xs active:scale-98";
-        }
-    },
-
-    deactivateCheckButton() {
-        const btn = document.getElementById('check-answer-btn');
-        if (btn) {
-            btn.disabled = true;
-            btn.className = "w-full mt-2 subcard-bg text-muted font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider cursor-not-allowed";
-        }
-    },
-
-    executeCheckAnswer() {
-        const ex = this.exerciseQueue[this.currentQueueIndex];
-        let isCorrect = false;
-
-        if (ex.templateId === '29' || ex.templateId === '30') {
-            isCorrect = this.currentUserState.tfValue === true;
-        } else if (ex.type === 'input' || ex.templateId === '18' || ex.templateId === '19' || ex.templateId === '5' || ex.templateId === '16' || ex.type === 'speaking' || ex.type === 'audio_input') {
-            const typedClean = this.cleanString(this.currentUserState.typedValue);
-            isCorrect = typedClean === ex.correct_answer;
-        } else {
-            const selectedOpt = ex.options[this.currentUserState.selectedOptionIndex];
-            isCorrect = selectedOpt && selectedOpt.cleanText === ex.correct_answer;
-        }
-
-        const checkBtn = document.getElementById('check-answer-btn');
-        const cardContainer = document.getElementById('exercise-card-container');
-        const tmplSkills = ex.skills || ['reading'];
-
-        if (isCorrect) {
-            this.totalHitsInLesson++;
-            if (ProgressManager.updateSkillMastery) {
-                ProgressManager.updateSkillMastery(tmplSkills, this.isReviewMode ? 0.5 : 1.5);
-            }
-
-            if (cardContainer) cardContainer.classList.add('animate-correct');
-            if (checkBtn) {
-                checkBtn.className = "w-full mt-2 bg-[#23483f] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider shadow-md";
-                checkBtn.innerText = "CORRECT! ✓";
-            }
-
-            setTimeout(() => {
-                this.currentQueueIndex++;
-                this.loopEngine();
-            }, 650);
-        } else {
-            if (cardContainer) {
-                cardContainer.classList.add('animate-shake');
-                setTimeout(() => cardContainer.classList.remove('animate-shake'), 400);
-            }
-
-            this.totalErrorsInLesson++;
-            if (ProgressManager.updateSkillMastery) {
-                ProgressManager.updateSkillMastery(tmplSkills, -1.0);
-            }
-
-            if (checkBtn) {
-                checkBtn.className = "w-full mt-2 bg-rose-500 text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider";
-                checkBtn.innerText = "INCORRECTO - REINTENTANDO AL FINAL";
-            }
-
-            if (!this.failedQueue.includes(ex)) this.failedQueue.push({ ...ex });
-
-            setTimeout(() => {
-                this.currentQueueIndex++;
-                this.loopEngine();
-            }, 1100);
-        }
     },
 
     markAsKnown() {
@@ -916,22 +1023,24 @@ export const VocabularyEngine = {
                     </div>
 
                     <button onclick="window.VocabularyEngine.exitLessonWithTransition()" 
-                            class="bg-[#23483f] hover:bg-[#19322b] text-white font-bold text-xs py-4 px-6 rounded-xl cursor-pointer uppercase w-full shadow-md transition-all active:scale-95">
+                            class="bg-[#23483f] hover:bg-[#19322b] text-white font-bold text-xs py-4 px-6 rounded-xl uppercase w-full shadow-md transition-all active:scale-95">
                         Continuar al Mapa ➔
                     </button>
                 </div>
             </div>
         `;
 
-        if (window.confetti) window.confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+        if (window.confetti) window.confetti({ particleCount: 110, spread: 90, origin: { y: 0.55 } });
     },
 
     exitLessonWithTransition() {
         const deck = document.getElementById('lesson-interactive-deck');
         if (deck) deck.classList.add('hidden');
 
+        const nextBubble = Number(this.currentBubbleType) + 1;
+
         if (typeof window.triggerHomeCarouselTransition === 'function') {
-            window.triggerHomeCarouselTransition(this.currentBubbleType);
+            window.triggerHomeCarouselTransition(nextBubble);
         } else if (typeof window.renderHomeLessonsModule === 'function') {
             window.renderHomeLessonsModule();
         }
