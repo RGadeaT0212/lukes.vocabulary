@@ -51,7 +51,7 @@ export const ProgressManager = {
                 writing: 0,
                 speaking: 0
             },
-            completed_bubbles: [1],
+            completed_bubbles: [],
             completed_blocks: {},
             mastered_words_ids: [],
             claimed_missions: [],
@@ -63,7 +63,7 @@ export const ProgressManager = {
             localStorage.removeItem(CACHE_KEY);
             if (window.AppState) {
                 window.AppState.studentStats = this.state.stats;
-                window.AppState.completedBubbles = new Set([1]);
+                window.AppState.completedBubbles = new Set([]);
             }
         } catch (e) {
             console.error('[ProgressManager] Error al limpiar caché:', e);
@@ -103,8 +103,8 @@ export const ProgressManager = {
             }
 
             if (data) {
-                const remoteBubbles = data.completed_bubbles || [1];
-                const localBubbles = this.state.completed_bubbles || [1];
+                const remoteBubbles = data.completed_bubbles || [];
+                const localBubbles = this.state.completed_bubbles || [];
                 const mergedBubbles = Array.from(new Set([...remoteBubbles, ...localBubbles]));
 
                 this.state = {
