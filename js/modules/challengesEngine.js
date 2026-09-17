@@ -1,5 +1,5 @@
 // ==========================================================================
-// ⚡ LUKES ACADEMY - CHALLENGES & REAL GAMES ENGINE v6.0 (3-LESSONS LOCK)
+// ⚡ LUKES ACADEMY - CHALLENGES & REAL GAMES ENGINE v7.0 (3-LESSONS LOCK)
 // ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
 import { ProgressManager } from './progressManager.js';
@@ -14,7 +14,7 @@ export const ChallengesEngine = {
     lives: 3,
     typedAnswer: '',
     activeChallengeType: null,
-    challengeTimeRemaining: 120, // 2 minutos por desafío
+    challengeTimeRemaining: 120,
     timerInterval: null,
 
     getLearnedWordsPool() {
@@ -38,13 +38,12 @@ export const ChallengesEngine = {
         deck.classList.remove('hidden');
         const userPaws = ProgressManager?.state?.stats?.paws || 0;
         const learnedWords = this.getLearnedWordsPool();
-        const learnedWordsCount = learnedWords.length;
         const imageWordsCount = learnedWords.filter(w => w.hasImage !== false && !!w.media_url).length;
         const isCardLinked = ProgressManager?.state?.is_gold_card_linked || false;
 
-        // 🔒 BLOQUEO HASTA COMPLETAR 3 LECCIONES (O 15 PALABRAS APRENDIDAS)
+        // 🔒 BLOQUEO PRINCIPAL: REQUIERE 3 LECCIONES COMPLETADAS
         const completedBubblesCount = ProgressManager?.state?.completed_bubbles?.length || 0;
-        const isArenaUnlocked = completedBubblesCount >= 3 || learnedWordsCount >= 15;
+        const isArenaUnlocked = completedBubblesCount >= 3;
 
         deck.innerHTML = `
             <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0 font-mono">
@@ -110,7 +109,7 @@ export const ChallengesEngine = {
                                 <div class="col-span-3 subcard-bg border border-dashed border-main/30 p-4 rounded-2xl text-center flex flex-col items-center gap-1 opacity-60">
                                     <span class="text-2xl">🔒</span>
                                     <span class="font-bold text-xs text-main uppercase">Arena Bloqueada</span>
-                                    <span class="text-[10px] text-muted">Completa tus primeras 3 lecciones en el mapa para desbloquear los desafíos (${Math.min(3, completedBubblesCount)}/3 lecciones finalizadas).</span>
+                                    <span class="text-[10px] text-muted">Completa tus primeras 3 lecciones en el mapa para activar la Arena (${Math.min(3, completedBubblesCount)}/3 lecciones finalizadas).</span>
                                 </div>
                             `}
                         </div>
@@ -127,14 +126,22 @@ export const ChallengesEngine = {
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                            <button onclick="window.ChallengesEngine.handleGameClick('wordsearch', 3)" 
-                                    class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
-                                <span class="text-lg">🔍</span>
-                                <span class="font-black text-[10px] uppercase">Sopa de Letras</span>
-                                <span class="text-[8px] text-amber-600 dark:text-amber-400 font-bold">COSTO: 3 PAWS</span>
-                            </button>
+                            ${isArenaUnlocked ? `
+                                <button onclick="window.ChallengesEngine.handleGameClick('wordsearch', 3)" 
+                                        class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
+                                    <span class="text-lg">🔍</span>
+                                    <span class="font-black text-[10px] uppercase">Sopa de Letras</span>
+                                    <span class="text-[8px] text-amber-600 dark:text-amber-400 font-bold">COSTO: 3 PAWS</span>
+                                </button>
+                            ` : `
+                                <div class="bg-gray-100 dark:bg-zinc-800/40 border border-main/20 p-3 rounded-2xl flex flex-col items-center gap-1 opacity-50 cursor-not-allowed text-center">
+                                    <span class="text-lg">🔒</span>
+                                    <span class="font-black text-[10px] uppercase">Sopa de Letras</span>
+                                    <span class="text-[7px] text-muted">Completa 3 lecciones</span>
+                                </div>
+                            `}
 
-                            ${imageWordsCount >= 5 ? `
+                            ${isArenaUnlocked && imageWordsCount >= 5 ? `
                                 <button onclick="window.ChallengesEngine.handleGameClick('crossword', 3)" 
                                         class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
                                     <span class="text-lg">🧩</span>
@@ -145,18 +152,26 @@ export const ChallengesEngine = {
                                 <div class="bg-gray-100 dark:bg-zinc-800/40 border border-main/20 p-3 rounded-2xl flex flex-col items-center gap-1 opacity-50 cursor-not-allowed text-center">
                                     <span class="text-lg">🔒</span>
                                     <span class="font-black text-[10px] uppercase">Crucigrama</span>
-                                    <span class="text-[7px] text-muted">Aprende 5 palabras con imagen (${imageWordsCount}/5)</span>
+                                    <span class="text-[7px] text-muted">${!isArenaUnlocked ? 'Completa 3 lecciones' : `Aprende 5 palabras con imagen (${imageWordsCount}/5)`}</span>
                                 </div>
                             `}
 
-                            <button onclick="window.ChallengesEngine.handleGameClick('hangman', 2)" 
-                                    class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
-                                <span class="text-lg">🔤</span>
-                                <span class="font-black text-[10px] uppercase">Ahorcado</span>
-                                <span class="text-[8px] text-amber-600 dark:text-amber-400 font-bold">COSTO: 2 PAWS</span>
-                            </button>
+                            ${isArenaUnlocked ? `
+                                <button onclick="window.ChallengesEngine.handleGameClick('hangman', 2)" 
+                                        class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
+                                    <span class="text-lg">🔤</span>
+                                    <span class="font-black text-[10px] uppercase">Ahorcado</span>
+                                    <span class="text-[8px] text-amber-600 dark:text-amber-400 font-bold">COSTO: 2 PAWS</span>
+                                </button>
+                            ` : `
+                                <div class="bg-gray-100 dark:bg-zinc-800/40 border border-main/20 p-3 rounded-2xl flex flex-col items-center gap-1 opacity-50 cursor-not-allowed text-center">
+                                    <span class="text-lg">🔒</span>
+                                    <span class="font-black text-[10px] uppercase">Ahorcado</span>
+                                    <span class="text-[7px] text-muted">Completa 3 lecciones</span>
+                                </div>
+                            `}
 
-                            ${imageWordsCount >= 4 ? `
+                            ${isArenaUnlocked && imageWordsCount >= 4 ? `
                                 <button onclick="window.ChallengesEngine.handleGameClick('memory', 1)" 
                                         class="subcard-bg border border-main hover:bg-[#23483f] hover:text-white p-3 rounded-2xl flex flex-col items-center gap-1 cursor-pointer transition-all text-center">
                                     <span class="text-lg">🃏</span>
@@ -167,7 +182,7 @@ export const ChallengesEngine = {
                                 <div class="bg-gray-100 dark:bg-zinc-800/40 border border-main/20 p-3 rounded-2xl flex flex-col items-center gap-1 opacity-50 cursor-not-allowed text-center">
                                     <span class="text-lg">🔒</span>
                                     <span class="font-black text-[10px] uppercase">Memorama</span>
-                                    <span class="text-[7px] text-muted">Aprende 4 palabras con imagen (${imageWordsCount}/4)</span>
+                                    <span class="text-[7px] text-muted">${!isArenaUnlocked ? 'Completa 3 lecciones' : `Aprende 4 palabras con imagen (${imageWordsCount}/4)`}</span>
                                 </div>
                             `}
                         </div>
@@ -286,13 +301,6 @@ export const ChallengesEngine = {
 
     startDailyChallenge(type) {
         const learnedWords = this.getLearnedWordsPool();
-
-        if (learnedWords.length < 5) {
-            if (typeof window.showToast === 'function') {
-                window.showToast("🔒 Completa primero 3 lecciones en el Mapa para generar Desafíos.", "warning");
-            }
-            return;
-        }
 
         this.activeChallengeType = type;
         const selected = [...learnedWords].sort(() => 0.5 - Math.random()).slice(0, 10);
