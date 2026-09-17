@@ -1,5 +1,5 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v61.0 (AUTH & REALTIME SYNC)
+// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v63.0 (PRIVACY & ISOLATED LOCKS)
 // ==========================================================================
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
@@ -29,6 +29,299 @@ const carouselItems = [
     { text: "🔥 PROGRESO REAL: Completa las lecciones para desbloquear el mapa.", tag: "SISTEMA" },
     { text: "Aprende produciendo en inglés y desbloquea las Patitas de Gato 🐾.", tag: "MÉTODO" }
 ];
+
+// 🔔 EVALUADOR DE BADGES / ALERTAS RED DOT (! OBLIGATORIO)
+window.updateAlertBadges = function() {
+    const completedBubblesCount = ProgressManager?.state?.completed_bubbles?.length || 0;
+    const isArenaUnlocked = completedBubblesCount >= 3;
+
+    const missions = MissionsEngine.getMissionList ? MissionsEngine.getMissionList() : [];
+    const claimed = ProgressManager?.state?.claimed_missions || [];
+    const hasUnclaimedMissions = missions.some(m => m.current >= m.target && !claimed.includes(m.id));
+
+    const challengesCompleted = ProgressManager?.state?.stats?.challengesCompleted || 0;
+    const hasPendingChallenges = isArenaUnlocked && challengesCompleted === 0;
+
+    const renderBadge = (elementId, show) => {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        if (show) {
+            el.innerHTML = `<span class="w-4 h-4 bg-rose-500 text-white rounded-full flex items-center justify-center text-[9px] font-black animate-pulse shadow-sm">!</span>`;
+            el.classList.remove('hidden');
+        } else {
+            el.classList.add('hidden');
+        }
+    };
+
+    renderBadge('missions-badge-desktop', hasUnclaimedMissions);
+    renderBadge('missions-badge-mobile', hasUnclaimedMissions);
+    renderBadge('challenges-badge-desktop', hasPendingChallenges);
+    renderBadge('challenges-badge-mobile', hasPendingChallenges);
+};
+
+window.switchAuthTab = function(tab) {
+    currentAuthTab = tab;
+    const title = document.getElementById('auth-modal-title');
+    const btnSubmit = document.getElementById('auth-submit-btn');
+    const nameGroup = document.getElementById('field-name-group');
+    const confirmGroup = document.getElementById('field-confirm-group');
+    const privacyGroup = document.getElementById('field-privacy-group');
+    const formContent = document.getElementById('auth-form-content');
+    const pendingNotice = document.getElementById('auth-pending-notice');
+
+    if (formContent && pendingNotice) {
+        formContent.classList.remove('hidden');
+        pendingNotice.classList.add('hidden');
+    }
+
+    if (tab === 'register') {
+        if (title) title.textContent = "Crear Cuenta";
+        if (btnSubmit) btnSubmit.textContent = "Registrar Cuenta ➔";
+        if (nameGroup) nameGroup.classList.remove('hidden');
+        if (confirmGroup) confirmGroup.classList.remove('hidden');
+        if (privacyGroup) privacyGroup.classList.remove('hidden'); // 👈 Desoculta Política de Privacidad
+    } else {
+        if (title) title.textContent = "Iniciar Sesión";
+        if (btnSubmit) btnSubmit.textContent = "Ingresar a la Plataforma ➔";
+        if (nameGroup) nameGroup.classList.add('hidden');
+        if (confirmGroup) confirmGroup.classList.add('hidden');
+        if (privacyGroup) privacyGroup.classList.add('hidden');
+    }
+};
+
+window.openPrivacyPolicyModal = function() {
+    let modal = document.getElementById('privacy-policy-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'privacy-policy-modal';
+        modal.className = "fixed inset-0 bg-[#1c2321]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 font-mono select-none animate-fade-in";
+        document.body.appendChild(modal);
+    } else {
+        modal.classList.remove('hidden');
+    }
+
+    modal.innerHTML = `
+        <div class="card-bg border border-main text-main w-full max-w-lg rounded-3xl p-6 shadow-2xl flex flex-col gap-4 relative max-h-[85vh] overflow-y-auto custom-scrollbar text-left">
+            <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer">✕</button>
+
+            <div class="border-b border-main/10 pb-3">
+                <span class="text-[9px] text-[#e06a4e] font-bold uppercase tracking-widest">// MARCO LEGAL Y PROTECCIÓN DE DATOS</span>
+                <h3 class="font-black text-base text-main uppercase mt-0.5">Política de Privacidad</h3>
+            </div>
+
+            <div class="flex flex-col gap-3 text-xs text-muted leading-relaxed font-sans">
+                <p>En <strong>Lukes English Academy</strong>, respetamos y protegemos la privacidad de nuestros estudiantes. Esta política describe cómo manejamos tus datos:</p>
+                
+                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
+                    <strong class="text-main uppercase">1. Uso Exclusivo del Correo Electrónico:</strong>
+                    <p>Tu correo electrónico se recopila únicamente para autenticar tu identidad y guardar en tiempo real tu progreso académico, vocabulario aprendido y recompensas.</p>
+                </div>
+
+                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
+                    <strong class="text-main uppercase">2. No Spam y Cero Correos No Deseados:</strong>
+                    <p>No enviamos boletines publicitarios ni correos comerciales. Únicamente recibirás mensajes esenciales del sistema (como enlaces de activación de cuenta o restablecimiento de contraseña).</p>
+                </div>
+
+                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
+                    <strong class="text-main uppercase">3. Confidencialidad y No Compartición:</strong>
+                    <p>Tus datos personales jamás serán vendidos, alquilados ni compartidos con empresas terceras ni anunciantes.</p>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
+                    class="w-full bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md mt-2">
+                Entendido y Cerrar ➔
+            </button>
+        </div>
+    `;
+};
+
+// 🔐 CIERRA SESIÓN CON PURGA ABSOLUTA DE CACHÉ
+window.handleLogout = function() {
+    window.showConfirmModal({
+        title: "¿Cerrar Sesión?",
+        message: "¿Seguro que quieres salir de tu cuenta de estudiante? Se purgará el caché local temporal.",
+        onConfirm: async () => {
+            try {
+                await supabaseClient.auth.signOut();
+                
+                // 🧹 Reset completo de estado y localStorage
+                ProgressManager.resetProgressState();
+                
+                window.AppState = {
+                    user: null,
+                    carouselIndex: 0,
+                    homeBubbleIndex: 0,
+                    activeLevel: 'A1',
+                    activeCategory: 'EXPRESSIONS',
+                    isDarkMode: false,
+                    targetLanguage: 'en',
+                    isFirstLoad: true
+                };
+                
+                updateUI(false);
+                window.updateStatsDisplay();
+                window.renderHomeLessonsModule();
+                window.updateAlertBadges();
+                
+                window.showToast("Sesión cerrada y caché purgado.", 'info');
+            } catch (e) {
+                console.error("Error al cerrar sesión:", e);
+            }
+        }
+    });
+};
+
+function bindAuthEvents() {
+    const form = document.getElementById('auth-form');
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('auth-email-input').value.trim();
+        const password = document.getElementById('auth-password-input').value;
+        const btn = document.getElementById('auth-submit-btn');
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Procesando...`;
+
+        try {
+            if (currentAuthTab === 'register') {
+                const name = document.getElementById('auth-name-input').value.trim();
+                const confirm = document.getElementById('auth-confirm-input').value;
+                const privacyCheck = document.getElementById('auth-privacy-checkbox');
+
+                if (password !== confirm) {
+                    window.showToast("Las contraseñas no coinciden.", 'warning');
+                    btn.disabled = false;
+                    btn.textContent = "Registrar Cuenta ➔";
+                    return;
+                }
+
+                if (privacyCheck && !privacyCheck.checked) {
+                    window.showToast("Debes aceptar la Política de Privacidad para registrarte.", 'warning');
+                    btn.disabled = false;
+                    btn.textContent = "Registrar Cuenta ➔";
+                    return;
+                }
+
+                const redirectUrl = window.location.origin.includes('github.io')
+                    ? `${window.location.origin}/lukes.vocabulary/verify.html`
+                    : `${window.location.origin}/verify.html`;
+
+                const { error } = await supabaseClient.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: { first_name: name || 'Estudiante' },
+                        emailRedirectTo: redirectUrl
+                    }
+                });
+
+                if (error) throw error;
+                showPendingEmailNotice(email);
+            } else {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                // 🧹 Limpieza preventiva antes de cargar los datos de la cuenta que ingresa
+                ProgressManager.resetProgressState();
+
+                window.AppState.user = {
+                    id: data.user.id,
+                    email: data.user.email,
+                    name: data.user.user_metadata?.first_name || data.user.email.split('@')[0]
+                };
+                await ProgressManager.init();
+                updateUI(true);
+                window.showToast(`¡Bienvenido, ${window.AppState.user.name}!`, 'success');
+                window.closeAuthModal();
+                window.updateStatsDisplay();
+                window.renderHomeLessonsModule();
+                window.updateAlertBadges();
+            }
+        } catch (err) {
+            window.showToast(`Error: ${err.message}`, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = currentAuthTab === 'register' ? "Registrar Cuenta ➔" : "Ingresar a la Plataforma ➔";
+        }
+    });
+}
+
+function updateUI(isLoggedIn) {
+    const guestBlock = document.getElementById('guest-auth-actions');
+    const userBlock = document.getElementById('logged-user-actions');
+    const mobGuestBtns = document.getElementById('mobile-auth-guest-btns');
+    const mobUserBtn = document.getElementById('mobile-auth-user-btn');
+    const nameDisp = document.getElementById('student-name-display');
+    const mobNameDisp = document.getElementById('mobile-name-display');
+
+    if (isLoggedIn && window.AppState.user) {
+        if (guestBlock) guestBlock.classList.add('hidden');
+        if (userBlock) userBlock.classList.remove('hidden');
+        if (mobGuestBtns) mobGuestBtns.classList.add('hidden');
+        if (mobUserBtn) mobUserBtn.classList.remove('hidden');
+
+        const displayName = window.AppState.user.name || 'Estudiante';
+        if (nameDisp) nameDisp.textContent = displayName;
+        if (mobNameDisp) mobNameDisp.textContent = displayName;
+    } else {
+        if (guestBlock) guestBlock.classList.remove('hidden');
+        if (userBlock) userBlock.classList.add('hidden');
+        if (mobGuestBtns) mobGuestBtns.classList.remove('hidden');
+        if (mobUserBtn) mobUserBtn.classList.add('hidden');
+    }
+}
+
+async function checkSession() {
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) {
+            window.AppState.user = {
+                id: session.user.id,
+                email: session.user.email,
+                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
+            };
+
+            await ProgressManager.init();
+            updateUI(true);
+            window.updateAlertBadges();
+            return;
+        }
+    } catch (e) {
+        console.error("Error comprobando sesión:", e);
+    }
+    window.AppState.user = null;
+    updateUI(false);
+    window.updateAlertBadges();
+}
+
+function initRealtimeAuthListener() {
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
+            window.AppState.user = {
+                id: session.user.id,
+                email: session.user.email,
+                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
+            };
+
+            const isNewUser = !session.user.last_sign_in_at || session.user.last_sign_in_at === session.user.created_at;
+            if (isNewUser) {
+                ProgressManager.resetProgressState();
+            }
+
+            await ProgressManager.init();
+            updateUI(true);
+            window.closeAuthModal();
+            window.updateStatsDisplay();
+            window.renderHomeLessonsModule();
+            window.updateAlertBadges();
+            window.showToast(`🎉 ¡Cuenta confirmada! Bienvenido, ${window.AppState.user.name}`, 'success');
+        }
+    });
+}
 
 function dismissSplashScreen() {
     const splash = document.getElementById('app-splash-screen');
@@ -63,11 +356,8 @@ window.toggleDarkMode = function() {
 window.updateDarkModeSwitches = function() {
     const isDark = window.AppState.isDarkMode;
     document.querySelectorAll('.dark-toggle-thumb').forEach(thumb => {
-        if (isDark) {
-            thumb.classList.add('translate-x-4');
-        } else {
-            thumb.classList.remove('translate-x-4');
-        }
+        if (isDark) thumb.classList.add('translate-x-4');
+        else thumb.classList.remove('translate-x-4');
     });
 };
 
@@ -79,126 +369,6 @@ function initDarkModePreference() {
     }
     window.updateDarkModeSwitches();
 }
-
-window.changeTargetLanguage = function(lang) {
-    window.AppState.targetLanguage = lang;
-    window.showToast("Idioma de aprendizaje: Inglés 🇺🇸", "info");
-};
-
-window.openUserProfileModal = function() {
-    const user = window.AppState.user || { name: 'Estudiante', email: 'Invitado / Sin cuenta' };
-    const stats = ProgressManager.state.stats || {};
-    const skillMastery = ProgressManager.state.skill_mastery || { listening: 0, reading: 0, writing: 0, speaking: 0 };
-    
-    const masteredWords = ProgressManager.state.mastered_words_ids?.length || stats.wordsLearned || 0;
-    const completedBubbles = ProgressManager.state.completed_bubbles?.length || 0;
-    const completedChallenges = stats.challengesCompleted || 0;
-    const streakDays = Math.max(1, Math.ceil(completedBubbles / 2));
-
-    let modal = document.getElementById('user-profile-detail-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'user-profile-detail-modal';
-        modal.className = "fixed inset-0 bg-[#1c2321]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 font-mono select-none";
-        document.body.appendChild(modal);
-    } else {
-        modal.classList.remove('hidden');
-    }
-
-    modal.innerHTML = `
-        <div class="card-bg border border-main text-main w-full max-w-md rounded-3xl p-6 shadow-2xl flex flex-col gap-4 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <button onclick="document.getElementById('user-profile-detail-modal').classList.add('hidden')" 
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer">✕</button>
-
-            <div class="flex items-center gap-4 border-b border-main/10 pb-4">
-                <div class="w-14 h-14 rounded-2xl bg-[#e06a4e] text-white flex items-center justify-center font-black text-xl shadow-md">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <div class="flex flex-col text-left truncate">
-                    <h3 class="font-black text-base text-main uppercase truncate">${user.name}</h3>
-                    <span class="text-xs text-muted truncate">${user.email}</span>
-                    <span class="text-[9px] text-[#e06a4e] font-bold mt-0.5">🔥 RACHA: ${streakDays} DÍAS CONSECUTIVOS</span>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2.5">
-                <span class="text-[10px] font-bold text-muted uppercase tracking-wider text-left">// CRECIMIENTO DE FLUIDEZ DE HABILIDADES</span>
-                
-                <div class="subcard-bg p-3.5 rounded-2xl border border-main flex flex-col gap-2">
-                    <div class="flex flex-col gap-1">
-                        <div class="flex justify-between text-[9px] font-bold">
-                            <span>🎧 LISTENING (ESCUCHA)</span>
-                            <span>${Math.round(skillMastery.listening)}%</span>
-                        </div>
-                        <div class="skill-bar-bg h-2 w-full">
-                            <div class="skill-bar-fill" style="width: ${skillMastery.listening}%"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1">
-                        <div class="flex justify-between text-[9px] font-bold">
-                            <span>📖 READING (LECTURA)</span>
-                            <span>${Math.round(skillMastery.reading)}%</span>
-                        </div>
-                        <div class="skill-bar-bg h-2 w-full">
-                            <div class="skill-bar-fill" style="width: ${skillMastery.reading}%"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1">
-                        <div class="flex justify-between text-[9px] font-bold">
-                            <span>✍️ WRITING (ESCRITURA)</span>
-                            <span>${Math.round(skillMastery.writing)}%</span>
-                        </div>
-                        <div class="skill-bar-bg h-2 w-full">
-                            <div class="skill-bar-fill" style="width: ${skillMastery.writing}%"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1">
-                        <div class="flex justify-between text-[9px] font-bold">
-                            <span>🎙️ SPEAKING (HABLA)</span>
-                            <span>${Math.round(skillMastery.speaking)}%</span>
-                        </div>
-                        <div class="skill-bar-bg h-2 w-full">
-                            <div class="skill-bar-fill" style="width: ${skillMastery.speaking}%"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 text-center">
-                <div class="subcard-bg p-2.5 rounded-2xl border border-main">
-                    <span class="text-[8px] text-muted font-bold block uppercase">DOMINADAS</span>
-                    <span class="text-base font-black text-main">${masteredWords}</span>
-                </div>
-                <div class="subcard-bg p-2.5 rounded-2xl border border-main">
-                    <span class="text-[8px] text-muted font-bold block uppercase">LECCIONES</span>
-                    <span class="text-base font-black text-main">${completedBubbles}</span>
-                </div>
-                <div class="subcard-bg p-2.5 rounded-2xl border border-main">
-                    <span class="text-[8px] text-muted font-bold block uppercase">DESAFÍOS</span>
-                    <span class="text-base font-black text-main">${completedChallenges}</span>
-                </div>
-            </div>
-
-            <div class="flex gap-2 mt-1">
-                <button onclick="window.MissionsEngine.renderLukesGoldCardModal()" 
-                        class="flex-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 font-bold text-xs py-3 rounded-xl uppercase transition-all">
-                    💳 Tarjeta Gold
-                </button>
-                <button onclick="document.getElementById('user-profile-detail-modal').classList.add('hidden')" 
-                        class="flex-1 bg-[#23483f] text-white font-bold text-xs py-3 rounded-xl uppercase transition-all">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    `;
-};
-
-window.toggleBottomSheetProfile = function() {
-    window.openUserProfileModal();
-};
 
 window.renderHomeLessonsModule = function() {
     const titleEl = document.getElementById('home-category-title');
@@ -224,8 +394,8 @@ window.renderHomeLessonsModule = function() {
     const totalBlocks = Math.ceil(wordCount / 5);
     const totalBubbles = totalBlocks * 3;
 
-    const rawCompletedArr = ProgressManager.state.completed_bubbles;
-    const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : [1]);
+    const rawCompletedArr = ProgressManager.state.completed_bubbles || [];
+    const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : []);
 
     if (window.AppState.isFirstLoad) {
         let activeIndex = 0;
@@ -289,7 +459,6 @@ window.renderHomeLessonsModule = function() {
     }).join('');
 
     window.updateHomeCarouselPosition();
-    window.initTouchSwipeForBubbles();
 };
 
 window.moveHomeCarousel = function(direction) {
@@ -304,40 +473,6 @@ window.moveHomeCarousel = function(direction) {
 
     window.AppState.homeBubbleIndex = nextIdx;
     window.updateHomeCarouselPosition();
-};
-
-window.triggerHomeCarouselTransition = function(completedBubbleNum) {
-    if (typeof window.renderHomeLessonsModule === 'function') {
-        window.renderHomeLessonsModule();
-    }
-
-    const currentBubbleEl = document.getElementById(`home-bubble-${completedBubbleNum}`);
-    const nextBubbleNum = completedBubbleNum + 1;
-    const nextBubbleEl = document.getElementById(`home-bubble-${nextBubbleNum}`);
-
-    if (currentBubbleEl && window.confetti) {
-        const rect = currentBubbleEl.getBoundingClientRect();
-        const x = (rect.left + rect.width / 2) / window.innerWidth;
-        const y = (rect.top + rect.height / 2) / window.innerHeight;
-
-        window.confetti({
-            particleCount: 60,
-            spread: 60,
-            origin: { x, y }
-        });
-    }
-
-    if (nextBubbleEl) {
-        const lockIcon = nextBubbleEl.querySelector('.lock-icon');
-        if (lockIcon) {
-            lockIcon.className = 'fa-solid fa-lock-open text-sm sm:text-xl text-[#e06a4e] animate-unlock';
-        }
-    }
-
-    setTimeout(() => {
-        window.AppState.homeBubbleIndex = Math.max(0, nextBubbleNum - 1);
-        window.updateHomeCarouselPosition();
-    }, 850);
 };
 
 window.updateHomeCarouselPosition = function() {
@@ -365,32 +500,6 @@ window.updateHomeCarouselPosition = function() {
     });
 };
 
-window.initTouchSwipeForBubbles = function() {
-    const trackContainer = document.getElementById('home-bubbles-track')?.parentElement;
-    if (!trackContainer || trackContainer.dataset.swipeInitialized) return;
-
-    let touchStartX = 0;
-
-    trackContainer.addEventListener('touchstart', (e) => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    trackContainer.addEventListener('touchend', (e) => {
-        const touchEndX = e.changedTouches[0].screenX;
-        const diffX = touchStartX - touchEndX;
-
-        if (Math.abs(diffX) > 35) {
-            if (diffX > 0) {
-                window.moveHomeCarousel(1);
-            } else {
-                window.moveHomeCarousel(-1);
-            }
-        }
-    }, { passive: true });
-
-    trackContainer.dataset.swipeInitialized = "true";
-};
-
 window.toggleWordPreviewAccordion = function() {
     const accordion = document.getElementById('word-preview-accordion');
     const chevron = document.getElementById('preview-chevron');
@@ -406,36 +515,8 @@ window.toggleWordPreviewAccordion = function() {
     }
 };
 
-window.changeAppLevel = function(newLevel) {
-    window.AppState.activeLevel = newLevel;
-    window.AppState.homeBubbleIndex = 0;
-    window.AppState.isFirstLoad = true;
-    window.renderHomeLessonsModule();
-};
-
 window.startHomeLesson = function(categoryName, bubbleNum) {
     VocabularyEngine.startLessonBlock(categoryName, bubbleNum);
-};
-
-window.showToast = function(message, type = 'info') {
-    const container = document.getElementById('luke-alert-container');
-    if (!container) return;
-
-    const toast = document.createElement('div');
-    let bgStyle = 'bg-[#23483f] border-[#19322b] text-white';
-    if (type === 'error') bgStyle = 'bg-rose-50 border-rose-200 text-rose-600';
-    if (type === 'success') bgStyle = 'bg-[#f0f7f4] border-[#d2e8e2] text-[#23483f]';
-    if (type === 'warning') bgStyle = 'bg-[#fdf6f0] border-[#f3d5c8] text-[#e06a4e]';
-
-    toast.className = `p-4 rounded-2xl border text-xs font-mono font-bold uppercase tracking-wider shadow-xl transition-all duration-300 translate-y-2 opacity-0 text-center z-50 pointer-events-auto min-w-[280px] max-w-sm ${bgStyle}`;
-    toast.innerHTML = message;
-    container.appendChild(toast);
-
-    setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
-    setTimeout(() => {
-        toast.classList.add('opacity-0', '-translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-    }, 3500);
 };
 
 window.updateStatsDisplay = function() {
@@ -477,7 +558,6 @@ window.openSpeakingManager = function() { SpeakingEngine.initSpeakingModule(); }
 window.openChallengesManager = function() { ChallengesEngine.openChallengesHub(); };
 window.openMissionsManager = function() { MissionsEngine.initMissionsModule(); };
 
-// 👁️ VISIBILIDAD DE CONTRASEÑA (TOGGLE EYE)
 window.togglePasswordVisibility = function(inputId, eyeIconId) {
     const input = document.getElementById(inputId);
     const icon = document.getElementById(eyeIconId);
@@ -505,34 +585,6 @@ window.closeAuthModal = function() {
     if (modal) modal.classList.add('opacity-0', 'pointer-events-none');
 };
 
-window.switchAuthTab = function(tab) {
-    currentAuthTab = tab;
-    const title = document.getElementById('auth-modal-title');
-    const btnSubmit = document.getElementById('auth-submit-btn');
-    const nameGroup = document.getElementById('field-name-group');
-    const confirmGroup = document.getElementById('field-confirm-group');
-    const formContent = document.getElementById('auth-form-content');
-    const pendingNotice = document.getElementById('auth-pending-notice');
-
-    if (formContent && pendingNotice) {
-        formContent.classList.remove('hidden');
-        pendingNotice.classList.add('hidden');
-    }
-
-    if (tab === 'register') {
-        if (title) title.textContent = "Crear Cuenta";
-        if (btnSubmit) btnSubmit.textContent = "Registrar Cuenta ➔";
-        if (nameGroup) nameGroup.classList.remove('hidden');
-        if (confirmGroup) confirmGroup.classList.remove('hidden');
-    } else {
-        if (title) title.textContent = "Iniciar Sesión";
-        if (btnSubmit) btnSubmit.textContent = "Ingresar a la Plataforma ➔";
-        if (nameGroup) nameGroup.classList.add('hidden');
-        if (confirmGroup) confirmGroup.classList.add('hidden');
-    }
-};
-
-// 📩 PANTALLA DE ESPERA DE CONFIRMACIÓN DE CORREO
 function showPendingEmailNotice(email) {
     const formContent = document.getElementById('auth-form-content');
     const pendingNotice = document.getElementById('auth-pending-notice');
@@ -545,151 +597,6 @@ function showPendingEmailNotice(email) {
     }
 }
 
-function updateUI(isLoggedIn) {
-    const guestBlock = document.getElementById('guest-auth-actions');
-    const userBlock = document.getElementById('logged-user-actions');
-    const mobGuestBtns = document.getElementById('mobile-auth-guest-btns');
-    const mobUserBtn = document.getElementById('mobile-auth-user-btn');
-    const nameDisp = document.getElementById('student-name-display');
-    const mobNameDisp = document.getElementById('mobile-name-display');
-
-    if (isLoggedIn && window.AppState.user) {
-        if (guestBlock) guestBlock.classList.add('hidden');
-        if (userBlock) userBlock.classList.remove('hidden');
-        if (mobGuestBtns) mobGuestBtns.classList.add('hidden');
-        if (mobUserBtn) mobUserBtn.classList.remove('hidden');
-
-        const displayName = window.AppState.user.name || 'Estudiante';
-        if (nameDisp) nameDisp.textContent = displayName;
-        if (mobNameDisp) mobNameDisp.textContent = displayName;
-    } else {
-        if (guestBlock) guestBlock.classList.remove('hidden');
-        if (userBlock) userBlock.classList.add('hidden');
-        if (mobGuestBtns) mobGuestBtns.classList.remove('hidden');
-        if (mobUserBtn) mobUserBtn.classList.add('hidden');
-    }
-}
-
-async function checkSession() {
-    try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && session.user) {
-            window.AppState.user = {
-                id: session.user.id,
-                email: session.user.email,
-                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
-            };
-
-            // 🧹 AISLAMIENTO DE CACHÉ PARA CUENTAS NUEVAS LIMPIAS
-            await ProgressManager.init();
-            updateUI(true);
-            return;
-        }
-    } catch (e) {
-        console.error("Error comprobando sesión:", e);
-    }
-    window.AppState.user = null;
-    updateUI(false);
-}
-
-// ⚡ LISTENER EN TIEMPO REAL: DETECTA CONFIRMACIÓN DE CORREO DESDE CUALQUIER DISPOSITIVO
-function initRealtimeAuthListener() {
-    supabaseClient.auth.onAuthStateChange(async (event, session) => {
-        console.log(`// Evento de autenticación en tiempo real: ${event}`);
-
-        if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session?.user) {
-            window.AppState.user = {
-                id: session.user.id,
-                email: session.user.email,
-                name: session.user.user_metadata?.first_name || session.user.email.split('@')[0]
-            };
-
-            // Resetear caché si es una cuenta recién creada sin progreso previo
-            if (ProgressManager.resetProgressState) {
-                const isNewUser = !session.user.last_sign_in_at || session.user.last_sign_in_at === session.user.created_at;
-                if (isNewUser) ProgressManager.resetProgressState();
-            }
-
-            await ProgressManager.init();
-            updateUI(true);
-            window.closeAuthModal();
-            window.updateStatsDisplay();
-            window.renderHomeLessonsModule();
-            window.showToast(`🎉 ¡Cuenta confirmada! Bienvenido, ${window.AppState.user.name}`, 'success');
-        }
-    });
-}
-
-function bindAuthEvents() {
-    const form = document.getElementById('auth-form');
-    if (!form) return;
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('auth-email-input').value.trim();
-        const password = document.getElementById('auth-password-input').value;
-        const btn = document.getElementById('auth-submit-btn');
-
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> Procesando...`;
-
-        try {
-            if (currentAuthTab === 'register') {
-                const name = document.getElementById('auth-name-input').value.trim();
-                const confirm = document.getElementById('auth-confirm-input').value;
-
-                if (password !== confirm) {
-                    window.showToast("Las contraseñas no coinciden.", 'warning');
-                    return;
-                }
-
-                // URL de redirección directa a verify.html en GitHub Pages
-                const redirectUrl = window.location.origin.includes('github.io')
-                    ? `${window.location.origin}/lukes.vocabulary/verify.html`
-                    : `${window.location.origin}/verify.html`;
-
-                const { error } = await supabaseClient.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: { first_name: name || 'Estudiante' },
-                        emailRedirectTo: redirectUrl
-                    }
-                });
-
-                if (error) throw error;
-                showPendingEmailNotice(email);
-            } else {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) throw error;
-
-                // Aislamiento de caché limpia para cuenta ingresada
-                if (ProgressManager.resetProgressState) {
-                    ProgressManager.resetProgressState();
-                }
-
-                window.AppState.user = {
-                    id: data.user.id,
-                    email: data.user.email,
-                    name: data.user.user_metadata?.first_name || data.user.email.split('@')[0]
-                };
-                await ProgressManager.init();
-                updateUI(true);
-                window.showToast(`¡Bienvenido, ${window.AppState.user.name}!`, 'success');
-                window.closeAuthModal();
-                window.updateStatsDisplay();
-                window.renderHomeLessonsModule();
-            }
-        } catch (err) {
-            window.showToast(`Error: ${err.message}`, 'error');
-        } finally {
-            btn.disabled = false;
-            btn.textContent = currentAuthTab === 'register' ? "Registrar Cuenta ➔" : "Ingresar a la Plataforma ➔";
-        }
-    });
-}
-
-// 🛑 MODAL CENTRADO DE CONFIRMACIÓN GLOBAL (YES / NO)
 window.showConfirmModal = function({ title = "¿Seguro que quieres salir?", message = "Perderás el progreso que no hayas guardado.", onConfirm }) {
     let modal = document.getElementById('global-confirm-modal');
     if (!modal) {
@@ -733,35 +640,6 @@ window.showConfirmModal = function({ title = "¿Seguro que quieres salir?", mess
         modal.classList.add('hidden');
         if (typeof onConfirm === 'function') onConfirm();
     };
-};
-
-// 🔐 CIERRA SESIÓN CON CONFIRMACIÓN
-window.handleLogout = function() {
-    window.showConfirmModal({
-        title: "¿Cerrar Sesión?",
-        message: "¿Seguro que quieres salir de tu cuenta de estudiante?",
-        onConfirm: async () => {
-            try {
-                await supabaseClient.auth.signOut();
-                window.AppState.user = null;
-                
-                if (ProgressManager.resetProgressState) {
-                    ProgressManager.resetProgressState();
-                }
-                
-                updateUI(false);
-                window.AppState.isFirstLoad = true;
-                window.AppState.homeBubbleIndex = 0;
-                
-                window.updateStatsDisplay();
-                window.renderHomeLessonsModule();
-                
-                window.showToast("Sesión cerrada.", 'info');
-            } catch (e) {
-                console.error("Error al cerrar sesión:", e);
-            }
-        }
-    });
 };
 
 function initCarousel() {
@@ -812,6 +690,7 @@ async function mainAppBoot() {
     bindAuthEvents();
     window.updateStatsDisplay();
     window.renderHomeLessonsModule();
+    window.updateAlertBadges();
     dismissSplashScreen();
 }
 
@@ -820,54 +699,3 @@ if (document.readyState === "loading") {
 } else {
     mainAppBoot();
 }
-
-// ==========================================================================
-// 📜 MODAL DE POLÍTICA DE PRIVACIDAD Y MARCO LEGAL EN SITE.JS
-// ==========================================================================
-window.openPrivacyPolicyModal = function() {
-    let modal = document.getElementById('privacy-policy-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'privacy-policy-modal';
-        modal.className = "fixed inset-0 bg-[#1c2321]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 font-mono select-none animate-fade-in";
-        document.body.appendChild(modal);
-    } else {
-        modal.classList.remove('hidden');
-    }
-
-    modal.innerHTML = `
-        <div class="card-bg border border-main text-main w-full max-w-lg rounded-3xl p-6 shadow-2xl flex flex-col gap-4 relative max-h-[85vh] overflow-y-auto custom-scrollbar text-left">
-            <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full subcard-bg text-muted flex items-center justify-center text-xs cursor-pointer">✕</button>
-
-            <div class="border-b border-main/10 pb-3">
-                <span class="text-[9px] text-[#e06a4e] font-bold uppercase tracking-widest">// MARCO LEGAL Y PROTECCIÓN DE DATOS</span>
-                <h3 class="font-black text-base text-main uppercase mt-0.5">Política de Privacidad</h3>
-            </div>
-
-            <div class="flex flex-col gap-3 text-xs text-muted leading-relaxed font-sans">
-                <p>En <strong>Lukes English Academy</strong>, respetamos y protegemos la privacidad de nuestros estudiantes. Esta política describe cómo manejamos tus datos:</p>
-                
-                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
-                    <strong class="text-main uppercase">1. Uso Exclusivo del Correo Electrónico:</strong>
-                    <p>Tu correo electrónico se recopila únicamente para autenticar tu identidad y guardar en tiempo real tu progreso académico, vocabulario aprendido y recompensas.</p>
-                </div>
-
-                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
-                    <strong class="text-main uppercase">2. No Spam y Cero Correos No Deseados:</strong>
-                    <p>No enviamos boletines publicitarios ni correos comerciales. Únicamente recibirás mensajes esenciales del sistema (como enlaces de activación de cuenta o restablecimiento de contraseña).</p>
-                </div>
-
-                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
-                    <strong class="text-main uppercase">3. Confidencialidad y No Compartición:</strong>
-                    <p>Tus datos personales jamás serán vendidos, alquilados ni compartidos con empresas terceras ni anunciantes.</p>
-                </div>
-            </div>
-
-            <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
-                    class="w-full bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md mt-2">
-                Entendido y Cerrar ➔
-            </button>
-        </div>
-    `;
-};
