@@ -79,7 +79,7 @@ window.switchAuthTab = function(tab) {
         if (btnSubmit) btnSubmit.textContent = "Registrar Cuenta ➔";
         if (nameGroup) nameGroup.classList.remove('hidden');
         if (confirmGroup) confirmGroup.classList.remove('hidden');
-        if (privacyGroup) privacyGroup.classList.remove('hidden'); // 👈 Desoculta Política de Privacidad
+        if (privacyGroup) privacyGroup.classList.remove('hidden'); // 👈 Desoculta Política de Privacidad  
     } else {
         if (title) title.textContent = "Iniciar Sesión";
         if (btnSubmit) btnSubmit.textContent = "Ingresar a la Plataforma ➔";
