@@ -1,6 +1,6 @@
 // ==========================================================================
 // 🎙️ SPEAKING ENGINE v3.1 - INTERFAZ DE PANTALLA COMPLETA Y GRID EXPANSIVO
-// ==========================================================================
+// ========================================================================== 
 import { VOCABULARY_DATABASE } from './database.js';
 import { startListening, stopListening } from './speechEngine.js';
 import { AudioEngine } from './audioEngine.js';
