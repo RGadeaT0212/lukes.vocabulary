@@ -1,7 +1,7 @@
 // ==========================================================================
 // 🪐 VOCABULARY ENGINE v72.0 (STRICT SHADOWING SPACE-FIX & SMOOTH MAP TRANSITION)
 // ==========================================================================
-import { VOCABULARY_DATABASE } from './database.js';
+import { VOCABULARY_DATABASE } from './database.js'; 
 import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
