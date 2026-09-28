@@ -744,7 +744,7 @@ export const ChallengesEngine = {
     },
 
     launchMemoryGame(cost) {
-        this.launchHangmanGame(cost);
+        this.launchHangmanGame(cost); 
     },
 
     closeEngine() {
