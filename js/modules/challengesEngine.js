@@ -39,9 +39,7 @@ export const ChallengesEngine = {
         const userPaws = ProgressManager?.state?.stats?.paws || 0;
         const learnedWords = this.getLearnedWordsPool();
         const imageWordsCount = learnedWords.filter(w => w.hasImage !== false && !!w.media_url).length;
-        const isCardLinked = ProgressManager?.state?.is_gold_card_linked || false;
 
-        // 🔒 BLOQUEO PRINCIPAL: REQUIERE 3 LECCIONES COMPLETADAS
         const completedBubblesCount = ProgressManager?.state?.completed_bubbles?.length || 0;
         const isArenaUnlocked = completedBubblesCount >= 3;
 
@@ -122,7 +120,6 @@ export const ChallengesEngine = {
                                 <span class="text-xs font-bold text-main uppercase tracking-wider block">🎮 MINIJUEGOS (SIN TIEMPO NI PRISA)</span>
                                 <span class="text-[10px] text-muted block">Juega libremente pagando con Paws. Sin recompensas monetarias.</span>
                             </div>
-                            ${!isCardLinked ? `<span class="text-[9px] bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-400 font-bold px-2 py-1 rounded-lg uppercase">💳 Requiere vincular Tarjeta Gold</span>` : ''}
                         </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -194,102 +191,7 @@ export const ChallengesEngine = {
     },
 
     handleGameClick(gameType, cost) {
-        const isCardLinked = ProgressManager?.state?.is_gold_card_linked || false;
-
-        if (!isCardLinked) {
-            this.renderCardAssociationModal(gameType, cost);
-            return;
-        }
-
         this.executeLaunchGame(gameType, cost);
-    },
-
-    renderCardAssociationModal(pendingGameType, pendingCost) {
-        const user = window.AppState?.user || { name: 'ESTUDIANTE LUKES' };
-        const studentName = (user.name || 'ESTUDIANTE').toUpperCase();
-        const deck = document.getElementById('lesson-interactive-deck');
-        if (!deck) return;
-
-        deck.innerHTML = `
-            <div class="w-full flex justify-between items-center border-b border-main pb-2 z-10 shrink-0 font-mono">
-                <span class="text-xs font-black uppercase text-[#23483f] dark:text-white">💳 ACTIVACIÓN DE TARJETA VIRTUAL GOLD</span>
-                <button onclick="window.ChallengesEngine.openChallengesHub()" class="bg-[#23483f] text-white text-[9px] px-3 py-1.5 rounded-lg uppercase font-black cursor-pointer">
-                    CANCELAR ✕
-                </button>
-            </div>
-
-            <div class="flex-grow flex flex-col items-center justify-center p-2 sm:p-4 text-center font-mono my-auto">
-                <div class="card-bg p-5 rounded-3xl border border-main shadow-2xl max-w-md w-full flex flex-col gap-4 relative">
-                    
-                    <div class="w-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 rounded-2xl p-4 text-stone-900 shadow-lg text-left relative overflow-hidden border border-amber-300">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-black uppercase tracking-widest text-stone-900">LUKES GOLD CARD 🐾</span>
-                            <span class="text-xs font-black italic">VIRTUAL</span>
-                        </div>
-                        <div class="mt-4 text-center font-mono font-black text-sm tracking-widest text-stone-950">
-                            4892 •••• •••• 9012
-                        </div>
-                        <div class="mt-4 flex justify-between items-end text-[9px] font-bold uppercase">
-                            <div>
-                                <span class="block text-[7px] text-stone-800">TITULAR DE LA TARJETA</span>
-                                <span class="font-black text-stone-950">${studentName}</span>
-                            </div>
-                            <div>
-                                <span class="block text-[7px] text-stone-800">EXPIRA</span>
-                                <span class="font-black text-stone-950">12/28</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-left">
-                        <h4 class="font-black text-xs uppercase text-main">Asocia tu tarjeta para compras en la tienda</h4>
-                        <p class="text-[10px] text-muted">Transcribe los datos visibles de tu tarjeta virtual para asociarla a tu cuenta de estudiante (Simulación educativa).</p>
-                    </div>
-
-                    <form id="gold-card-form" onsubmit="window.ChallengesEngine.submitCardAssociation(event, '${pendingGameType}', ${pendingCost})" class="flex flex-col gap-2.5 text-left">
-                        <div>
-                            <label class="text-[9px] font-bold text-muted uppercase block mb-0.5">Nombre del Titular:</label>
-                            <input type="text" required id="card-input-name" placeholder="${studentName}" value="${studentName}" class="w-full subcard-bg border border-main rounded-xl p-2.5 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e]">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="text-[9px] font-bold text-muted uppercase block mb-0.5">Número de Tarjeta (16 dígitos):</label>
-                                <input type="text" required id="card-input-number" maxlength="16" placeholder="4892000000009012" class="w-full subcard-bg border border-main rounded-xl p-2.5 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e]">
-                            </div>
-                            <div>
-                                <label class="text-[9px] font-bold text-muted uppercase block mb-0.5">Código CVV (3 dígitos):</label>
-                                <input type="text" required id="card-input-cvv" maxlength="3" placeholder="789" class="w-full subcard-bg border border-main rounded-xl p-2.5 text-xs font-bold text-main focus:outline-none focus:border-[#e06a4e]">
-                            </div>
-                        </div>
-
-                        <button type="submit" class="w-full mt-2 bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md">
-                            Asociar Tarjeta Gold a la Plataforma ➔
-                        </button>
-                    </form>
-
-                </div>
-            </div>
-        `;
-    },
-
-    submitCardAssociation(event, pendingGameType, pendingCost) {
-        event.preventDefault();
-        
-        if (ProgressManager.state) {
-            ProgressManager.state.is_gold_card_linked = true;
-            ProgressManager.syncToSupabase();
-        }
-
-        if (typeof window.showToast === 'function') {
-            window.showToast("💳 ¡Tarjeta Lukes Gold asociada con éxito!", "success");
-        }
-
-        if (window.confetti) window.confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
-
-        setTimeout(() => {
-            this.executeLaunchGame(pendingGameType, pendingCost);
-        }, 800);
     },
 
     executeLaunchGame(gameType, cost) {
@@ -744,7 +646,7 @@ export const ChallengesEngine = {
     },
 
     launchMemoryGame(cost) {
-        this.launchHangmanGame(cost); 
+        this.launchHangmanGame(cost);
     },
 
     closeEngine() {
