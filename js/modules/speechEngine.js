@@ -1,40 +1,29 @@
 // ==========================================================================
 // 🎙️ MOTOR NATIVO DE RECONOCIMIENTO DE VOZ OPTIMIZADO PARA MÓVILES Y DESKTOP
-// ========================================================================== 
+// ==========================================================================
 
 let recognition = null;
 let isListeningActive = false;
 
-/**
- * Inicializa y configura el motor de escucha del micrófono de forma nativa.
- * @returns {Object|null} Instancia del reconocedor de voz configurada.
- */
 function initSpeechRecognition() {
-    // 1. Compatibilidad Multi-Navegador (Chrome / Safari iOS / Edge / Android)
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
-        console.error("Error de Hardware: Este navegador no soporta el reconocimiento de voz por micrófono.");
+        console.error("Hardware/Navegador no compatible con SpeechRecognition.");
         return null;
     }
 
     const instance = new SpeechRecognition();
-    
-    // 2. Ajustes de captura fonética para teléfonos móviles
-    instance.lang = 'en-US';              // Captura en inglés americano
-    instance.continuous = false;          // Finaliza tras capturar la frase
-    instance.interimResults = false;       // Solo procesa el resultado final procesado
-    instance.maxAlternatives = 1;          // Coincidencia con mayor índice de confianza
+    instance.lang = 'en-US';
+    instance.continuous = false;
+    instance.interimResults = false;
+    instance.maxAlternatives = 1;
 
     return instance;
 }
 
-/**
- * Escucha al usuario a través del micrófono y devuelve el texto procesado.
- * @param {Function} onResultCallback - Recibe el texto final pronunciado.
- * @param {Function} onErrorCallback - Captura errores de hardware o silencios.
- */
 export function startListening(onResultCallback, onErrorCallback) {
+    // 1. Inicialización o reutilización
     if (!recognition) {
         recognition = initSpeechRecognition();
     }
@@ -44,64 +33,65 @@ export function startListening(onResultCallback, onErrorCallback) {
         return;
     }
 
-    // Si la captura estaba activa en el teléfono, la reseteamos de forma segura
-    if (isListeningActive) {
-        try {
-            recognition.abort();
-        } catch (e) {}
-    }
+    // 2. Abortar cualquier sesión móvil previa que haya quedado colgada
+    try {
+        recognition.abort();
+    } catch (e) {}
 
-    // 3. Configurar eventos de captura
+    isListeningActive = false;
+
+    // 3. Handlers de eventos
     recognition.onstart = () => {
         isListeningActive = true;
-        console.log("// Micrófono Móvil/Desktop Activo: Escuchando...");
+        console.log("// Micrófono capturando audio...");
     };
 
     recognition.onresult = (event) => {
         isListeningActive = false;
         if (event.results && event.results[0] && event.results[0][0]) {
             const spokenText = event.results[0][0].transcript;
-            console.log(`// Texto detectado en el canal de entrada: "${spokenText}"`);
+            console.log(`// Pronunciación detectada: "${spokenText}"`);
             if (onResultCallback) onResultCallback(spokenText);
         }
     };
 
     recognition.onerror = (event) => {
         isListeningActive = false;
-        console.error(`// Fallo en captura de micrófono [Código: ${event.error}]`);
-        if (onErrorCallback) onErrorCallback(event.error);
+        console.warn(`// Evento de micrófono: ${event.error}`);
+        
+        // Si el teléfono arrojó 'no-speech' (silencio rápido), informamos para reintento
+        if (onErrorCallback) {
+            onErrorCallback(event.error);
+        }
     };
 
     recognition.onend = () => {
         isListeningActive = false;
-        console.log("// Canal del micrófono cerrado.");
     };
 
-    // 4. Encendido del hardware en móviles (Invocación directa)
+    // 4. Disparo inmediato dentro del evento táctil del usuario
     try {
         recognition.start();
     } catch (e) {
         isListeningActive = false;
-        // Si el reconocedor estaba colgado, lo abortamos y reiniciamos
-        try {
-            recognition.abort();
-            setTimeout(() => {
-                try { recognition.start(); } catch (err) {}
-            }, 100);
-        } catch (err) {}
+        // Reintento de emergencia si la API estaba bloqueada
+        setTimeout(() => {
+            try {
+                recognition.abort();
+                recognition.start();
+            } catch (err) {
+                if (onErrorCallback) onErrorCallback("start-failed");
+            }
+        }, 150);
     }
 }
 
-/**
- * Apaga forzadamente la captura del micrófono.
- */
 export function stopListening() {
-    if (recognition && isListeningActive) {
+    if (recognition) {
         try {
             recognition.stop();
         } catch(e) {}
         isListeningActive = false;
-        console.log("// Canal del micrófono cerrado de forma segura.");
     }
 }
 
