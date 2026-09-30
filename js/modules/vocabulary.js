@@ -1,7 +1,7 @@
 // ==========================================================================
-// 🪐 VOCABULARY ENGINE v72.0 (STRICT SHADOWING SPACE-FIX & SMOOTH MAP TRANSITION)
+// 🪐 VOCABULARY ENGINE v74.0 (FLUID L2 SHADOWING & MIC FIX)
 // ==========================================================================
-import { VOCABULARY_DATABASE } from './database.js'; 
+import { VOCABULARY_DATABASE } from './database.js';
 import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
@@ -268,7 +268,6 @@ export const VocabularyEngine = {
                     spanish: w.spanish
                 })).sort(() => 0.5 - Math.random());
 
-                // PREPARACIÓN DE FICHAS TÁCTILES EXTRAIENDO ÚNICAMENTE CARACTERES ALFANUMÉRICOS
                 const wordUpperClean = (word.english_word || word.word).toUpperCase().replace(/[^A-Z0-9]/g, '');
                 const scrambledTiles = wordUpperClean.split('').sort(() => 0.5 - Math.random());
 
@@ -309,8 +308,10 @@ export const VocabularyEngine = {
     loopEngine() {
         if (this.activeTypewriterInterval) clearInterval(this.activeTypewriterInterval);
 
+        // EVALUACIÓN CONTROLADA DEL MODO SHADOWING (MUESTRA REPORTE AL FINALIZAR)
         if (this.isShadowingMode) {
             if (this.currentQueueIndex >= this.shadowingQueue.length) {
+                this.isShadowingMode = false;
                 this.renderLessonReport();
                 return;
             }
@@ -318,6 +319,7 @@ export const VocabularyEngine = {
             return;
         }
 
+        // CONTROL DE FIN DE COLA DE EJERCICIOS PRINCIPALES
         if (this.currentQueueIndex >= this.exerciseQueue.length) {
             if (!this.isReviewMode && this.failedQueue.length > 0) {
                 this.isReviewMode = true;
@@ -340,7 +342,7 @@ export const VocabularyEngine = {
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
 
-        // FASE INTRODUCTORIA
+        // INTRO CARD
         if (ex.type === 'intro_card') {
             deck.innerHTML = `
                 <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0">
@@ -422,7 +424,7 @@ export const VocabularyEngine = {
             return;
         }
 
-        // FASE EJERCICIOS INTERACTIVOS
+        // EJERCICIOS INTERACTIVOS
         let exerciseInteractiveBody = '';
 
         if (ex.type === 'shadowing_text' || ex.type === 'shadowing_image') {
@@ -446,7 +448,7 @@ export const VocabularyEngine = {
                         ${ex.scrambledTiles.map((tileLetter, tileIdx) => `
                             <button id="tile-btn-${tileIdx}" 
                                     type="button"
-                                    onclick="window.VocabularyEngine.pickTactileTile('${tileLetter}', ${tileIdx})" 
+                                    onclick="window.VocabularyEngine.pickTactileTile('${tileLetter}',${tileIdx})" 
                                     class="w-10 h-10 bg-[#23483f] hover:bg-[#19322b] text-white font-black text-base rounded-xl cursor-pointer shadow-md active:scale-95 transition-all">
                                 ${tileLetter}
                             </button>
@@ -598,7 +600,7 @@ export const VocabularyEngine = {
                     <div id="spanish-translation-container">
                         <button onclick="window.VocabularyEngine.revealSpanishTranslation()" 
                                 class="text-[9px] font-mono text-muted hover:text-[#e06a4e] border border-dashed border-main px-2 py-0.5 rounded-lg cursor-pointer">
-                            👁️ Ver Significado
+                            👁️️ Ver Significado
                         </button>
                         <p id="spanish-translation-text" class="text-xs text-muted font-medium italic hidden font-bold">"${ex.spanish_translation}"</p>
                     </div>
@@ -810,6 +812,11 @@ export const VocabularyEngine = {
 
     executeCheckAnswer() {
         const ex = this.exerciseQueue[this.currentQueueIndex];
+        if (!ex) {
+            this.loopEngine();
+            return;
+        }
+
         let isCorrect = false;
 
         if (ex.templateId === '29' || ex.templateId === '30') {
@@ -882,6 +889,12 @@ export const VocabularyEngine = {
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
 
+        if (this.currentQueueIndex >= this.shadowingQueue.length) {
+            this.isShadowingMode = false;
+            this.renderLessonReport();
+            return;
+        }
+
         const currentWord = this.shadowingQueue[this.currentQueueIndex];
 
         deck.innerHTML = `
@@ -928,6 +941,8 @@ export const VocabularyEngine = {
         if (!btn) return;
 
         const currentWord = this.shadowingQueue[this.currentQueueIndex];
+        if (!currentWord) return;
+
         const targetClean = this.cleanString(currentWord.english_word || currentWord.word);
 
         if (this.cleanString(val) === targetClean) {
@@ -943,7 +958,12 @@ export const VocabularyEngine = {
 
     advanceShadowingBonus() {
         this.currentQueueIndex++;
-        this.loopEngine();
+        if (this.currentQueueIndex >= this.shadowingQueue.length) {
+            this.isShadowingMode = false;
+            this.renderLessonReport();
+        } else {
+            this.loopEngine();
+        }
     },
 
     markAsKnown() {
