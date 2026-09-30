@@ -1,6 +1,7 @@
 // ==========================================================================
 // 🎙️️ SPEAKING ENGINE v3.2 - LABORATORIO ORAL CON AVISO DE 3 LECCIONES
-// ==========================================================================
+// ========================================================================== 
+
 import { VOCABULARY_DATABASE } from './database.js';
 import { startListening, stopListening } from './speechEngine.js';
 import { AudioEngine } from './audioEngine.js';
