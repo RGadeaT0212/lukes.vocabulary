@@ -1,6 +1,6 @@
 // ==========================================================================
-// 🎙️ SPEAKING ENGINE v3.1 - INTERFAZ DE PANTALLA COMPLETA Y GRID EXPANSIVO
-// ========================================================================== 
+// 🎙️️ SPEAKING ENGINE v3.2 - LABORATORIO ORAL CON AVISO DE 3 LECCIONES
+// ==========================================================================
 import { VOCABULARY_DATABASE } from './database.js';
 import { startListening, stopListening } from './speechEngine.js';
 import { AudioEngine } from './audioEngine.js';
@@ -10,33 +10,76 @@ export const SpeakingEngine = {
     activeSessionWords: [],
     currentLessonIndex: 0,
     currentSessionNumber: 1,
-    lessonTimeRemaining: 180, // 3 minutos
+    lessonTimeRemaining: 180,
     timerInterval: null,
 
     speakingTemplates: ['Repeat', 'Say', 'Answer', 'SentenceRepeater'],
 
     initSpeakingModule() {
-        const totalLearned = window.AppState?.studentStats?.wordsLearned || window.ProgressManager?.state?.mastered_words_ids?.length || 0;
-    
-        if (totalLearned < 5) {
-            const remaining = 5 - totalLearned;
-            if (typeof window.showToast === 'function') {
-                window.showToast(`🔒 Módulo Bloqueado. Completa ${remaining} palabra(s) más para desbloquear Speaking.`, 'warning');
-            }
+        const completedBubblesCount = window.ProgressManager?.state?.completed_bubbles?.length || 0;
+        
+        // 🔒 AVISO DE BLOQUEO SI TIENE MENOS DE 3 LECCIONES
+        if (completedBubblesCount < 3) {
+            const remaining = 3 - completedBubblesCount;
+            this.renderSpeakingLockedNotice(completedBubblesCount, remaining);
             return;
         }
 
+        const totalLearned = window.AppState?.studentStats?.wordsLearned || window.ProgressManager?.state?.mastered_words_ids?.length || 5;
         this.openSpeakingDashboard(totalLearned);
     },
 
-    // 🎯 DASHBOARD ADAPTATIVO: APROVECHA EL LIENZO COMPLETO EN PC Y MÓVIL
+    renderSpeakingLockedNotice(completed, remaining) {
+        const deck = document.getElementById('lesson-interactive-deck');
+        if (!deck) return;
+
+        deck.classList.remove('hidden');
+
+        deck.innerHTML = `
+            <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0 font-mono">
+                <span class="text-xs font-black uppercase text-[#23483f] dark:text-white">
+                    🎙️ LABORATORIO DE SPEAKING
+                </span>
+                <button onclick="window.SpeakingEngine.closeSpeakingModule()" 
+                        class="bg-[#23483f] text-white text-[9px] px-3.5 py-1.5 rounded-lg uppercase font-black cursor-pointer">
+                    SALIR ✕
+                </button>
+            </div>
+
+            <div class="flex-grow flex flex-col items-center justify-center p-4 font-mono my-auto">
+                <div class="card-bg p-6 rounded-3xl border border-main shadow-2xl max-w-md w-full text-center flex flex-col items-center gap-4">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-3xl border border-amber-500/20 shadow-xs">
+                        🔒
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] text-[#e06a4e] font-bold uppercase tracking-widest">// REQUISITO PREVIO</span>
+                        <h3 class="font-black text-lg text-main uppercase">Módulo Bloqueado</h3>
+                        <p class="text-xs text-muted leading-relaxed mt-1">
+                            Debes completar al menos <strong>3 lecciones</strong> en el mapa para activar las actividades de <strong>Speaking</strong>.
+                        </p>
+                    </div>
+
+                    <div class="w-full subcard-bg p-3.5 rounded-2xl border border-main flex items-center justify-between font-bold text-xs">
+                        <span class="text-muted">Progreso actual:</span>
+                        <span class="text-[#e06a4e]">${completed} / 3 lecciones (${remaining} restante${remaining > 1 ? 's' : ''})</span>
+                    </div>
+
+                    <button onclick="window.SpeakingEngine.closeSpeakingModule()" 
+                            class="w-full bg-[#23483f] hover:bg-[#19322b] text-white font-bold text-xs py-3.5 px-6 rounded-xl uppercase shadow-md transition-all active:scale-95 cursor-pointer mt-1">
+                         Ir a las Lecciones del Mapa ➔
+                    </button>
+                </div>
+            </div>
+        `;
+    },
+
     openSpeakingDashboard(totalLearned) {
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
 
         deck.classList.remove('hidden');
 
-        // 2 lecciones por cada 5 palabras aprendidas
         const totalAvailableLessons = Math.max(2, Math.floor(totalLearned / 5) * 2);
         const completedSpeakingLevel = window.ProgressManager?.state?.completed_speaking_session || 0;
 
@@ -56,7 +99,6 @@ export const SpeakingEngine = {
                 </button>
             </div>
 
-            <!-- CONTENEDOR EXPANSIVO DE PANTALLA COMPLETA -->
             <div class="flex-grow flex flex-col justify-start sm:justify-center w-full max-w-5xl mx-auto my-auto p-2 sm:p-6 overflow-hidden">
                 <div class="card-bg w-full h-full sm:h-auto max-h-[82vh] p-4 sm:p-8 rounded-3xl border border-main shadow-md flex flex-col gap-4 relative font-mono overflow-hidden">
                     
@@ -70,7 +112,6 @@ export const SpeakingEngine = {
                         </span>
                     </div>
 
-                    <!-- GRID RESPONSIVO EXPANSIVO (SE ADAPTA A PANTALLA COMPLETA EN PC) -->
                     <div class="flex-grow overflow-y-auto custom-scrollbar p-2 my-1">
                         <div class="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3 sm:gap-4 justify-items-center">
                             ${Array.from({ length: totalAvailableLessons }).map((_, idx) => {
@@ -80,10 +121,10 @@ export const SpeakingEngine = {
 
                                 if (isUnlocked) {
                                     return `
-                                        <button onclick="window.SpeakingEngine.startSpeakingSession(${sessionNum}, ${totalLearned})" 
+                                        <button onclick="window.SpeakingEngine.startSpeakingSession(${sessionNum},${totalLearned})" 
                                                 class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl ${isCompleted ? 'bg-emerald-600 dark:bg-emerald-500' : 'bg-[#23483f] hover:bg-[#19322b]'} text-white flex flex-col items-center justify-center text-sm font-black shadow-md cursor-pointer transition-all active:scale-95 border border-main">
                                             <span class="text-[8px] opacity-80 uppercase">SESIÓN</span>
-                                            <span class="text-base">${sessionNum} ${isCompleted ? '✓' : ''}</span>
+                                            <span class="text-base">${sessionNum}${isCompleted ? '✓' : ''}</span>
                                         </button>
                                     `;
                                 } else {
@@ -112,7 +153,7 @@ export const SpeakingEngine = {
 
         this.activeSessionWords = weightedPool.sort(() => 0.5 - Math.random()).slice(0, 8);
         this.currentLessonIndex = 0;
-        this.lessonTimeRemaining = 180; // 3 minutos
+        this.lessonTimeRemaining = 180;
 
         const deck = document.getElementById('lesson-interactive-deck');
         if (deck) deck.classList.remove('hidden');
@@ -231,11 +272,7 @@ export const SpeakingEngine = {
     closeSpeakingModule() {
         stopListening();
         clearInterval(this.timerInterval);
-        const deck = document.getElementById('lesson-interactive-deck');
-        if (deck) deck.classList.add('hidden');
-        if (typeof window.renderHomeLessonsModule === 'function') {
-            window.renderHomeLessonsModule();
-        }
+        window.openHomeView();
     },
 
     exitSpeakingSession() {
