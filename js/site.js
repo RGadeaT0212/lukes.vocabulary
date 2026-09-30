@@ -1,5 +1,5 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v63.0 (PRIVACY & ISOLATED LOCKS)
+// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v65.0 (HIGHLIGHT NAV & FIXED UI)
 // ==========================================================================
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
@@ -19,7 +19,8 @@ window.AppState = {
     activeCategory: 'EXPRESSIONS',
     isDarkMode: false,
     targetLanguage: 'en',
-    isFirstLoad: true
+    isFirstLoad: true,
+    activeView: 'home'
 };
 
 let currentAuthTab = 'login';
@@ -30,7 +31,54 @@ const carouselItems = [
     { text: "Aprende produciendo en inglés y desbloquea las Patitas de Gato 🐾.", tag: "MÉTODO" }
 ];
 
-// 🔔 EVALUADOR DE BADGES / ALERTAS RED DOT (! OBLIGATORIO)
+// 🎨 ANIMACIÓN DE ILUMINACIÓN Y RESALTADO DE BOTONES ACTIVOS
+window.setActiveNavButton = function(viewName) {
+    window.AppState.activeView = viewName;
+
+    const desktopNavMap = {
+        home: 'nav-btn-home',
+        speaking: 'nav-btn-speaking',
+        missions: 'nav-btn-missions',
+        challenges: 'nav-btn-challenges'
+    };
+
+    const mobileNavMap = {
+        home: 'mob-nav-home',
+        speaking: 'mob-nav-speaking',
+        missions: 'mob-nav-missions',
+        challenges: 'mob-nav-challenges',
+        account: 'mob-nav-account'
+    };
+
+    // Estilos PC: Fondo verde oscuro, texto blanco y ligera elevación
+    const activeClassesDesktop = "flex items-center justify-between px-4 py-3 rounded-xl bg-[#23483f] text-white font-bold text-xs uppercase tracking-wider shadow-md cursor-pointer w-full text-left transition-all scale-[1.02]";
+    const inactiveClassesDesktop = "nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-muted hover:text-main font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left opacity-70 hover:opacity-100";
+
+    // Estilos Móvil: Icono en contenedor verde animado, texto resaltado
+    const activeClassesMobile = "flex flex-col items-center text-[#23483f] dark:text-emerald-400 font-black cursor-pointer scale-110 transition-transform duration-200";
+    const inactiveClassesMobile = "flex flex-col items-center text-muted hover:text-main cursor-pointer opacity-60 hover:opacity-100 transition-transform duration-200";
+
+    Object.keys(desktopNavMap).forEach(key => {
+        const btn = document.getElementById(desktopNavMap[key]);
+        if (btn) btn.className = (key === viewName) ? activeClassesDesktop : inactiveClassesDesktop;
+    });
+
+    Object.keys(mobileNavMap).forEach(key => {
+        const btn = document.getElementById(mobileNavMap[key]);
+        if (btn) {
+            btn.className = (key === viewName) ? activeClassesMobile : inactiveClassesMobile;
+            const iconBox = btn.querySelector('.nav-icon-box');
+            if (iconBox) {
+                if (key === viewName) {
+                    iconBox.className = "nav-icon-box w-7 h-7 rounded-full flex items-center justify-center bg-[#23483f] text-white shadow-md animate-pulse";
+                } else {
+                    iconBox.className = "nav-icon-box w-6 h-6 rounded-full flex items-center justify-center subcard-bg";
+                }
+            }
+        }
+    });
+};
+
 window.updateAlertBadges = function() {
     const completedBubblesCount = ProgressManager?.state?.completed_bubbles?.length || 0;
     const isArenaUnlocked = completedBubblesCount >= 3;
@@ -46,7 +94,7 @@ window.updateAlertBadges = function() {
         const el = document.getElementById(elementId);
         if (!el) return;
         if (show) {
-            el.innerHTML = `<span class="w-4 h-4 bg-rose-500 text-white rounded-full flex items-center justify-center text-[9px] font-black animate-pulse shadow-sm">!</span>`;
+            el.innerHTML = `<span class="w-3.5 h-3.5 bg-rose-500 text-white rounded-full flex items-center justify-center text-[8px] font-black animate-pulse shadow-xs">!</span>`;
             el.classList.remove('hidden');
         } else {
             el.classList.add('hidden');
@@ -57,6 +105,56 @@ window.updateAlertBadges = function() {
     renderBadge('missions-badge-mobile', hasUnclaimedMissions);
     renderBadge('challenges-badge-desktop', hasPendingChallenges);
     renderBadge('challenges-badge-mobile', hasPendingChallenges);
+};
+
+// 🏡 NAVEGACIÓN CONTINUA SIN OCULTAR MENÚS
+window.openHomeView = function() {
+    window.setActiveNavButton('home');
+    const deck = document.getElementById('lesson-interactive-deck');
+    if (deck) deck.classList.add('hidden');
+    window.renderHomeLessonsModule();
+};
+
+window.openSpeakingManager = function() {
+    window.setActiveNavButton('speaking');
+    SpeakingEngine.initSpeakingModule();
+};
+
+window.openMissionsManager = function() {
+    window.setActiveNavButton('missions');
+    MissionsEngine.initMissionsModule();
+};
+
+window.openChallengesManager = function() {
+    window.setActiveNavButton('challenges');
+    ChallengesEngine.openChallengesHub();
+};
+
+// 👤 BOTÓN CUENTA CON RECOGNICIÓN DE INVITADO
+window.openUserProfileModal = function() {
+    window.setActiveNavButton('account');
+    if (!window.AppState.user) {
+        if (typeof window.showToast === 'function') {
+            window.showToast("👤 Inicia sesión o regístrate para sincronizar tu progreso.", "info");
+        }
+        window.openAuthModal('login');
+    } else {
+        window.toggleBottomSheetProfile();
+    }
+};
+
+window.toggleBottomSheetProfile = function() {
+    const sheet = document.getElementById('profile-bottom-sheet');
+    if (!sheet) return;
+
+    const isHidden = sheet.classList.contains('pointer-events-none');
+    if (isHidden) {
+        sheet.classList.remove('pointer-events-none', 'opacity-0');
+        sheet.firstElementChild?.classList.remove('translate-y-full');
+    } else {
+        sheet.classList.add('pointer-events-none', 'opacity-0');
+        sheet.firstElementChild?.classList.add('translate-y-full');
+    }
 };
 
 window.switchAuthTab = function(tab) {
@@ -79,7 +177,7 @@ window.switchAuthTab = function(tab) {
         if (btnSubmit) btnSubmit.textContent = "Registrar Cuenta ➔";
         if (nameGroup) nameGroup.classList.remove('hidden');
         if (confirmGroup) confirmGroup.classList.remove('hidden');
-        if (privacyGroup) privacyGroup.classList.remove('hidden'); // 👈 Desoculta Política de Privacidad  
+        if (privacyGroup) privacyGroup.classList.remove('hidden');
     } else {
         if (title) title.textContent = "Iniciar Sesión";
         if (btnSubmit) btnSubmit.textContent = "Ingresar a la Plataforma ➔";
@@ -112,41 +210,27 @@ window.openPrivacyPolicyModal = function() {
 
             <div class="flex flex-col gap-3 text-xs text-muted leading-relaxed font-sans">
                 <p>En <strong>Lukes English Academy</strong>, respetamos y protegemos la privacidad de nuestros estudiantes. Esta política describe cómo manejamos tus datos:</p>
-                
                 <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
                     <strong class="text-main uppercase">1. Uso Exclusivo del Correo Electrónico:</strong>
-                    <p>Tu correo electrónico se recopila únicamente para autenticar tu identidad y guardar en tiempo real tu progreso académico, vocabulario aprendido y recompensas.</p>
-                </div>
-
-                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
-                    <strong class="text-main uppercase">2. No Spam y Cero Correos No Deseados:</strong>
-                    <p>No enviamos boletines publicitarios ni correos comerciales. Únicamente recibirás mensajes esenciales del sistema (como enlaces de activación de cuenta o restablecimiento de contraseña).</p>
-                </div>
-
-                <div class="subcard-bg p-3 rounded-2xl border border-main flex flex-col gap-1.5 font-mono text-[10px]">
-                    <strong class="text-main uppercase">3. Confidencialidad y No Compartición:</strong>
-                    <p>Tus datos personales jamás serán vendidos, alquilados ni compartidos con empresas terceras ni anunciantes.</p>
+                    <p>Tu correo electrónico se recopila únicamente para autenticar tu identidad y guardar tu progreso académico.</p>
                 </div>
             </div>
 
             <button onclick="document.getElementById('privacy-policy-modal').classList.add('hidden')" 
-                    class="w-full bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase tracking-wider transition-all cursor-pointer shadow-md mt-2">
+                    class="w-full bg-[#23483f] hover:bg-[#19322b] text-white font-mono text-xs font-black py-3.5 rounded-xl uppercase transition-all cursor-pointer shadow-md mt-2">
                 Entendido y Cerrar ➔
             </button>
         </div>
     `;
 };
 
-// 🔐 CIERRA SESIÓN CON PURGA ABSOLUTA DE CACHÉ
 window.handleLogout = function() {
     window.showConfirmModal({
         title: "¿Cerrar Sesión?",
-        message: "¿Seguro que quieres salir de tu cuenta de estudiante? Se purgará el caché local temporal.",
+        message: "¿Seguro que quieres salir de tu cuenta de estudiante?",
         onConfirm: async () => {
             try {
                 await supabaseClient.auth.signOut();
-                
-                // 🧹 Reset completo de estado y localStorage
                 ProgressManager.resetProgressState();
                 
                 window.AppState = {
@@ -157,15 +241,16 @@ window.handleLogout = function() {
                     activeCategory: 'EXPRESSIONS',
                     isDarkMode: false,
                     targetLanguage: 'en',
-                    isFirstLoad: true
+                    isFirstLoad: true,
+                    activeView: 'home'
                 };
                 
                 updateUI(false);
                 window.updateStatsDisplay();
-                window.renderHomeLessonsModule();
+                window.openHomeView();
                 window.updateAlertBadges();
                 
-                window.showToast("Sesión cerrada y caché purgado.", 'info');
+                window.showToast("Sesión cerrada.", 'info');
             } catch (e) {
                 console.error("Error al cerrar sesión:", e);
             }
@@ -225,7 +310,6 @@ function bindAuthEvents() {
                 const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                // 🧹 Limpieza preventiva antes de cargar los datos de la cuenta que ingresa
                 ProgressManager.resetProgressState();
 
                 window.AppState.user = {
@@ -238,7 +322,7 @@ function bindAuthEvents() {
                 window.showToast(`¡Bienvenido, ${window.AppState.user.name}!`, 'success');
                 window.closeAuthModal();
                 window.updateStatsDisplay();
-                window.renderHomeLessonsModule();
+                window.openHomeView();
                 window.updateAlertBadges();
             }
         } catch (err) {
@@ -316,7 +400,7 @@ function initRealtimeAuthListener() {
             updateUI(true);
             window.closeAuthModal();
             window.updateStatsDisplay();
-            window.renderHomeLessonsModule();
+            window.openHomeView();
             window.updateAlertBadges();
             window.showToast(`🎉 ¡Cuenta confirmada! Bienvenido, ${window.AppState.user.name}`, 'success');
         }
@@ -554,10 +638,6 @@ window.updateStatsDisplay = function() {
     if (pawsMobileEl) pawsMobileEl.textContent = stats.paws || 0;
 };
 
-window.openSpeakingManager = function() { SpeakingEngine.initSpeakingModule(); };
-window.openChallengesManager = function() { ChallengesEngine.openChallengesHub(); };
-window.openMissionsManager = function() { MissionsEngine.initMissionsModule(); };
-
 window.togglePasswordVisibility = function(inputId, eyeIconId) {
     const input = document.getElementById(inputId);
     const icon = document.getElementById(eyeIconId);
@@ -689,7 +769,7 @@ async function mainAppBoot() {
     initRealtimeAuthListener();
     bindAuthEvents();
     window.updateStatsDisplay();
-    window.renderHomeLessonsModule();
+    window.openHomeView();
     window.updateAlertBadges();
     dismissSplashScreen();
 }
