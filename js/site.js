@@ -1,6 +1,6 @@
 // ==========================================================================
 // 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v65.0 (HIGHLIGHT NAV & FIXED UI)
-// ==========================================================================
+// ========================================================================== 
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
 import { VocabularyEngine, BUBBLE_COLOR_PALETTE } from './modules/vocabulary.js';
