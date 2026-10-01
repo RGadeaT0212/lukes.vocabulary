@@ -4,49 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <title>Lukes English Academy - Aprende Vocabulario en Inglés Rápido</title>
-    <meta name="description" content="Domina más de 300 palabras en inglés rápido con Lukes English Academy. Ejercicios interactivos, reconocimiento de voz, dinámicas gamificadas y seguimiento de progreso real. 100% interactivo y efectivo.">
-    <meta name="keywords" content="aprender ingles rapido, vocabulario en ingles, ejercicios de ingles interactivos, laboratorio de speaking ingles, aprender ingles gratis, app para aprender ingles, lukes english academy">
+    <title>Lukes English Academy - Aprende Vocabulario Rápido</title>
+    <meta name="description" content="Domina vocabulario en múltiples idiomas rápido con Lukes English Academy. Ejercicios interactivos, reconocimiento de voz y seguimiento de progreso real.">
     <meta name="author" content="Lukes English Academy">
     <meta name="robots" content="index, follow">
 
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rgadeat0212.github.io/lukes.vocabulary/">
-    <meta property="og:title" content="Lukes English Academy - Domina el Vocabulario en Inglés">
-    <meta property="og:description" content="Aprende y retén vocabulario en inglés rápido mediante retos interactivos, práctica oral con inteligencia de voz y recompensas diarias.">
-    <meta property="og:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Lukes English Academy - Aprende Inglés Rápido">
-    <meta name="twitter:description" content="Aprende y retén vocabulario en inglés con un método acelerado e interactivo.">
-    <meta name="twitter:image" content="https://rgadeat0212.github.io/lukes.vocabulary/assets/lukes-academy-logo.svg">
-
-    <script type="application/ld+json">
-    {
-     "@context": "https://schema.org",
-    "@type": "EducationalApplication",
-    "name": "Lukes English Academy",
-     "operatingSystem": "Web",
-    "applicationCategory": "EducationalApplication",
-    "educationalLevel": ["A1", "A2", "B1"],
-    "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-    },
-    "url": "https://rgadeat0212.github.io/lukes.vocabulary/",
-    "description": "Plataforma web educativa para aprender y dominar vocabulario en inglés de forma rápida mediante lecciones continuas, retos de práctica oral, minijuegos y un sistema de gamificación por recompensas.",
-    "inLanguage": ["es", "en"],
-    "featureList": [
-        "Alineación con el Marco Común Europeo (A1 - B1)",
-        "Laboratorio de Speaking con reconocimiento de voz",
-        "Desafíos diarios e interactivos con recompensa Paws",
-        "Estadísticas de fluidez y retención en tiempo real",
-        "Diseño adaptable para dispositivos móviles y PC"
-    ]
-    }   
-    </script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&family=Afacad+Flux:wght@400;600;700&display=swap" rel="stylesheet">
@@ -81,9 +43,9 @@
                 <img src="assets/lukes-academy-logo.svg" class="w-full max-w-[190px] h-auto object-contain transition-transform hover:scale-105" alt="Lukes English Academy">
             </div>
 
-            <!-- SELECTOR MULTI-IDIOMA DE APRENDIZAJE -->
+            <!-- SELECTOR MULTI-IDIOMA DE APRENDIZAJE DESKTOP -->
             <div class="relative group">
-                <button class="w-full flex items-center justify-between subcard-bg px-3 py-2 rounded-xl border border-main text-xs font-mono font-bold cursor-pointer">
+                <button class="w-full flex items-center justify-between subcard-bg px-3 py-2.5 rounded-xl border border-main text-xs font-mono font-bold cursor-pointer hover:border-[#e06a4e] transition-colors">
                     <div class="flex items-center gap-2">
                         <span class="text-base active-target-flag">🇺🇸</span>
                         <span class="text-[10px] text-main uppercase">Aprendiendo</span>
@@ -91,12 +53,30 @@
                     <span class="text-[10px] font-bold text-[#e06a4e] active-target-name">English</span>
                 </button>
                 <div class="absolute left-0 right-0 top-full mt-1 subcard-bg border border-main rounded-xl p-1.5 shadow-xl hidden group-hover:flex flex-col gap-1 z-50">
-                    <button onclick="window.I18nManager.setTargetLanguage('en')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇺🇸 English</button>
-                    <button onclick="window.I18nManager.setTargetLanguage('es')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇪🇸 Español</button>
-                    <button onclick="window.I18nManager.setTargetLanguage('it')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇮🇹 Italiano</button>
-                    <button onclick="window.I18nManager.setTargetLanguage('fr')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇫🇷 Français</button>
-                    <button onclick="window.I18nManager.setTargetLanguage('pt')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇵🇹 Português</button>
-                    <button onclick="window.I18nManager.setTargetLanguage('de')" class="flex items-center gap-2 p-1.5 hover:bg-main/10 rounded-lg text-[10px] font-bold text-left cursor-pointer">🇩🇪 Deutsch</button>
+                    <button onclick="window.I18nManager.setTargetLanguage('en')" data-lang="en" class="lang-option-btn flex items-center justify-between p-2 rounded-lg text-xs font-bold text-left cursor-pointer transition-all">
+                        <span>🇺🇸 English</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('es')" data-lang="es" class="lang-option-btn flex items-center justify-between p-2 rounded-lg text-xs font-bold text-left cursor-pointer transition-all">
+                        <span>🇪🇸 Español</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('it')" data-lang="it" class="lang-option-btn flex items-center justify-between p-2 rounded-lg text-xs font-bold text-left cursor-pointer transition-all">
+                        <span>🇮🇹 Italiano</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('fr')" data-lang="fr" class="lang-option-btn flex items-center justify-between p-2 rounded-lg text-xs font-bold text-left cursor-pointer transition-all">
+                        <span>🇫🇷 Français</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('pt')" data-lang="pt" class="lang-option-btn flex items-center justify-between p-2 rounded-lg text-xs font-bold text-left cursor-pointer transition-all">
+                        <span>🇵🇹 Português</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('de')" data-lang="de" class="lang-option-btn flex items-center justify-between p-2 rounded-lg text-xs font-bold text-left cursor-pointer transition-all">
+                        <span>🇩🇪 Deutsch</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
                 </div>
             </div>
 
@@ -176,28 +156,32 @@
         </div>
     </aside>
 
-    <!-- HEADER MÓVIL FIJO -->
-    <header class="md:hidden w-full card-bg border-b border-main px-4 py-2 flex items-center justify-between shadow-xs shrink-0 z-30 transition-colors">
+    <!-- HEADER MÓVIL FIJO (CON SELECTOR DE IDIOMA INCORPORADO) -->
+    <header class="md:hidden w-full card-bg border-b border-main px-3 py-2 flex items-center justify-between shadow-xs shrink-0 z-30 transition-colors">
         <div class="flex items-center">
-            <img src="assets/lukes-academy-logo.svg" class="h-11 sm:h-12 w-auto object-contain" alt="Lukes English Academy">
+            <img src="assets/lukes-academy-logo.svg" class="h-10 sm:h-12 w-auto object-contain" alt="Lukes English Academy">
         </div>
 
-        <div class="flex items-center gap-2">
-            <div class="flex items-center gap-1 text-[11px] font-bold text-[#e06a4e] subcard-bg px-2.5 py-1 rounded-full border border-main">
+        <div class="flex items-center gap-1.5">
+            <!-- 🌐 ACCESO RÁPIDO DE IDIOMA EN HEADER MÓVIL -->
+            <button onclick="window.toggleBottomSheetProfile()" class="flex items-center gap-1 text-[10px] font-mono font-bold text-main subcard-bg px-2.5 py-1 rounded-full border border-main hover:border-[#e06a4e] cursor-pointer">
+                <span class="active-target-flag text-xs">🇺🇸</span>
+                <span class="active-target-code font-black text-[#e06a4e]">EN</span>
+            </button>
+
+            <!-- PATITAS -->
+            <div class="flex items-center gap-1 text-[10px] font-bold text-[#e06a4e] subcard-bg px-2.5 py-1 rounded-full border border-main">
                 <span>🐾</span>
                 <span id="mobile-coins-display">0</span>
             </div>
             
             <div id="mobile-auth-guest-btns" class="flex gap-1">
-                <button onclick="window.openAuthModal('login')" class="text-[9px] font-mono font-bold text-white bg-[#23483f] px-2.5 py-1.5 rounded-lg uppercase">
+                <button onclick="window.openAuthModal('login')" class="text-[9px] font-mono font-bold text-white bg-[#23483f] px-2 py-1 rounded-lg uppercase">
                     Entrar
-                </button>
-                <button onclick="window.openAuthModal('register')" class="text-[9px] font-mono font-bold text-white bg-[#e06a4e] px-2.5 py-1.5 rounded-lg uppercase">
-                    Registro
                 </button>
             </div>
             
-            <button id="mobile-auth-user-btn" onclick="window.openUserProfileModal()" class="hidden text-[10px] font-bold text-main truncate max-w-[85px] subcard-bg px-2.5 py-1 rounded-lg border border-main">
+            <button id="mobile-auth-user-btn" onclick="window.openUserProfileModal()" class="hidden text-[10px] font-bold text-main truncate max-w-[80px] subcard-bg px-2 py-1 rounded-lg border border-main">
                 <span id="mobile-name-display">Estudiante</span>
             </button>
         </div>
@@ -206,122 +190,127 @@
     <!-- 2. CONTENEDOR PRINCIPAL CON SCROLL INTERNO ÚNICO EN MÓVIL -->
     <main class="flex-1 overflow-y-auto md:overflow-hidden w-full p-3 sm:p-5 flex flex-col justify-between gap-4 max-w-5xl mx-auto md:mx-0 md:pr-12 custom-scrollbar">
 
-        <!-- CARRUSEL PUBLICITARIO -->
-        <section class="w-full card-bg rounded-2xl sm:rounded-3xl border border-main shadow-xs p-2 sm:p-3 shrink-0 h-28 sm:h-36 flex items-center justify-center overflow-hidden relative transition-colors">
-            <div class="w-full h-full rounded-xl sm:rounded-2xl border border-main subcard-bg overflow-hidden relative">
-                <div id="carousel-track" class="w-full h-full flex transition-transform duration-500 ease-out"></div>
-                <div id="carousel-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
-            </div>
-        </section>
+        <!-- VISTA DE NAVEGACIÓN INTERNA EN EL ÁREA CENTRAL -->
+        <div id="main-content-view" class="w-full flex flex-col gap-4">
 
-        <!-- MÓDULO INTEGRADO DE BURBUJAS -->
-        <section class="w-full card-bg border border-main rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs flex flex-col gap-3 transition-colors">
-            <div class="w-full flex justify-between items-center border-b border-main pb-2">
-                <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-mono font-bold text-muted uppercase"></span>
-                    <h3 id="home-category-title" class="title-brand font-black text-sm sm:text-lg text-main uppercase tracking-tight">EXPRESSIONS</h3>
+            <!-- CARRUSEL PUBLICITARIO -->
+            <section class="w-full card-bg rounded-2xl sm:rounded-3xl border border-main shadow-xs p-2 sm:p-3 shrink-0 h-28 sm:h-36 flex items-center justify-center overflow-hidden relative transition-colors">
+                <div class="w-full h-full rounded-xl sm:rounded-2xl border border-main subcard-bg overflow-hidden relative">
+                    <div id="carousel-track" class="w-full h-full flex transition-transform duration-500 ease-out"></div>
+                    <div id="carousel-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
                 </div>
+            </section>
 
-                <div class="flex items-center gap-1.5">
-                    <span id="home-level-badge" class="px-3 py-1 rounded-xl bg-[#e06a4e] text-white font-mono text-xs font-black uppercase tracking-wider">A1</span>
-                </div>
-            </div>
-
-            <!-- ACORDEÓN DE PALABRAS -->
-            <div class="w-full">
-                <button onclick="window.toggleWordPreviewAccordion()" class="text-[10px] font-mono font-bold text-muted hover:text-[#e06a4e] flex items-center gap-1 cursor-pointer transition-colors">
-                    <span>👁️ Ver las 5 palabras de esta lección</span>
-                    <i id="preview-chevron" class="fa-solid fa-chevron-down text-[8px] transition-transform"></i>
-                </button>
-                <div id="word-preview-accordion" class="hidden grid grid-cols-2 sm:grid-cols-5 gap-1.5 mt-2 subcard-bg p-2 rounded-xl border border-main"></div>
-            </div>
-
-            <!-- TIRA CONTINUA DE BURBUJAS AMPLIFICADAS -->
-            <div class="w-full h-24 sm:h-32 flex items-center justify-center relative overflow-hidden my-1">
-                <button onclick="window.moveHomeCarousel(-1)" class="absolute left-1 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full card-bg border border-main shadow-md flex items-center justify-center text-xs sm:text-sm text-main cursor-pointer active:scale-95">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </button>
-
-                <div id="home-bubbles-track" class="flex items-center gap-5 sm:gap-10 transition-transform duration-500 ease-out absolute left-1/2"></div>
-
-                <button onclick="window.moveHomeCarousel(1)" class="absolute right-1 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full card-bg border border-main shadow-md flex items-center justify-center text-xs sm:text-sm text-main cursor-pointer active:scale-95">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
-            </div>
-        </section>
-
-        <!-- MÓDULOS DE PRÁCTICA COMPACTOS HORIZONTALES -->
-        <section class="grid grid-cols-3 gap-2 sm:gap-4 w-full shrink-0">
-            <div onclick="window.openSpeakingManager()"
-                 class="card-bg card-hover border border-main border-b-4 border-b-[#e06a4e] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 shadow-xs cursor-pointer transition-all active:translate-y-0.5">
-                <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#e06a4e] text-xs sm:text-sm shrink-0 border border-main">
-                    <i class="fa-solid fa-microphone"></i>
-                </div>
-                <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Speaking</span>
-            </div>
-
-            <div onclick="window.openMissionsManager()" 
-                 class="card-bg card-hover border border-main border-b-4 border-b-[#23483f] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#23483f] dark:text-[#8b9690] text-xs sm:text-sm shrink-0 border border-main">
-                        <i class="fa-solid fa-bullseye"></i>
+            <!-- MÓDULO INTEGRADO DE BURBUJAS -->
+            <section class="w-full card-bg border border-main rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs flex flex-col gap-3 transition-colors">
+                <div class="w-full flex justify-between items-center border-b border-main pb-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[9px] font-mono font-bold text-muted uppercase"></span>
+                        <h3 id="home-category-title" class="title-brand font-black text-sm sm:text-lg text-main uppercase tracking-tight">EXPRESSIONS</h3>
                     </div>
-                    <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Misiones</span>
-                </div>
-                <span id="missions-badge-mobile" class="hidden"></span>
-            </div>
 
-            <div onclick="window.openChallengesManager()" 
-                 class="card-bg card-hover border border-main border-b-4 border-b-[#d4a373] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#d4a373] text-xs sm:text-sm shrink-0 border border-main">
-                        <i class="fa-solid fa-trophy"></i>
+                    <div class="flex items-center gap-1.5">
+                        <span id="home-level-badge" class="px-3 py-1 rounded-xl bg-[#e06a4e] text-white font-mono text-xs font-black uppercase tracking-wider">A1</span>
                     </div>
-                    <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Desafíos</span>
                 </div>
-                <span id="challenges-badge-mobile" class="hidden"></span>
-            </div>
-        </section>
 
-        <!-- SECCIÓN DE ESTADÍSTICAS -->
-        <section class="card-bg rounded-xl sm:rounded-3xl px-3 py-2 sm:px-6 sm:py-2.5 shadow-xs border border-main flex items-center justify-around shrink-0 h-14 sm:h-16 transition-colors mb-2">
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle-progress" stroke="#23483f" stroke-dasharray="0, 100" id="circle-words-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    </svg>
-                    <span id="stat-words-learned" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
+                <!-- ACORDEÓN DE PALABRAS -->
+                <div class="w-full">
+                    <button onclick="window.toggleWordPreviewAccordion()" class="text-[10px] font-mono font-bold text-muted hover:text-[#e06a4e] flex items-center gap-1 cursor-pointer transition-colors">
+                        <span>👁️ Ver las 5 palabras de esta lección</span>
+                        <i id="preview-chevron" class="fa-solid fa-chevron-down text-[8px] transition-transform"></i>
+                    </button>
+                    <div id="word-preview-accordion" class="hidden grid grid-cols-2 sm:grid-cols-5 gap-1.5 mt-2 subcard-bg p-2 rounded-xl border border-main"></div>
                 </div>
-                <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Aprendidas</span>
-            </div>
 
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle-progress" stroke="#d4a373" stroke-dasharray="0, 100" id="circle-challenges-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    </svg>
-                    <span id="stat-challenges-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0</span>
-                </div>
-                <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Desafíos</span>
-            </div>
+                <!-- TIRA CONTINUA DE BURBUJAS AMPLIFICADAS -->
+                <div class="w-full h-24 sm:h-32 flex items-center justify-center relative overflow-hidden my-1">
+                    <button onclick="window.moveHomeCarousel(-1)" class="absolute left-1 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full card-bg border border-main shadow-md flex items-center justify-center text-xs sm:text-sm text-main cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
 
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
-                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
-                        <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle-progress" stroke="#e06a4e" stroke-dasharray="0, 100" id="circle-missions-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    </svg>
-                    <span id="stat-missions-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
+                    <div id="home-bubbles-track" class="flex items-center gap-5 sm:gap-10 transition-transform duration-500 ease-out absolute left-1/2"></div>
+
+                    <button onclick="window.moveHomeCarousel(1)" class="absolute right-1 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full card-bg border border-main shadow-md flex items-center justify-center text-xs sm:text-sm text-main cursor-pointer active:scale-95">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
                 </div>
-                <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Misiones</span>
-            </div>
-        </section>
+            </section>
+
+            <!-- MÓDULOS DE PRÁCTICA COMPACTOS HORIZONTALES -->
+            <section class="grid grid-cols-3 gap-2 sm:gap-4 w-full shrink-0">
+                <div onclick="window.openSpeakingManager()"
+                     class="card-bg card-hover border border-main border-b-4 border-b-[#e06a4e] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                    <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#e06a4e] text-xs sm:text-sm shrink-0 border border-main">
+                        <i class="fa-solid fa-microphone"></i>
+                    </div>
+                    <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Speaking</span>
+                </div>
+
+                <div onclick="window.openMissionsManager()" 
+                     class="card-bg card-hover border border-main border-b-4 border-b-[#23483f] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#23483f] dark:text-[#8b9690] text-xs sm:text-sm shrink-0 border border-main">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Misiones</span>
+                    </div>
+                    <span id="missions-badge-mobile" class="hidden"></span>
+                </div>
+
+                <div onclick="window.openChallengesManager()" 
+                     class="card-bg card-hover border border-main border-b-4 border-b-[#d4a373] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#d4a373] text-xs sm:text-sm shrink-0 border border-main">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Desafíos</span>
+                    </div>
+                    <span id="challenges-badge-mobile" class="hidden"></span>
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE ESTADÍSTICAS -->
+            <section class="card-bg rounded-xl sm:rounded-3xl px-3 py-2 sm:px-6 sm:py-2.5 shadow-xs border border-main flex items-center justify-around shrink-0 h-14 sm:h-16 transition-colors mb-2">
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle-progress" stroke="#23483f" stroke-dasharray="0, 100" id="circle-words-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span id="stat-words-learned" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
+                    </div>
+                    <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Aprendidas</span>
+                </div>
+
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle-progress" stroke="#d4a373" stroke-dasharray="0, 100" id="circle-challenges-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span id="stat-challenges-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0</span>
+                    </div>
+                    <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Desafíos</span>
+                </div>
+
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle-progress" stroke="#e06a4e" stroke-dasharray="0, 100" id="circle-missions-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        </svg>
+                        <span id="stat-missions-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
+                    </div>
+                    <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Misiones</span>
+                </div>
+            </section>
+
+        </div>
 
     </main>
 
-    <!-- FOOTER MÓVIL DE 5 BOTONES CON CAJAS DE ICONO ILUMINADAS -->
+    <!-- FOOTER MÓVIL DE 5 BOTONES FIJO -->
     <footer class="md:hidden card-bg border-t border-main py-2 w-full shrink-0 shadow-md z-30 transition-colors">
         <nav class="flex justify-around items-center px-1">
             <button id="mob-nav-home" onclick="window.openHomeView()" class="flex flex-col items-center text-[#23483f] font-black cursor-pointer scale-110 transition-transform">
@@ -361,7 +350,7 @@
         </nav>
     </footer>
 
-    <!-- BOTTOM SHEET MÓVIL -->
+    <!-- BOTTOM SHEET MÓVIL CON SELECTOR DE IDIOMAS MULTI-IDIOMA -->
     <div id="profile-bottom-sheet" class="fixed inset-0 bg-[#1e2623]/70 backdrop-blur-md z-50 flex flex-col justify-end opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="card-bg border-t border-main w-full rounded-t-3xl p-5 shadow-2xl flex flex-col gap-4 font-mono max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300">
             
@@ -371,6 +360,37 @@
                     <span class="text-xs font-bold text-main uppercase">// <span class="active-target-name">English</span> APRENDIENDO</span>
                 </div>
                 <button onclick="window.toggleBottomSheetProfile()" class="w-7 h-7 rounded-full subcard-bg text-main flex items-center justify-center text-xs cursor-pointer">✕</button>
+            </div>
+
+            <!-- 🌐 SELECTOR MULTI-IDIOMA MÓVIL RESTRUCTURADO -->
+            <div class="subcard-bg p-3.5 rounded-2xl border border-main flex flex-col gap-2.5 font-mono">
+                <span class="text-[10px] font-bold text-muted uppercase">// SELECCIONAR IDIOMA DE APRENDIZAJE:</span>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="window.I18nManager.setTargetLanguage('en')" data-lang="en" class="lang-option-btn flex items-center justify-between p-2.5 subcard-bg border border-main/20 rounded-xl text-xs font-bold hover:border-[#e06a4e] cursor-pointer transition-all">
+                        <span>🇺🇸 English</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('es')" data-lang="es" class="lang-option-btn flex items-center justify-between p-2.5 subcard-bg border border-main/20 rounded-xl text-xs font-bold hover:border-[#e06a4e] cursor-pointer transition-all">
+                        <span>🇪🇸 Español</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('it')" data-lang="it" class="lang-option-btn flex items-center justify-between p-2.5 subcard-bg border border-main/20 rounded-xl text-xs font-bold hover:border-[#e06a4e] cursor-pointer transition-all">
+                        <span>🇮🇹 Italiano</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('fr')" data-lang="fr" class="lang-option-btn flex items-center justify-between p-2.5 subcard-bg border border-main/20 rounded-xl text-xs font-bold hover:border-[#e06a4e] cursor-pointer transition-all">
+                        <span>🇫🇷 Français</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('pt')" data-lang="pt" class="lang-option-btn flex items-center justify-between p-2.5 subcard-bg border border-main/20 rounded-xl text-xs font-bold hover:border-[#e06a4e] cursor-pointer transition-all">
+                        <span>🇵🇹 Português</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                    <button onclick="window.I18nManager.setTargetLanguage('de')" data-lang="de" class="lang-option-btn flex items-center justify-between p-2.5 subcard-bg border border-main/20 rounded-xl text-xs font-bold hover:border-[#e06a4e] cursor-pointer transition-all">
+                        <span>🇩🇪 Deutsch</span>
+                        <span class="active-check hidden">✓</span>
+                    </button>
+                </div>
             </div>
 
             <div class="subcard-bg p-4 rounded-2xl border border-main flex items-center justify-between">
@@ -483,7 +503,7 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR DE EJERCICIOS DE LECCIÓN (SÓLO APARECE AL ENTRAR A UNA BURBUJA) -->
+    <!-- CONTENEDOR DE EJERCICIOS DE LECCIÓN (SÓLO PANTALLA COMPLETA DURANTE UNA LECCIÓN ACTIVA) -->
     <div id="lesson-interactive-deck" class="fixed inset-0 md:left-64 app-bg z-50 flex flex-col justify-between p-4 sm:p-6 overflow-hidden select-none hidden text-main"></div>
 
     <script type="module" src="./js/site.js"></script>
