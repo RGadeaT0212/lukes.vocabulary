@@ -1,7 +1,7 @@
 // ==========================================================================
-// 🪐 VOCABULARY ENGINE v74.0 (FLUID L2 SHADOWING & MIC FIX)
+// 🪐 VOCABULARY ENGINE v76.0 (MANDATORY L1 & L2 SHADOWING + DYNAMIC LANG)
 // ==========================================================================
-import { VOCABULARY_DATABASE } from './database.js';
+import { getVocabularyForTargetLang } from './database.js';
 import { VOCABULARY_TEMPLATES } from './templatesCatalogue.js';
 import { MissionsEngine } from './missionsEngine.js';
 import { ProgressManager } from './progressManager.js';
@@ -93,17 +93,13 @@ export const VocabularyEngine = {
 
     loadGymCategories(levelFilter = null) {
         this.selectedLevel = levelFilter || window.AppState?.activeLevel || 'A1';
-        const targetLang = window.AppState?.targetLanguage || I18nManager?.targetLang || 'en';
 
-        const filteredWords = VOCABULARY_DATABASE.filter(w => {
-            const matchesLevel = String(w.level || w.euroLevel || 'A1').toUpperCase() === String(this.selectedLevel).toUpperCase();
-            const matchesLang = w.lang ? String(w.lang).toLowerCase() === String(targetLang).toLowerCase() : true;
-            return matchesLevel && matchesLang;
-        });
+        // Obtener el vocabulario construido dinámicamente según AppState.targetLanguage
+        const dynamicDatabase = getVocabularyForTargetLang();
 
-        this.allWords = filteredWords.map(w => ({
+        this.allWords = dynamicDatabase.map(w => ({
             ...w,
-            english_word: w.word || w.english_word,
+            english_word: w.word,
             category_group: w.category,
             image_url: w.media_url,
             hasImage: w.hasImage !== undefined ? w.hasImage : true
@@ -116,7 +112,7 @@ export const VocabularyEngine = {
 
         this.currentBlockNumber = Math.floor((bubbleNum - 1) / 3) + 1;
         const startIndex = (this.currentBlockNumber - 1) * 5;
-        this.currentBlockWords = filtered.length > 0 ? filtered.slice(startIndex, startIndex + 5) : VOCABULARY_DATABASE.slice(0, 5);
+        this.currentBlockWords = filtered.length > 0 ? filtered.slice(startIndex, startIndex + 5) : this.allWords.slice(0, 5);
 
         this.currentBubbleType = bubbleNum;
         this.currentSubLesson = ((bubbleNum - 1) % 3) + 1;
@@ -308,7 +304,6 @@ export const VocabularyEngine = {
     loopEngine() {
         if (this.activeTypewriterInterval) clearInterval(this.activeTypewriterInterval);
 
-        // EVALUACIÓN CONTROLADA DEL MODO SHADOWING (MUESTRA REPORTE AL FINALIZAR)
         if (this.isShadowingMode) {
             if (this.currentQueueIndex >= this.shadowingQueue.length) {
                 this.isShadowingMode = false;
@@ -319,7 +314,6 @@ export const VocabularyEngine = {
             return;
         }
 
-        // CONTROL DE FIN DE COLA DE EJERCICIOS PRINCIPALES
         if (this.currentQueueIndex >= this.exerciseQueue.length) {
             if (!this.isReviewMode && this.failedQueue.length > 0) {
                 this.isReviewMode = true;
@@ -342,7 +336,6 @@ export const VocabularyEngine = {
         const deck = document.getElementById('lesson-interactive-deck');
         if (!deck) return;
 
-        // INTRO CARD
         if (ex.type === 'intro_card') {
             deck.innerHTML = `
                 <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0">
@@ -424,7 +417,6 @@ export const VocabularyEngine = {
             return;
         }
 
-        // EJERCICIOS INTERACTIVOS
         let exerciseInteractiveBody = '';
 
         if (ex.type === 'shadowing_text' || ex.type === 'shadowing_image') {
@@ -524,7 +516,7 @@ export const VocabularyEngine = {
         } else if (ex.type === 'input') {
             exerciseInteractiveBody = `
                 <div class="flex flex-col gap-2 mt-2">
-                    <input type="text" id="type-answer-input" autocomplete="off" placeholder="Escribe en inglés..." 
+                    <input type="text" id="type-answer-input" autocomplete="off" placeholder="Escribe tu respuesta..." 
                            oninput="window.VocabularyEngine.handleTextInput(this.value)"
                            onkeypress="if(event.key==='Enter' && !document.getElementById('check-answer-btn').disabled) window.VocabularyEngine.executeCheckAnswer()"
                            class="w-full subcard-bg border border-main rounded-xl p-3.5 text-center font-mono text-xs sm:text-sm font-bold text-main focus:outline-none focus:border-[#e06a4e]">
@@ -532,15 +524,18 @@ export const VocabularyEngine = {
             `;
         } else if ((ex.type === 'speaking' || ex.type === 'audio_input') && this.canUserSpeakNow) {
             exerciseInteractiveBody = `
-                <div class="flex flex-col items-center gap-2.5 mt-2">
-                    <button id="mic-lesson-btn" type="button" onclick="window.VocabularyEngine.listenLessonVoiceAnswer()" 
-                            class="w-14 h-14 bg-[#e06a4e] hover:bg-[#c8573b] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg active:scale-90 transition-all">
-                        <i class="fa-solid fa-microphone"></i>
-                    </button>
-                    <span id="speaking-status-text" class="text-[10px] font-mono text-muted">Toca para encender micrófono</span>
+                <div class="flex flex-col items-center gap-3 mt-3">
+                    <div class="relative flex items-center justify-center">
+                        <div id="mic-pulse-ring" class="hidden absolute w-24 h-24 rounded-full bg-amber-500/30 animate-ping"></div>
+                        <button id="mic-lesson-btn" type="button" onclick="window.VocabularyEngine.listenLessonVoiceAnswer()" 
+                                class="w-18 h-18 bg-[#e06a4e] hover:bg-[#c8573b] text-white rounded-full flex items-center justify-center text-2xl cursor-pointer shadow-xl active:scale-95 transition-all z-10 border-2 border-white/20">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                    </div>
+                    <span id="speaking-status-text" class="text-xs font-mono text-muted font-bold">Toca para encender el micrófono</span>
                     
                     <button type="button" onclick="window.VocabularyEngine.toggleSpeechMode(false)" 
-                            class="text-[9px] font-mono text-muted hover:text-main underline cursor-pointer mt-1">
+                            class="text-[10px] font-mono text-muted hover:text-main underline cursor-pointer mt-1">
                         🚫 No puedo hablar ahora (Desactivar ejercicios orales)
                     </button>
                 </div>
@@ -600,7 +595,7 @@ export const VocabularyEngine = {
                     <div id="spanish-translation-container">
                         <button onclick="window.VocabularyEngine.revealSpanishTranslation()" 
                                 class="text-[9px] font-mono text-muted hover:text-[#e06a4e] border border-dashed border-main px-2 py-0.5 rounded-lg cursor-pointer">
-                            👁️️ Ver Significado
+                            👁 Ver Significado
                         </button>
                         <p id="spanish-translation-text" class="text-xs text-muted font-medium italic hidden font-bold">"${ex.spanish_translation}"</p>
                     </div>
@@ -703,15 +698,18 @@ export const VocabularyEngine = {
         const targetWord = ex.clean_target || this.cleanString(ex.prompt_text);
         const statusText = document.getElementById('speaking-status-text');
         const micBtn = document.getElementById('mic-lesson-btn');
+        const pulseRing = document.getElementById('mic-pulse-ring');
 
-        if (micBtn) micBtn.className = "w-14 h-14 bg-amber-500 text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg animate-pulse transition-all";
+        if (micBtn) micBtn.className = "w-18 h-18 bg-amber-500 text-white rounded-full flex items-center justify-center text-2xl cursor-pointer shadow-xl animate-pulse ring-4 ring-amber-400/50 transition-all z-10";
+        if (pulseRing) pulseRing.classList.remove('hidden');
         if (statusText) statusText.innerText = "Escuchando tu voz...";
 
         startListening(
             (spokenText) => {
                 stopListening();
                 const cleanSpoken = this.cleanString(spokenText);
-                if (micBtn) micBtn.className = "w-14 h-14 bg-[#23483f] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg transition-all";
+                if (micBtn) micBtn.className = "w-18 h-18 bg-[#23483f] text-white rounded-full flex items-center justify-center text-2xl cursor-pointer shadow-xl transition-all z-10";
+                if (pulseRing) pulseRing.classList.add('hidden');
 
                 const isMatch = cleanSpoken.includes(targetWord) || targetWord.includes(cleanSpoken);
 
@@ -732,7 +730,8 @@ export const VocabularyEngine = {
             },
             (error) => {
                 stopListening();
-                if (micBtn) micBtn.className = "w-14 h-14 bg-[#e06a4e] text-white rounded-full flex items-center justify-center text-lg cursor-pointer shadow-lg transition-all";
+                if (micBtn) micBtn.className = "w-18 h-18 bg-[#e06a4e] text-white rounded-full flex items-center justify-center text-2xl cursor-pointer shadow-xl transition-all z-10";
+                if (pulseRing) pulseRing.classList.add('hidden');
                 if (statusText) {
                     statusText.className = "text-xs font-mono font-bold text-rose-500 mt-1";
                     statusText.innerText = "No se detectó audio o el micrófono está apagado.";
@@ -881,7 +880,7 @@ export const VocabularyEngine = {
         this.isShadowingMode = true;
         this.shadowingQueue = [...this.currentBlockWords];
         this.currentQueueIndex = 0;
-        this.showToast("✍️ ¡Bonus: Practica escribiendo en el teclado!", "info");
+        this.showToast("✍️ ¡Practica escribiendo todas las palabras en tu teclado!", "info");
         this.loopEngine();
     },
 
@@ -900,10 +899,10 @@ export const VocabularyEngine = {
         deck.innerHTML = `
             <div class="w-full flex justify-between items-center border-b border-main pb-3 z-10 shrink-0">
                 <span class="text-xs font-mono font-black uppercase text-[#e06a4e]">
-                    ✍️ SHADOWING WRITING // BONUS (${this.currentQueueIndex + 1}/5)
+                    ✍️ PRÁCTICA ESCRITA // (${this.currentQueueIndex + 1}/${this.shadowingQueue.length})
                 </span>
                 <span class="text-[9px] font-mono subcard-bg px-2 py-0.5 rounded-full font-bold text-muted border border-main">
-                    SIN TIEMPO NI EVALUACIÓN
+                    ESCRIBE LA PALABRA
                 </span>
             </div>
 
@@ -912,7 +911,7 @@ export const VocabularyEngine = {
                     ${currentWord.media_url ? `<img src="${currentWord.media_url}" class="w-24 h-24 mx-auto object-contain my-1" onerror="this.remove()">` : ''}
 
                     <div class="flex flex-col items-center gap-1 my-1">
-                        <span class="text-[9px] font-mono font-bold text-muted uppercase">// TOCA Y CALCA LA PALABRA:</span>
+                        <span class="text-[9px] font-mono font-bold text-muted uppercase">// ESCRIBE LA PALABRA:</span>
                         <h2 class="title-brand text-3xl font-black text-main/35 uppercase tracking-widest select-none">
                             ${currentWord.english_word || currentWord.word}
                         </h2>
@@ -982,13 +981,13 @@ export const VocabularyEngine = {
                 onConfirm: () => {
                     const deck = document.getElementById('lesson-interactive-deck');
                     if (deck) deck.classList.add('hidden');
-                    if (typeof window.renderHomeLessonsModule === 'function') window.renderHomeLessonsModule();
+                    if (typeof window.openHomeView === 'function') window.openHomeView();
                 }
             });
         } else {
             const deck = document.getElementById('lesson-interactive-deck');
             if (deck) deck.classList.add('hidden');
-            if (typeof window.renderHomeLessonsModule === 'function') window.renderHomeLessonsModule();
+            if (typeof window.openHomeView === 'function') window.openHomeView();
         }
     },
 
@@ -1057,12 +1056,8 @@ export const VocabularyEngine = {
         const deck = document.getElementById('lesson-interactive-deck');
         if (deck) deck.classList.add('hidden');
 
-        const nextBubble = Number(this.currentBubbleType) + 1;
-
-        if (typeof window.triggerHomeCarouselTransition === 'function') {
-            window.triggerHomeCarouselTransition(nextBubble);
-        } else if (typeof window.renderHomeLessonsModule === 'function') {
-            window.renderHomeLessonsModule();
+        if (typeof window.openHomeView === 'function') {
+            window.openHomeView();
         }
     }
 };
