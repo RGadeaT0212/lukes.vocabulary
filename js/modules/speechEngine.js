@@ -1,9 +1,18 @@
 // ==========================================================================
-// 🎙️ MOTOR NATIVO DE RECONOCIMIENTO DE VOZ OPTIMIZADO PARA MÓVILES Y DESKTOP
+// 🎙️️ MOTOR NATIVO DE RECONOCIMIENTO DE VOZ ADAPTATIVO POR IDIOMA
 // ==========================================================================
 
 let recognition = null;
 let isListeningActive = false;
+
+const SPEECH_LANG_MAP = {
+    en: 'en-US',
+    es: 'es-ES',
+    fr: 'fr-FR',
+    it: 'it-IT',
+    pt: 'pt-PT',
+    de: 'de-DE'
+};
 
 function initSpeechRecognition() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -14,7 +23,6 @@ function initSpeechRecognition() {
     }
 
     const instance = new SpeechRecognition();
-    instance.lang = 'en-US';
     instance.continuous = false;
     instance.interimResults = false;
     instance.maxAlternatives = 1;
@@ -33,7 +41,11 @@ export function startListening(onResultCallback, onErrorCallback) {
         return;
     }
 
-    // 2. Abortar cualquier sesión móvil previa que haya quedado colgada
+    // 🌐 ASIGNAR IDIOMA DINÁMICO DE RECONOCIMIENTO SEGÚN EL OBJETIVO DE APRENDIZAJE
+    const activeTargetLang = window.AppState?.targetLanguage || localStorage.getItem('lukes_target_lang') || 'en';
+    recognition.lang = SPEECH_LANG_MAP[activeTargetLang] || 'en-US';
+
+    // 2. Abortar cualquier sesión previa colgada
     try {
         recognition.abort();
     } catch (e) {}
@@ -43,7 +55,7 @@ export function startListening(onResultCallback, onErrorCallback) {
     // 3. Handlers de eventos
     recognition.onstart = () => {
         isListeningActive = true;
-        console.log("// Micrófono capturando audio...");
+        console.log(`// Micrófono capturando audio para idioma [${recognition.lang}]...`);
     };
 
     recognition.onresult = (event) => {
@@ -59,7 +71,6 @@ export function startListening(onResultCallback, onErrorCallback) {
         isListeningActive = false;
         console.warn(`// Evento de micrófono: ${event.error}`);
         
-        // Si el teléfono arrojó 'no-speech' (silencio rápido), informamos para reintento
         if (onErrorCallback) {
             onErrorCallback(event.error);
         }
@@ -74,7 +85,6 @@ export function startListening(onResultCallback, onErrorCallback) {
         recognition.start();
     } catch (e) {
         isListeningActive = false;
-        // Reintento de emergencia si la API estaba bloqueada
         setTimeout(() => {
             try {
                 recognition.abort();
