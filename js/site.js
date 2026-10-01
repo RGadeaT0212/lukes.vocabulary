@@ -1,6 +1,6 @@
 // ==========================================================================
-// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v65.0 (HIGHLIGHT NAV & FIXED UI)
-// ========================================================================== 
+// 🪐 LUKES ACADEMY - CENTRAL ORCHESTRATOR v68.0 (FIXED NAV & HOME DOM REBUILD)
+// ==========================================================================
 import { supabaseClient } from './modules/supabaseClient.js';
 import { ProgressManager } from './modules/progressManager.js';
 import { VocabularyEngine, BUBBLE_COLOR_PALETTE } from './modules/vocabulary.js';
@@ -18,7 +18,7 @@ window.AppState = {
     activeLevel: 'A1',
     activeCategory: 'EXPRESSIONS',
     isDarkMode: false,
-    targetLanguage: 'en',
+    targetLanguage: localStorage.getItem('lukes_target_lang') || 'en',
     isFirstLoad: true,
     activeView: 'home'
 };
@@ -28,10 +28,9 @@ let currentAuthTab = 'login';
 const carouselItems = [
     { text: "🚀 ¡RUTA CONTINUA DE LECCIONES! Avanza sin modales innecesarios.", tag: "NUEVO" },
     { text: "🔥 PROGRESO REAL: Completa las lecciones para desbloquear el mapa.", tag: "SISTEMA" },
-    { text: "Aprende produciendo en inglés y desbloquea las Patitas de Gato 🐾.", tag: "MÉTODO" }
+    { text: "Aprende produciendo en el idioma activo y desbloquea las Patitas de Gato 🐾.", tag: "MÉTODO" }
 ];
 
-// 🎨 ANIMACIÓN DE ILUMINACIÓN Y RESALTADO DE BOTONES ACTIVOS
 window.setActiveNavButton = function(viewName) {
     window.AppState.activeView = viewName;
 
@@ -50,11 +49,9 @@ window.setActiveNavButton = function(viewName) {
         account: 'mob-nav-account'
     };
 
-    // Estilos PC: Fondo verde oscuro, texto blanco y ligera elevación
     const activeClassesDesktop = "flex items-center justify-between px-4 py-3 rounded-xl bg-[#23483f] text-white font-bold text-xs uppercase tracking-wider shadow-md cursor-pointer w-full text-left transition-all scale-[1.02]";
     const inactiveClassesDesktop = "nav-btn flex items-center justify-between px-4 py-3 rounded-xl text-muted hover:text-main font-bold text-xs uppercase tracking-wider transition-all cursor-pointer w-full text-left opacity-70 hover:opacity-100";
 
-    // Estilos Móvil: Icono en contenedor verde animado, texto resaltado
     const activeClassesMobile = "flex flex-col items-center text-[#23483f] dark:text-emerald-400 font-black cursor-pointer scale-110 transition-transform duration-200";
     const inactiveClassesMobile = "flex flex-col items-center text-muted hover:text-main cursor-pointer opacity-60 hover:opacity-100 transition-transform duration-200";
 
@@ -80,14 +77,15 @@ window.setActiveNavButton = function(viewName) {
 };
 
 window.updateAlertBadges = function() {
-    const completedBubblesCount = ProgressManager?.state?.completed_bubbles?.length || 0;
+    const currentLangProgress = ProgressManager?.getLangProgress() || {};
+    const completedBubblesCount = currentLangProgress.completed_bubbles?.length || 0;
     const isArenaUnlocked = completedBubblesCount >= 3;
 
     const missions = MissionsEngine.getMissionList ? MissionsEngine.getMissionList() : [];
-    const claimed = ProgressManager?.state?.claimed_missions || [];
+    const claimed = currentLangProgress.claimed_missions || [];
     const hasUnclaimedMissions = missions.some(m => m.current >= m.target && !claimed.includes(m.id));
 
-    const challengesCompleted = ProgressManager?.state?.stats?.challengesCompleted || 0;
+    const challengesCompleted = currentLangProgress.stats?.challengesCompleted || 0;
     const hasPendingChallenges = isArenaUnlocked && challengesCompleted === 0;
 
     const renderBadge = (elementId, show) => {
@@ -107,12 +105,121 @@ window.updateAlertBadges = function() {
     renderBadge('challenges-badge-mobile', hasPendingChallenges);
 };
 
-// 🏡 NAVEGACIÓN CONTINUA SIN OCULTAR MENÚS
+// 🏡 NAVEGACIÓN CONTINUA Y RESTAURACIÓN LIMPIA DEL DOM DE INICIO
 window.openHomeView = function() {
     window.setActiveNavButton('home');
+    
     const deck = document.getElementById('lesson-interactive-deck');
     if (deck) deck.classList.add('hidden');
+
+    const sheet = document.getElementById('profile-bottom-sheet');
+    if (sheet && !sheet.classList.contains('pointer-events-none')) {
+        window.toggleBottomSheetProfile();
+    }
+
+    const mainView = document.getElementById('main-content-view');
+    if (mainView) {
+        // Restaurar plantilla base del mapa si Misiones o Desafíos la reemplazaron
+        if (!document.getElementById('home-bubbles-track')) {
+            mainView.innerHTML = `
+                <section class="w-full card-bg rounded-2xl sm:rounded-3xl border border-main shadow-xs p-2 sm:p-3 shrink-0 h-28 sm:h-36 flex items-center justify-center overflow-hidden relative transition-colors">
+                    <div class="w-full h-full rounded-xl sm:rounded-2xl border border-main subcard-bg overflow-hidden relative">
+                        <div id="carousel-track" class="w-full h-full flex transition-transform duration-500 ease-out"></div>
+                        <div id="carousel-dots" class="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10"></div>
+                    </div>
+                </section>
+
+                <section class="w-full card-bg border border-main rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs flex flex-col gap-3 transition-colors">
+                    <div class="w-full flex justify-between items-center border-b border-main pb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-mono font-bold text-muted uppercase"></span>
+                            <h3 id="home-category-title" class="title-brand font-black text-sm sm:text-lg text-main uppercase tracking-tight">EXPRESSIONS</h3>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <span id="home-level-badge" class="px-3 py-1 rounded-xl bg-[#e06a4e] text-white font-mono text-xs font-black uppercase tracking-wider">A1</span>
+                        </div>
+                    </div>
+
+                    <div class="w-full">
+                        <button onclick="window.toggleWordPreviewAccordion()" class="text-[10px] font-mono font-bold text-muted hover:text-[#e06a4e] flex items-center gap-1 cursor-pointer transition-colors">
+                            <span>👁️ Ver las 5 palabras de esta lección</span>
+                            <i id="preview-chevron" class="fa-solid fa-chevron-down text-[8px] transition-transform"></i>
+                        </button>
+                        <div id="word-preview-accordion" class="hidden grid grid-cols-2 sm:grid-cols-5 gap-1.5 mt-2 subcard-bg p-2 rounded-xl border border-main"></div>
+                    </div>
+
+                    <div class="w-full h-24 sm:h-32 flex items-center justify-center relative overflow-hidden my-1">
+                        <button onclick="window.moveHomeCarousel(-1)" class="absolute left-1 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full card-bg border border-main shadow-md flex items-center justify-center text-xs sm:text-sm text-main cursor-pointer active:scale-95">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <div id="home-bubbles-track" class="flex items-center gap-5 sm:gap-10 transition-transform duration-500 ease-out absolute left-1/2"></div>
+                        <button onclick="window.moveHomeCarousel(1)" class="absolute right-1 z-20 w-9 h-9 sm:w-10 sm:h-10 rounded-full card-bg border border-main shadow-md flex items-center justify-center text-xs sm:text-sm text-main cursor-pointer active:scale-95">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="grid grid-cols-3 gap-2 sm:gap-4 w-full shrink-0">
+                    <div onclick="window.openSpeakingManager()" class="card-bg card-hover border border-main border-b-4 border-b-[#e06a4e] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-center gap-2 sm:gap-3 shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                        <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#e06a4e] text-xs sm:text-sm shrink-0 border border-main"><i class="fa-solid fa-microphone"></i></div>
+                        <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Speaking</span>
+                    </div>
+                    <div onclick="window.openMissionsManager()" class="card-bg card-hover border border-main border-b-4 border-b-[#23483f] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#23483f] dark:text-[#8b9690] text-xs sm:text-sm shrink-0 border border-main"><i class="fa-solid fa-bullseye"></i></div>
+                            <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Misiones</span>
+                        </div>
+                        <span id="missions-badge-mobile" class="hidden"></span>
+                    </div>
+                    <div onclick="window.openChallengesManager()" class="card-bg card-hover border border-main border-b-4 border-b-[#d4a373] rounded-xl sm:rounded-2xl p-2 sm:px-4 sm:py-2.5 h-12 sm:h-14 flex items-center justify-between shadow-xs cursor-pointer transition-all active:translate-y-0.5">
+                        <div class="flex items-center gap-2 sm:gap-3">
+                            <div class="w-6 h-6 sm:w-8 sm:h-8 subcard-bg rounded-lg flex items-center justify-center text-[#d4a373] text-xs sm:text-sm shrink-0 border border-main"><i class="fa-solid fa-trophy"></i></div>
+                            <span class="text-[10px] sm:text-xs font-bold text-main uppercase tracking-wider">Desafíos</span>
+                        </div>
+                        <span id="challenges-badge-mobile" class="hidden"></span>
+                    </div>
+                </section>
+
+                <section class="card-bg rounded-xl sm:rounded-3xl px-3 py-2 sm:px-6 sm:py-2.5 shadow-xs border border-main flex items-center justify-around shrink-0 h-14 sm:h-16 transition-colors mb-2">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle-progress" stroke="#23483f" stroke-dasharray="0, 100" id="circle-words-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span id="stat-words-learned" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
+                        </div>
+                        <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Aprendidas</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle-progress" stroke="#d4a373" stroke-dasharray="0, 100" id="circle-challenges-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span id="stat-challenges-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0</span>
+                        </div>
+                        <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Desafíos</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <div class="relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle-progress" stroke="#e06a4e" stroke-dasharray="0, 100" id="circle-missions-progress" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span id="stat-missions-completed" class="absolute text-[8px] sm:text-[10px] font-bold text-main">0%</span>
+                        </div>
+                        <span class="text-[7px] sm:text-[10px] font-mono font-bold text-muted uppercase">Misiones</span>
+                    </div>
+                </section>
+            `;
+            initCarousel();
+        }
+    }
+
     window.renderHomeLessonsModule();
+    window.updateAlertBadges();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 window.openSpeakingManager = function() {
@@ -130,7 +237,6 @@ window.openChallengesManager = function() {
     ChallengesEngine.openChallengesHub();
 };
 
-// 👤 BOTÓN CUENTA CON RECOGNICIÓN DE INVITADO
 window.openUserProfileModal = function() {
     window.setActiveNavButton('account');
     if (!window.AppState.user) {
@@ -478,7 +584,8 @@ window.renderHomeLessonsModule = function() {
     const totalBlocks = Math.ceil(wordCount / 5);
     const totalBubbles = totalBlocks * 3;
 
-    const rawCompletedArr = ProgressManager.state.completed_bubbles || [];
+    const currentLangProgress = ProgressManager.getLangProgress();
+    const rawCompletedArr = currentLangProgress.completed_bubbles || [];
     const completedBubbles = new Set(Array.isArray(rawCompletedArr) ? rawCompletedArr : []);
 
     if (window.AppState.isFirstLoad) {
@@ -500,7 +607,7 @@ window.renderHomeLessonsModule = function() {
         
         accordionEl.innerHTML = previewWords.map(w => `
             <div class="flex flex-col text-center p-1.5 subcard-bg rounded-xl border border-main">
-                <span class="text-[10px] font-bold text-main truncate">${w.english_word || w.word}</span>
+                <span class="text-[10px] font-bold text-main truncate">${w.word}</span>
                 <span class="text-[8px] text-muted truncate">${w.spanish}</span>
             </div>
         `).join('');
@@ -604,14 +711,15 @@ window.startHomeLesson = function(categoryName, bubbleNum) {
 };
 
 window.updateStatsDisplay = function() {
-    const stats = ProgressManager.state.stats || {};
-    const masteredIds = ProgressManager.state.mastered_words_ids || [];
-    const totalVocabularyCount = 340;
+    const currentLangProgress = ProgressManager.getLangProgress();
+    const stats = currentLangProgress.stats || {};
+    const masteredIds = currentLangProgress.mastered_words_ids || [];
+    const totalVocabularyCount = 142;
 
     const learnedCount = masteredIds.length || stats.wordsLearned || 0;
     const wordPercentage = Math.min(100, Math.round((learnedCount / totalVocabularyCount) * 100));
 
-    const completedBubbles = ProgressManager.state.completed_bubbles?.length || 0;
+    const completedBubbles = currentLangProgress.completed_bubbles?.length || 0;
     const lessonPercentage = Math.min(100, Math.round((completedBubbles / 60) * 100));
     const challengesCount = stats.challengesCompleted || 0;
     const challengePercentage = Math.min(100, Math.round((challengesCount / 20) * 100));
@@ -721,6 +829,12 @@ window.showConfirmModal = function({ title = "¿Seguro que quieres salir?", mess
         if (typeof onConfirm === 'function') onConfirm();
     };
 };
+
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted) {
+        window.openHomeView();
+    }
+});
 
 function initCarousel() {
     const track = document.getElementById('carousel-track');
